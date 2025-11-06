@@ -9,7 +9,7 @@ import {
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
 import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
-import { Slash } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { Fragment } from 'react';
 import Link from 'next/link';
 
@@ -49,7 +49,7 @@ export function Breadcrumbs() {
                   )}
                   {index < mobileItems.length - 1 && (
                     <BreadcrumbSeparator>
-                      <Slash className='h-3 w-3' />
+                      <ChevronRight />
                     </BreadcrumbSeparator>
                   )}
                 </Fragment>
@@ -79,7 +79,7 @@ export function Breadcrumbs() {
                   )}
                   {index < desktopItems.length - 1 && (
                     <BreadcrumbSeparator>
-                      <Slash className='h-4 w-4' />
+                      <ChevronRight />
                     </BreadcrumbSeparator>
                   )}
                 </Fragment>
