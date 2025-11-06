@@ -15,7 +15,6 @@ export function UserPageHeader({ onCreateUser }: UserPageHeaderProps) {
   return (
     <PageHeader
       title='用户管理'
-      description='管理系统用户账户和权限'
       action={{
         label: '新增用户',
         onClick: onCreateUser,

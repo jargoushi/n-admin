@@ -16,7 +16,6 @@ export function PermissionPageHeader({
   return (
     <PageHeader
       title='权限管理'
-      description='管理系统权限和访问控制'
       action={{
         label: '新增权限',
         onClick: onCreatePermission,

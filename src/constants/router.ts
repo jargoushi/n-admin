@@ -4,14 +4,13 @@ import {
   SquareTerminal,
   Settings,
   ScrollText,
-  Cog,
   Users,
   Shield,
   Key
 } from 'lucide-react';
 
-// 业务导航列表
-export const businessNavList: NavItem[] = [
+// 系统导航列表
+export const navList: NavItem[] = [
   {
     title: '工作台',
     url: '/dashboard/overview',
@@ -19,11 +18,7 @@ export const businessNavList: NavItem[] = [
     isActive: false,
     description: '工作台',
     items: []
-  }
-];
-
-// 系统导航列表
-export const systemNavList: NavItem[] = [
+  },
   {
     title: '账号管理',
     url: '#',
@@ -65,6 +60,3 @@ export const systemNavList: NavItem[] = [
     ]
   }
 ];
-
-// 保持原有的navList导出以兼容现有代码
-export const navList: NavItem[] = [...businessNavList, ...systemNavList];
