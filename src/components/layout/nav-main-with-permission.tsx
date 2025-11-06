@@ -1,6 +1,5 @@
 'use client';
 
-import { ChevronRight } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { usePermissions } from '@/hooks/use-permissions';
@@ -14,7 +13,6 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -105,30 +103,17 @@ export function NavMainWithPermission() {
             return (
               <Collapsible key={item.title} asChild defaultOpen={shouldOpen}>
                 <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip={item.title}
-                    isActive={isItemActive}
-                  >
-                    {item.url === '#' ? (
-                      <div>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </div>
-                    ) : (
-                      <Link href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    )}
-                  </SidebarMenuButton>
                   {item.items?.length ? (
                     <>
                       <CollapsibleTrigger asChild>
-                        <SidebarMenuAction className='data-[state=open]:rotate-90'>
-                          <ChevronRight />
-                          <span className='sr-only'>Toggle</span>
-                        </SidebarMenuAction>
+                        <SidebarMenuButton
+                          tooltip={item.title}
+                          isActive={isItemActive}
+                          className='cursor-pointer'
+                        >
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </SidebarMenuButton>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <SidebarMenuSub>
@@ -139,6 +124,7 @@ export function NavMainWithPermission() {
                                 isActive={isActivePath(subItem.url)}
                               >
                                 <Link href={subItem.url}>
+                                  <subItem.icon />
                                   <span>{subItem.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>
@@ -147,7 +133,19 @@ export function NavMainWithPermission() {
                         </SidebarMenuSub>
                       </CollapsibleContent>
                     </>
-                  ) : null}
+                  ) : (
+                    // 没有子菜单的情况：普通链接
+                    <SidebarMenuButton
+                      asChild
+                      tooltip={item.title}
+                      isActive={isItemActive}
+                    >
+                      <Link href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  )}
                 </SidebarMenuItem>
               </Collapsible>
             );
