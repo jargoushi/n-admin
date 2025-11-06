@@ -18,25 +18,10 @@ import {
 } from '@/components/ui/sidebar';
 import { siteConfig } from '@/config/site';
 
-const data = {
-  navSecondary: [
-    {
-      title: '支持',
-      url: 'https://github.com/guizimo',
-      icon: LifeBuoy
-    },
-    {
-      title: '反馈',
-      url: 'https://github.com/guizimo/n-admin/issues',
-      icon: Send
-    }
-  ]
-};
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar variant='inset' {...props}>
-      <SidebarHeader>
+      {/* <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size='lg' asChild>
@@ -65,10 +50,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-      </SidebarHeader>
+      </SidebarHeader> */}
       <SidebarContent>
         <NavMainWithPermission />
-        <NavSecondary items={data.navSecondary} className='mt-auto' />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
