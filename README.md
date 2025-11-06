@@ -1,15 +1,15 @@
 <div align="center">
   <img src="public/logo.png" alt="N-Admin Logo" width="120" height="120">
-  
-  # N Admin
-  
-  基于 Next.js 15 构建的现代化后台管理系统。
-  
-  [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)](https://nextjs.org/)
-  [![React](https://img.shields.io/badge/React-19-blue?style=flat-square&logo=react)](https://reactjs.org/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-  [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
-  
+
+# N Admin
+
+基于 Next.js 15 构建的现代化后台管理系统。
+
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-blue?style=flat-square&logo=react)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+
 </div>
 
 ## 特性
@@ -157,10 +157,6 @@ DATABASE_URL="postgresql://user:password@localhost:5432/n_admin"
 # JWT
 JWT_SECRET="your-secret-key"
 JWT_REFRESH_SECRET="your-refresh-secret"
-
-# 应用
-NEXT_PUBLIC_APP_NAME="N-Admin"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
 ## 贡献

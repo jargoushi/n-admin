@@ -81,10 +81,6 @@ DATABASE_URL="postgresql://username:password@localhost:5432/n_admin"
 JWT_SECRET="your-jwt-secret-key"
 JWT_REFRESH_SECRET="your-jwt-refresh-secret-key"
 
-# 应用配置
-NEXT_PUBLIC_APP_NAME="N-Admin"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-
 # 邮件配置（可选）
 EMAIL_FROM="noreply@yourdomain.com"
 SMTP_HOST="smtp.yourdomain.com"
