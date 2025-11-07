@@ -24,8 +24,6 @@ export function LogPageHeader({
 }: LogPageHeaderProps) {
   return (
     <PageHeader
-      title='日志管理'
-      description='查看和管理系统运行日志'
       action={{
         label: '刷新数据',
         onClick: onRefresh,

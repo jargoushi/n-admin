@@ -48,8 +48,7 @@ export function UserTable({
   onEdit,
   onDelete,
   onEnable,
-  onDisable,
-  emptyState
+  onDisable
 }: UserTableProps) {
   // 表格列配置
   const columns = TABLE_COLUMNS.map((col) => {
@@ -170,13 +169,6 @@ export function UserTable({
   });
 
   return (
-    <DataTable
-      columns={columns}
-      data={users}
-      loading={loading}
-      emptyText={MESSAGES.EMPTY.USERS}
-      emptyState={emptyState}
-      rowKey='id'
-    />
+    <DataTable columns={columns} data={users} loading={loading} rowKey='id' />
   );
 }

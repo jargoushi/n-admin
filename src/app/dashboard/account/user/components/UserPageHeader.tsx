@@ -14,7 +14,6 @@ interface UserPageHeaderProps {
 export function UserPageHeader({ onCreateUser }: UserPageHeaderProps) {
   return (
     <PageHeader
-      title='用户管理'
       action={{
         label: '新增用户',
         onClick: onCreateUser,

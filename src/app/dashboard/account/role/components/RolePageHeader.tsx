@@ -11,7 +11,6 @@ interface RolePageHeaderProps {
 export function RolePageHeader({ onCreateRole }: RolePageHeaderProps) {
   return (
     <PageHeader
-      title='角色管理'
       action={{
         label: '新增角色',
         onClick: onCreateRole,

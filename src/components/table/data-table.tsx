@@ -19,19 +19,10 @@ interface Column<T> {
   render?: (value: any, record: T, index: number) => React.ReactNode;
 }
 
-interface EmptyStateProps {
-  icon?: React.ReactNode;
-  title?: string;
-  description?: string;
-  action?: React.ReactNode;
-}
-
 interface DataTableProps<T> {
   columns: Column<T>[];
   data: T[];
   loading?: boolean;
-  emptyText?: string;
-  emptyState?: EmptyStateProps;
   rowKey?: string | ((record: T) => string);
 }
 
@@ -39,8 +30,6 @@ export function DataTable<T extends Record<string, any>>({
   columns,
   data,
   loading = false,
-  emptyText = '暂无数据',
-  emptyState,
   rowKey = 'id'
 }: DataTableProps<T>) {
   const getRowKey = (record: T, index: number): string => {
@@ -87,22 +76,16 @@ export function DataTable<T extends Record<string, any>>({
                 <TableCell colSpan={columns.length} className='text-center'>
                   <div className='flex min-h-[200px] flex-col items-center justify-center space-y-4'>
                     <div className='bg-muted/50 rounded-full p-4'>
-                      {emptyState?.icon || (
-                        <Database className='text-muted-foreground h-8 w-8' />
-                      )}
+                      <Database className='text-muted-foreground h-8 w-8' />
                     </div>
                     <div className='space-y-2 text-center'>
                       <p className='text-foreground text-sm font-medium'>
-                        {emptyState?.title || emptyText || '暂无数据'}
+                        暂无数据
                       </p>
                       <p className='text-muted-foreground max-w-sm text-xs'>
-                        {emptyState?.description ||
-                          '尝试调整筛选条件或添加新数据'}
+                        尝试调整筛选条件或添加新数据
                       </p>
                     </div>
-                    {emptyState?.action && (
-                      <div className='mt-4'>{emptyState.action}</div>
-                    )}
                   </div>
                 </TableCell>
               </TableRow>

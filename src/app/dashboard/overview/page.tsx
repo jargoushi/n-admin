@@ -185,8 +185,6 @@ export default function DashboardOverview() {
       <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-6 overflow-y-auto'>
         {/* 页面头部 */}
         <PageHeader
-          title={`欢迎回来，${user.username} 👋`}
-          description='这里是您的系统概览和关键指标'
           action={{
             label: '刷新数据',
             onClick: fetchStats,

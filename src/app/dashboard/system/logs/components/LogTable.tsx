@@ -125,12 +125,6 @@ export function LogTable({
   ];
 
   return (
-    <DataTable
-      columns={columns}
-      data={data}
-      loading={loading}
-      emptyText='暂无日志数据'
-      rowKey='id'
-    />
+    <DataTable columns={columns} data={data} loading={loading} rowKey='id' />
   );
 }

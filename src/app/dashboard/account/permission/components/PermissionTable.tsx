@@ -42,8 +42,7 @@ export function PermissionTable({
   loading,
   pagination,
   onEdit,
-  onDelete,
-  emptyState
+  onDelete
 }: PermissionTableProps) {
   // 表格列配置
   const columns = TABLE_COLUMNS.map((col) => {
@@ -110,8 +109,6 @@ export function PermissionTable({
       columns={columns}
       data={permissions}
       loading={loading}
-      emptyText={MESSAGES.EMPTY.PERMISSIONS}
-      emptyState={emptyState}
       rowKey='id'
     />
   );

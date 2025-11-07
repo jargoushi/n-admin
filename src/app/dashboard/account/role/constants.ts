@@ -125,7 +125,6 @@ export const MESSAGES = {
     ASSIGN_PERMISSIONS: '权限分配失败'
   },
   EMPTY: {
-    ROLES: '暂无角色数据',
     DESCRIPTION: '暂无描述',
     PERMISSIONS: '暂无权限数据'
   },

@@ -15,7 +15,7 @@ import {
 } from './components';
 
 import { useRoleFilters, useRoleManagement } from './hooks';
-import { DEFAULT_PAGINATION, PAGE_SIZE_OPTIONS } from './constants';
+import { PAGE_SIZE_OPTIONS } from './constants';
 import type { Role } from './types';
 
 export default function RoleManagementPage() {

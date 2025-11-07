@@ -125,7 +125,6 @@ export const MESSAGES = {
     FETCH_ROLES: '获取角色列表失败'
   },
   EMPTY: {
-    USERS: '暂无用户数据',
     ROLE: '未分配',
     LAST_LOGIN: '从未登录'
   },

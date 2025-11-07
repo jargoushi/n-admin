@@ -121,12 +121,6 @@ export function RoleTable({
   });
 
   return (
-    <DataTable
-      columns={columns}
-      data={data}
-      loading={loading}
-      emptyText={MESSAGES.EMPTY.ROLES}
-      rowKey='id'
-    />
+    <DataTable columns={columns} data={data} loading={loading} rowKey='id' />
   );
 }

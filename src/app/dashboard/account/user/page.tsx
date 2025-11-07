@@ -5,8 +5,6 @@ import { PermissionGuard } from '@/components/auth/permission-guard';
 import { PERMISSIONS } from '@/lib/permissions';
 import { Pagination } from '@/components/table/pagination';
 import PageContainer from '@/components/layout/page-container';
-import { Users, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 // 导入重构后的组件和 hooks
 import {
@@ -28,6 +26,7 @@ export default function UserManagementPage() {
     clearFilters,
     hasActiveFilters
   } = useUserFilters();
+
   const {
     users,
     roles,
@@ -165,25 +164,6 @@ export default function UserManagementPage() {
                 onDelete={handleDeleteUser}
                 onEnable={handleEnableUser}
                 onDisable={handleDisableUser}
-                emptyState={{
-                  icon: <Users className='text-muted-foreground h-8 w-8' />,
-                  title: hasActiveFilters ? '未找到匹配的用户' : '还没有用户',
-                  description: hasActiveFilters
-                    ? '请尝试调整筛选条件以查看更多结果'
-                    : '开始添加用户来管理您的系统',
-                  action: !hasActiveFilters ? (
-                    <PermissionGuard permissions={PERMISSIONS.USER.CREATE}>
-                      <Button
-                        onClick={handleOpenCreateDialog}
-                        size='sm'
-                        className='mt-2'
-                      >
-                        <Plus className='mr-2 h-4 w-4' />
-                        添加用户
-                      </Button>
-                    </PermissionGuard>
-                  ) : undefined
-                }}
               />
             </div>
 
