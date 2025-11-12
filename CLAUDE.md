@@ -63,13 +63,19 @@ src/
 │   ├── ui/         # Shadcn UI 基础组件
 │   └── layout/     # 布局相关组件
 ├── lib/            # 工具函数和核心逻辑
-│   ├── auth.ts     # 认证相关函数
+│   ├── auth.ts     # 认证相关函数 (auth, verifyToken, getCurrentUser)
+│   ├── server-permissions.ts  # 服务端权限检查 (getUserPermissions, hasPermission)
 │   ├── utils.ts    # 通用工具函数
-│   └── db.ts       # 数据库连接
+│   └── logger.ts   # 日志记录工具
 ├── hooks/          # 自定义 React Hooks
 ├── contexts/       # React Context 提供者
 └── db/             # 数据库 Schema 和配置
-    └── schema.ts   # Drizzle 表定义
+    ├── index.ts    # 数据库连接实例
+    └── schema.ts   # Drizzle 表定义和关系
+
+路径别名:
+- @/*  -> src/*    # 项目源码目录
+- ~/*  -> public/* # 静态资源目录
 ```
 
 ### 权限系统架构
@@ -82,17 +88,30 @@ src/
 ### 认证和授权流程
 
 1. **JWT Token**: 使用 JWT 进行无状态认证
-2. **中间件保护**: 在 API 路由中通过 `getCurrentUser()` 验证用户身份
-3. **权限检查**: 前端和后端都进行权限验证
+2. **服务端认证**:
+   - `auth()` - 服务端组件中获取当前会话
+   - `getCurrentUser(request)` - API 路由中从请求获取用户信息
+3. **权限检查**: 使用 `lib/server-permissions.ts` 中的函数
+   - `getUserPermissions(userId?)` - 获取用户所有权限代码
+   - `hasPermission(code, userId?)` - 检查单个权限
+   - `hasAnyPermission(codes, userId?)` - 检查是否有任意权限
+   - `hasAllPermissions(codes, userId?)` - 检查是否有所有权限
 4. **会话管理**: 基于 Cookie 的 Token 存储
 
 ### 数据库设计核心
 
-- **用户表**: 存储用户基本信息和角色关联
-- **角色表**: 角色定义，支持超级管理员标识
-- **权限表**: 树形权限结构，支持排序
-- **角色权限关联表**: 多对多关系表
-- **系统日志表**: 记录用户操作和系统事件
+- **用户表 (users)**: 存储用户基本信息，包含 `roleId` 和 `isSuperAdmin` 字段
+- **角色表 (roles)**: 角色定义，包含 `isSuper` 超级管理员标识
+- **权限表 (permissions)**: 树形权限结构，包含 `parentId` 和 `sortOrder` 字段
+- **角色权限关联表 (rolePermissions)**: 角色和权限的多对多关系
+- **系统日志表 (systemLogs)**: 记录用户操作和系统事件
+
+**表关系**:
+
+- users.roleId → roles.id (一对多)
+- rolePermissions.roleId → roles.id (多对多中间表)
+- rolePermissions.permissionId → permissions.id (多对多中间表)
+- permissions.parentId → permissions.id (自关联树形结构)
 
 ## 开发规范
 
@@ -122,12 +141,19 @@ src/
 首次使用需要配置 `.env.local` 文件：
 
 ```bash
+# 数据库配置 (MySQL)
 DATABASE_HOST="localhost"
 DATABASE_PORT="3306"
 DATABASE_USERNAME="your_username"
 DATABASE_PASSWORD="your_password"
 DATABASE_NAME="n_admin"
+
+# JWT 密钥
 JWT_SECRET="your_jwt_secret"
+JWT_REFRESH_SECRET="your_refresh_secret"
+
+# 超级管理员初始密码 (可选，默认 Admin@123456)
+SUPER_ADMIN_PASSWORD="Admin@123456"
 ```
 
 ### 系统初始化
@@ -151,12 +177,82 @@ pnpm dev
 
 - 邮箱: `admin@example.com`
 - 用户名: `admin`
-- 密码: 在环境变量 `SUPER_ADMIN_PASSWORD` 中配置
+- 密码: 默认 `Admin@123456` (可通过环境变量 `SUPER_ADMIN_PASSWORD` 自定义)
+
+## 关键开发模式
+
+### API 路由开发
+
+在 API 路由中实现权限保护:
+
+```typescript
+import { getCurrentUser } from '@/lib/auth';
+import { hasPermission } from '@/lib/server-permissions';
+
+export async function GET(request: Request) {
+  // 1. 验证用户身份
+  const user = getCurrentUser(request);
+  if (!user) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  // 2. 检查权限
+  const canRead = await hasPermission('account.user.read', user.id);
+  if (!canRead) {
+    return new Response('Forbidden', { status: 403 });
+  }
+
+  // 3. 执行业务逻辑
+  // ...
+}
+```
+
+### 服务端组件开发
+
+在服务端组件中获取用户信息:
+
+```typescript
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+
+export default async function Page() {
+  const session = await auth();
+  if (!session) {
+    redirect('/login');
+  }
+
+  // 使用 session.user
+}
+```
+
+### 数据库操作
+
+使用 Drizzle ORM 进行数据库操作:
+
+```typescript
+import { db } from '@/db';
+import { users } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+
+// 查询
+const user = await db.select().from(users).where(eq(users.id, userId));
+
+// 插入
+await db.insert(users).values({ email, username, password, roleId });
+
+// 更新
+await db.update(users).set({ status: 'disabled' }).where(eq(users.id, userId));
+
+// 删除
+await db.delete(users).where(eq(users.id, userId));
+```
 
 ## 重要提醒
 
 - 所有代码注释和文档必须使用中文
 - 严格遵循项目既定的代码规范和架构模式
-- 数据库变更需要先生成迁移文件再执行
+- **TypeScript 严格模式**: 禁止使用 `any` 类型，必须定义明确的类型
+- 数据库变更需要先生成迁移文件再执行 (`pnpm db:generate`)
 - 权限相关的代码修改需要特别谨慎，确保安全性
+- API 路由必须进行用户身份验证和权限检查
 - 提交代码前必须通过 `pnpm lint` 检查

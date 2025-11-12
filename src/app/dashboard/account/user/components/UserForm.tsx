@@ -13,10 +13,11 @@ import {
 } from '@/components/ui/select';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { User, UserFormData } from '../types';
 
 interface UserFormProps {
-  initialData?: any;
-  onSubmit: (values: any) => void;
+  initialData?: User;
+  onSubmit: (values: UserFormData) => void;
   onCancel?: () => void;
 }
 
