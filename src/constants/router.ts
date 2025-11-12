@@ -16,7 +16,6 @@ export const navList: NavItem[] = [
     url: '/dashboard/overview',
     icon: SquareTerminal,
     isActive: false,
-    description: '工作台',
     items: []
   },
   {
@@ -28,19 +27,16 @@ export const navList: NavItem[] = [
       {
         title: '用户管理',
         url: '/dashboard/account/user',
-        description: '用户管理',
         icon: Users
       },
       {
         title: '角色管理',
         url: '/dashboard/account/role',
-        description: '角色管理',
         icon: Shield
       },
       {
         title: '权限管理',
         url: '/dashboard/account/permission',
-        description: '权限管理',
         icon: Key
       }
     ]
@@ -54,8 +50,12 @@ export const navList: NavItem[] = [
       {
         title: '日志管理',
         url: '/dashboard/system/logs',
-        icon: ScrollText,
-        description: '系统日志审计'
+        icon: ScrollText
+      },
+      {
+        title: '激活码管理',
+        url: '/dashboard/activation',
+        icon: ScrollText
       }
     ]
   }

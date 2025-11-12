@@ -11,12 +11,6 @@ import {
 
 export async function GET(request: NextRequest) {
   try {
-    // 检查用户权限
-    const userId = await getUserFromRequest();
-    if (!userId) {
-      return unauthorizedResponse('未授权');
-    }
-
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
