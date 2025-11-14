@@ -25,7 +25,6 @@ import {
 import { useActivationCodeFilters, useActivationCodeManagement } from './hooks';
 import type { ActivationCode, ActivationCodeDialogState } from './types';
 import { MESSAGES } from './constants';
-import { toast } from 'sonner';
 
 /**
  * 激活码管理页面组件

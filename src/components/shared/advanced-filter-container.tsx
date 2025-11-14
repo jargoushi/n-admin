@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Search, RotateCcw, X } from 'lucide-react';
+import { Search, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -10,15 +10,6 @@ import {
   DialogTitle,
   DialogFooter
 } from '@/components/ui/dialog';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerFooter,
-  DrawerClose
-} from '@/components/ui/drawer';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 interface AdvancedFilterContainerProps {
   /** 是否打开 */
@@ -53,8 +44,6 @@ export function AdvancedFilterContainer({
   onReset,
   loading = false
 }: AdvancedFilterContainerProps) {
-  const isMobile = useIsMobile();
-
   /**
    * 执行搜索并关闭弹窗
    */
@@ -75,63 +64,25 @@ export function AdvancedFilterContainer({
    * 渲染操作按钮
    */
   const renderActions = () => (
-    <div
-      className={isMobile ? 'flex flex-col gap-2' : 'flex justify-end gap-3'}
-    >
-      <Button
-        variant='outline'
-        onClick={onClose}
-        className={isMobile ? 'w-full' : ''}
-      >
+    <div className={'flex justify-end gap-3'}>
+      <Button variant='outline' onClick={onClose}>
         取消
       </Button>
       <Button
         variant='outline'
         onClick={handleReset}
         disabled={!hasActiveFilters}
-        className={isMobile ? 'w-full' : ''}
       >
         <RotateCcw className='mr-2 h-4 w-4' />
         重置
       </Button>
-      <Button
-        onClick={handleSearch}
-        disabled={loading}
-        className={isMobile ? 'w-full' : ''}
-      >
+      <Button onClick={handleSearch} disabled={loading}>
         <Search className='mr-2 h-4 w-4' />
         {loading ? '查询中...' : '查询'}
       </Button>
     </div>
   );
 
-  // 移动端使用 Drawer
-  if (isMobile) {
-    return (
-      <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-        <DrawerContent className='max-h-[90vh]'>
-          <DrawerHeader className='text-left'>
-            <DrawerTitle>{title}</DrawerTitle>
-            <DrawerClose asChild>
-              <Button
-                variant='ghost'
-                size='sm'
-                className='absolute top-4 right-4 h-8 w-8 p-0'
-              >
-                <X className='h-4 w-4' />
-              </Button>
-            </DrawerClose>
-          </DrawerHeader>
-
-          <div className='flex-1 overflow-y-auto px-4 pb-4'>{children}</div>
-
-          <DrawerFooter>{renderActions()}</DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-    );
-  }
-
-  // PC端使用 Dialog
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className='flex max-h-[90vh] flex-col sm:max-w-2xl'>
