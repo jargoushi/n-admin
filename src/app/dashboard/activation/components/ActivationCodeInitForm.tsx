@@ -4,8 +4,9 @@
  * @description
  * 支持批量生成多种类型的激活码
  * - 动态添加/移除初始化项
- * - 每种类型只能出现一次
- * - 最多10个初始化项
+ * - 每种类型只能出现一次（自动禁用已选择类型）
+ * - 最多4个初始化项（对应4种激活码类型）
+ * - 最少保留1个初始化项
  */
 
 'use client';
@@ -73,6 +74,7 @@ export function ActivationCodeInitForm({
 
   /**
    * 添加初始化项
+   * 自动选择一个未使用的类型
    */
   const handleAddItem = () => {
     if (items.length >= MAX_INIT_ITEMS) {
@@ -80,7 +82,16 @@ export function ActivationCodeInitForm({
       return;
     }
 
-    setItems([...items, { type: 0, count: 10 }]);
+    // 找出未使用的类型
+    const usedTypes = new Set(items.map((item) => item.type));
+    const availableType = [0, 1, 2, 3].find((type) => !usedTypes.has(type));
+
+    if (availableType === undefined) {
+      toast.error('所有激活码类型已添加');
+      return;
+    }
+
+    setItems([...items, { type: availableType, count: 10 }]);
   };
 
   /**
@@ -263,14 +274,25 @@ export function ActivationCodeInitForm({
                   <SelectContent>
                     {ACTIVATION_CODE_TYPE_OPTIONS.filter(
                       (opt) => opt.value !== 'all'
-                    ).map((option) => (
-                      <SelectItem
-                        key={option.value}
-                        value={String(option.value)}
-                      >
-                        {option.label}
-                      </SelectItem>
-                    ))}
+                    ).map((option) => {
+                      // 检查该类型是否已被其他项使用
+                      const isUsedByOther = items.some(
+                        (otherItem, otherIndex) =>
+                          otherIndex !== index &&
+                          otherItem.type === option.value
+                      );
+
+                      return (
+                        <SelectItem
+                          key={option.value}
+                          value={String(option.value)}
+                          disabled={isUsedByOther}
+                        >
+                          {option.label}
+                          {isUsedByOther && ' (已使用)'}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>
