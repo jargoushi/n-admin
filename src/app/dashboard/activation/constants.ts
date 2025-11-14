@@ -203,9 +203,12 @@ export const DATE_FORMAT = 'yyyy-MM-dd';
 
 /**
  * 批量初始化最大项数
- * 每种激活码类型（日卡、月卡、年卡、永久卡）只能初始化一次，共4种
+ * 根据激活码类型数量动态计算（排除"全部"选项）
+ * 每种激活码类型只能初始化一次
  */
-export const MAX_INIT_ITEMS = 4;
+export const MAX_INIT_ITEMS = ACTIVATION_CODE_TYPE_OPTIONS.filter(
+  (opt) => opt.value !== 'all'
+).length;
 
 /**
  * 单次生成数量范围

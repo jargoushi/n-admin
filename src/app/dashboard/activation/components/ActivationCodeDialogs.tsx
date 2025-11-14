@@ -83,7 +83,7 @@ export function ActivationCodeDialogs({
           <DialogHeader>
             <DialogTitle>批量初始化激活码</DialogTitle>
             <DialogDescription>
-              批量生成不同类型的激活码，每种类型只能出现一次，最多添加10个初始化项
+              批量生成不同类型的激活码，每种类型只能出现一次
             </DialogDescription>
           </DialogHeader>
           <ActivationCodeInitForm onSubmit={onInit} onCancel={onClose} />

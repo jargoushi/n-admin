@@ -82,9 +82,12 @@ export function ActivationCodeInitForm({
       return;
     }
 
-    // 找出未使用的类型
+    // 找出未使用的类型（动态从类型选项中获取）
     const usedTypes = new Set(items.map((item) => item.type));
-    const availableType = [0, 1, 2, 3].find((type) => !usedTypes.has(type));
+    const allTypes = ACTIVATION_CODE_TYPE_OPTIONS.filter(
+      (opt) => opt.value !== 'all'
+    ).map((opt) => opt.value as number);
+    const availableType = allTypes.find((type) => !usedTypes.has(type));
 
     if (availableType === undefined) {
       toast.error('所有激活码类型已添加');
