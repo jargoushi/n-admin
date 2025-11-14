@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -33,91 +34,97 @@ export function Pagination({
   showPageSizeSelector = true
 }: PaginationProps) {
   const { page, limit, total, totalPages } = pagination;
+  const [jumpPage, setJumpPage] = useState(String(page));
+
+  /**
+   * 同步当前页码到输入框
+   */
+  useEffect(() => {
+    setJumpPage(String(page));
+  }, [page]);
+
+  /**
+   * 生成页码数组
+   * 智能显示当前页附近的页码，用省略号表示跳过的页码
+   */
+  const generatePageNumbers = (): (number | string)[] => {
+    const delta = 2; // 当前页前后显示的页码数量
+    const range: (number | string)[] = [];
+    const rangeWithDots: (number | string)[] = [];
+
+    // 总页数小于等于7时，显示所有页码
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        range.push(i);
+      }
+      return range;
+    }
+
+    // 生成页码范围
+    for (let i = 1; i <= totalPages; i++) {
+      if (
+        i === 1 || // 第一页
+        i === totalPages || // 最后一页
+        (i >= page - delta && i <= page + delta) // 当前页附近
+      ) {
+        range.push(i);
+      }
+    }
+
+    // 添加省略号
+    let prev = 0;
+    for (const i of range) {
+      if (typeof i === 'number') {
+        if (prev && i - prev > 1) {
+          rangeWithDots.push('...');
+        }
+        rangeWithDots.push(i);
+        prev = i;
+      }
+    }
+
+    return rangeWithDots;
+  };
+
+  const pageNumbers = generatePageNumbers();
+
+  /**
+   * 处理页码输入变化（只允许输入数字）
+   */
+  const handleJumpPageChange = (value: string) => {
+    // 只允许输入数字
+    if (value === '' || /^\d+$/.test(value)) {
+      setJumpPage(value);
+    }
+  };
+
+  /**
+   * 处理输入框回车
+   * 超过最大页码时自动跳转到最大页码
+   */
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Enter') {
+      return;
+    }
+
+    const pageNumber = parseInt(jumpPage);
+    if (pageNumber >= 1) {
+      const targetPage = Math.min(pageNumber, totalPages);
+      if (targetPage !== page) {
+        onPageChange(targetPage);
+      }
+    }
+  };
 
   return (
     <div className='mt-4'>
-      {/* 移动端布局 */}
-      <div className='flex flex-col gap-4 sm:hidden'>
-        {/* 分页按钮居中 */}
-        <div className='flex items-center justify-center'>
-          <div className='flex items-center gap-1'>
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={() => onPageChange(1)}
-              disabled={page <= 1}
-              className='h-9 w-9 cursor-pointer p-0'
-            >
-              «
-            </Button>
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={() => onPageChange(page - 1)}
-              disabled={page <= 1}
-              className='h-9 w-9 cursor-pointer p-0'
-            >
-              ‹
-            </Button>
-            <span className='mx-3 text-sm font-medium'>
-              {page} / {totalPages}
-            </span>
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={() => onPageChange(page + 1)}
-              disabled={page >= totalPages}
-              className='h-9 w-9 cursor-pointer p-0'
-            >
-              ›
-            </Button>
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={() => onPageChange(totalPages)}
-              disabled={page >= totalPages}
-              className='h-9 w-9 cursor-pointer p-0'
-            >
-              »
-            </Button>
-          </div>
-        </div>
-
-        {/* 信息行：总记录数和每页显示 */}
-        <div className='text-muted-foreground flex items-center justify-between text-sm'>
-          <span>共 {total} 条</span>
-          {showPageSizeSelector && (
-            <div className='flex items-center gap-1'>
-              <span>每页</span>
-              <Select
-                value={String(limit)}
-                onValueChange={(value) => onPageSizeChange(parseInt(value))}
-              >
-                <SelectTrigger className='h-8 w-[80px] cursor-pointer text-xs'>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {pageSizeOptions.map((pageSize) => (
-                    <SelectItem
-                      key={pageSize}
-                      value={String(pageSize)}
-                      className='cursor-pointer text-xs'
-                    >
-                      {pageSize}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <span>条</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* PC端布局 */}
-      <div className='hidden items-center justify-between sm:flex'>
-        <div className='text-muted-foreground text-sm'>总计 {total} 条记录</div>
-        <div className='flex items-center gap-6'>
+      <div className='flex items-center justify-between'>
+        {/* 左侧：总数和每页显示 */}
+        <div className='flex items-center gap-4'>
+          <span className='text-muted-foreground text-sm'>
+            总共 <span className='text-primary font-semibold'>{total}</span>{' '}
+            条记录
+          </span>
           {showPageSizeSelector && (
             <div className='flex items-center gap-2'>
               <span className='text-muted-foreground text-sm'>每页显示</span>
@@ -125,7 +132,7 @@ export function Pagination({
                 value={String(limit)}
                 onValueChange={(value) => onPageSizeChange(parseInt(value))}
               >
-                <SelectTrigger className='h-8 w-[80px] cursor-pointer'>
+                <SelectTrigger className='h-8 w-[75px] cursor-pointer'>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -143,48 +150,77 @@ export function Pagination({
               <span className='text-muted-foreground text-sm'>条</span>
             </div>
           )}
-          <div className='flex items-center gap-4'>
-            <span className='text-muted-foreground text-sm'>
-              第 {page} 页，共 {totalPages} 页
-            </span>
-            <div className='flex items-center gap-1'>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => onPageChange(1)}
-                disabled={page <= 1}
-                className='h-8 w-8 cursor-pointer p-0'
-              >
-                «
-              </Button>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => onPageChange(page - 1)}
-                disabled={page <= 1}
-                className='h-8 w-8 cursor-pointer p-0'
-              >
-                ‹
-              </Button>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => onPageChange(page + 1)}
-                disabled={page >= totalPages}
-                className='h-8 w-8 cursor-pointer p-0'
-              >
-                ›
-              </Button>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => onPageChange(totalPages)}
-                disabled={page >= totalPages}
-                className='h-8 w-8 cursor-pointer p-0'
-              >
-                »
-              </Button>
-            </div>
+        </div>
+
+        {/* 右侧：分页控制 */}
+        <div className='flex items-center gap-3'>
+          {/* 上一页 */}
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => onPageChange(page - 1)}
+            disabled={page <= 1}
+            className='h-8 cursor-pointer'
+          >
+            上一页
+          </Button>
+
+          {/* 页码列表 */}
+          <div className='flex items-center gap-1'>
+            {pageNumbers.map((pageNum, index) => {
+              if (pageNum === '...') {
+                return (
+                  <span
+                    key={`ellipsis-${index}`}
+                    className='text-muted-foreground flex h-8 w-8 items-center justify-center text-sm'
+                  >
+                    •••
+                  </span>
+                );
+              }
+
+              const isCurrentPage = pageNum === page;
+              return (
+                <Button
+                  key={pageNum}
+                  variant={isCurrentPage ? 'default' : 'outline'}
+                  size='sm'
+                  onClick={() => onPageChange(pageNum as number)}
+                  disabled={isCurrentPage}
+                  className={`h-8 w-8 cursor-pointer p-0 ${
+                    isCurrentPage
+                      ? 'bg-primary text-primary-foreground font-semibold'
+                      : 'hover:bg-accent'
+                  }`}
+                >
+                  {pageNum}
+                </Button>
+              );
+            })}
+          </div>
+
+          {/* 下一页 */}
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => onPageChange(page + 1)}
+            disabled={page >= totalPages}
+            className='h-8 cursor-pointer'
+          >
+            下一页
+          </Button>
+
+          {/* 跳转到指定页 */}
+          <div className='flex items-center gap-2'>
+            <span className='text-muted-foreground text-sm'>跳至</span>
+            <Input
+              type='text'
+              value={jumpPage}
+              onChange={(e) => handleJumpPageChange(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className='h-8 w-16 text-center'
+            />
+            <span className='text-muted-foreground text-sm'>页</span>
           </div>
         </div>
       </div>

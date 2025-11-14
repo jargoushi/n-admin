@@ -74,30 +74,28 @@ export class HttpRequest {
    * @param url - 请求地址
    * @param params - 查询参数
    * @param config - 请求配置
-   * @returns Promise<ApiResponse<T>>
+   * @returns Promise<T> - 拦截器已解包 ApiResponse，直接返回业务数据
    *
    * @example
    * // 基础用法
-   * const res = await http.get<User[]>('/users');
+   * const users = await http.get<User[]>('/users');
    *
    * // 带查询参数
-   * const res = await http.get<User[]>('/users', { page: 1, limit: 10 });
+   * const users = await http.get<User[]>('/users', { page: 1, limit: 10 });
    *
    * // RESTful 路径参数
-   * const res = await http.get<User>('/users/{id}', undefined, { pathParams: { id: 1 } });
+   * const user = await http.get<User>('/users/{id}', undefined, { pathParams: { id: 1 } });
    */
   static async get<T = unknown>(
     url: string,
     params?: QueryParams,
     config?: RequestConfig & { pathParams?: PathParams }
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     const finalUrl = config?.pathParams
       ? replacePath(url, config.pathParams)
       : url;
-    const response: AxiosResponse<ApiResponse<T>> = await axiosInstance.get(
-      finalUrl,
-      { params, ...config }
-    );
+    const response = await axiosInstance.get(finalUrl, { params, ...config });
+    // 拦截器返回 ApiResponse<T>，response.data 是业务数据 T
     return response.data;
   }
 
@@ -108,7 +106,7 @@ export class HttpRequest {
    * @param url - 请求地址
    * @param data - 请求体数据
    * @param config - 请求配置
-   * @returns Promise<ApiResponse<T>>
+   * @returns Promise<T> - 拦截器已解包 ApiResponse，直接返回业务数据
    *
    * @example
    * interface CreateUserDto {
@@ -116,7 +114,7 @@ export class HttpRequest {
    *   email: string;
    * }
    *
-   * const res = await http.post<User, CreateUserDto>('/users', {
+   * const user = await http.post<User, CreateUserDto>('/users', {
    *   username: 'admin',
    *   email: 'admin@example.com'
    * });
@@ -125,15 +123,12 @@ export class HttpRequest {
     url: string,
     data?: D,
     config?: RequestConfig & { pathParams?: PathParams }
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     const finalUrl = config?.pathParams
       ? replacePath(url, config.pathParams)
       : url;
-    const response: AxiosResponse<ApiResponse<T>> = await axiosInstance.post(
-      finalUrl,
-      data,
-      config
-    );
+    const response = await axiosInstance.post(finalUrl, data, config);
+    // 拦截器返回 ApiResponse<T>，response.data 是业务数据 T
     return response.data;
   }
 
@@ -144,10 +139,10 @@ export class HttpRequest {
    * @param url - 请求地址
    * @param data - 请求体数据
    * @param config - 请求配置
-   * @returns Promise<ApiResponse<T>>
+   * @returns Promise<T> - 拦截器已解包 ApiResponse，直接返回业务数据
    *
    * @example
-   * const res = await http.put<User>('/users/{id}',
+   * const user = await http.put<User>('/users/{id}',
    *   { username: 'new_name' },
    *   { pathParams: { id: 1 } }
    * );
@@ -156,15 +151,12 @@ export class HttpRequest {
     url: string,
     data?: D,
     config?: RequestConfig & { pathParams?: PathParams }
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     const finalUrl = config?.pathParams
       ? replacePath(url, config.pathParams)
       : url;
-    const response: AxiosResponse<ApiResponse<T>> = await axiosInstance.put(
-      finalUrl,
-      data,
-      config
-    );
+    const response = await axiosInstance.put(finalUrl, data, config);
+    // 拦截器返回 ApiResponse<T>，response.data 是业务数据 T
     return response.data;
   }
 
@@ -175,10 +167,10 @@ export class HttpRequest {
    * @param url - 请求地址
    * @param data - 请求体数据
    * @param config - 请求配置
-   * @returns Promise<ApiResponse<T>>
+   * @returns Promise<T> - 拦截器已解包 ApiResponse，直接返回业务数据
    *
    * @example
-   * const res = await http.patch<User>('/users/{id}/status',
+   * const user = await http.patch<User>('/users/{id}/status',
    *   { status: 'active' },
    *   { pathParams: { id: 1 } }
    * );
@@ -187,15 +179,12 @@ export class HttpRequest {
     url: string,
     data?: D,
     config?: RequestConfig & { pathParams?: PathParams }
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     const finalUrl = config?.pathParams
       ? replacePath(url, config.pathParams)
       : url;
-    const response: AxiosResponse<ApiResponse<T>> = await axiosInstance.patch(
-      finalUrl,
-      data,
-      config
-    );
+    const response = await axiosInstance.patch(finalUrl, data, config);
+    // 拦截器返回 ApiResponse<T>，response.data 是业务数据 T
     return response.data;
   }
 
@@ -204,22 +193,20 @@ export class HttpRequest {
    * @template T - 响应数据类型
    * @param url - 请求地址
    * @param config - 请求配置
-   * @returns Promise<ApiResponse<T>>
+   * @returns Promise<T> - 拦截器已解包 ApiResponse，直接返回业务数据
    *
    * @example
-   * const res = await http.delete('/users/{id}', { pathParams: { id: 1 } });
+   * const result = await http.delete('/users/{id}', { pathParams: { id: 1 } });
    */
   static async delete<T = unknown>(
     url: string,
     config?: RequestConfig & { pathParams?: PathParams }
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     const finalUrl = config?.pathParams
       ? replacePath(url, config.pathParams)
       : url;
-    const response: AxiosResponse<ApiResponse<T>> = await axiosInstance.delete(
-      finalUrl,
-      config
-    );
+    const response = await axiosInstance.delete(finalUrl, config);
+    // 拦截器返回 ApiResponse<T>，response.data 是业务数据 T
     return response.data;
   }
 }

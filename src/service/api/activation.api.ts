@@ -190,7 +190,7 @@ export class ActivationApiService {
    */
   static async init(
     request: ActivationCodeBatchCreateRequest
-  ): Promise<ApiResponse<ActivationCodeBatchResponse>> {
+  ): Promise<ActivationCodeBatchResponse> {
     return http.post<
       ActivationCodeBatchResponse,
       ActivationCodeBatchCreateRequest
@@ -208,7 +208,7 @@ export class ActivationApiService {
    */
   static async distribute(
     request: ActivationCodeGetRequest
-  ): Promise<ApiResponse<string[]>> {
+  ): Promise<string[]> {
     return http.post<string[], ActivationCodeGetRequest>(
       '/activation/distribute',
       request
@@ -224,9 +224,7 @@ export class ActivationApiService {
    * @param activationCode - 激活码字符串
    * @returns 激活后的激活码详细信息
    */
-  static async activate(
-    activationCode: string
-  ): Promise<ApiResponse<ActivationCode>> {
+  static async activate(activationCode: string): Promise<ActivationCode> {
     return http.post<ActivationCode>(
       `/activation/activate?activation_code=${encodeURIComponent(activationCode)}`
     );
@@ -243,7 +241,7 @@ export class ActivationApiService {
    */
   static async invalidate(
     request: ActivationCodeInvalidateRequest
-  ): Promise<ApiResponse<boolean>> {
+  ): Promise<boolean> {
     return http.post<boolean, ActivationCodeInvalidateRequest>(
       '/activation/invalidate',
       request
@@ -259,9 +257,7 @@ export class ActivationApiService {
    * @param activationCode - 激活码字符串
    * @returns 激活码详细信息
    */
-  static async getDetail(
-    activationCode: string
-  ): Promise<ApiResponse<ActivationCode>> {
+  static async getDetail(activationCode: string): Promise<ActivationCode> {
     return http.get<ActivationCode>(
       '/activation/{activation_code}',
       undefined,
@@ -282,7 +278,7 @@ export class ActivationApiService {
    */
   static async getPageList(
     params?: ActivationCodeQueryRequest
-  ): Promise<ApiResponse<PageResponse<ActivationCode>>> {
+  ): Promise<PageResponse<ActivationCode>> {
     return http.post<
       PageResponse<ActivationCode>,
       ActivationCodeQueryRequest | undefined
