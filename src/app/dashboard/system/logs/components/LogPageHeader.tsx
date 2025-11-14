@@ -24,11 +24,13 @@ export function LogPageHeader({
 }: LogPageHeaderProps) {
   return (
     <PageHeader
-      action={{
-        label: '刷新数据',
-        onClick: onRefresh,
-        icon: <RefreshCw className='mr-2 h-4 w-4' />
-      }}
+      actions={[
+        {
+          label: '刷新数据',
+          onClick: onRefresh,
+          icon: <RefreshCw className='mr-2 h-4 w-4' />
+        }
+      ]}
     />
   );
 }

@@ -11,11 +11,13 @@ interface RolePageHeaderProps {
 export function RolePageHeader({ onCreateRole }: RolePageHeaderProps) {
   return (
     <PageHeader
-      action={{
-        label: '新增角色',
-        onClick: onCreateRole,
-        icon: <Plus className='mr-2 h-4 w-4' />
-      }}
+      actions={[
+        {
+          label: '新增角色',
+          onClick: onCreateRole,
+          icon: <Plus className='mr-2 h-4 w-4' />
+        }
+      ]}
     />
   );
 }

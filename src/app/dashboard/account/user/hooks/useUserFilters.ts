@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { UserFilters } from '../types';
 import { DEFAULT_FILTERS } from '../constants';
 
@@ -9,7 +9,6 @@ import { DEFAULT_FILTERS } from '../constants';
  */
 export function useUserFilters() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const isUpdatingFromSearch = useRef(false);
 
   const [filters, setFilters] = useState<UserFilters>(DEFAULT_FILTERS);
@@ -35,6 +34,7 @@ export function useUserFilters() {
 
   /**
    * 手动搜索（不自动更新URL）
+   * 使用 window.history.replaceState 避免触发 Next.js RSC 请求
    */
   const searchFilters = useCallback(
     (newFilters: Partial<UserFilters>) => {
@@ -64,13 +64,18 @@ export function useUserFilters() {
         }
       });
 
-      router.push(`?${params.toString()}`);
+      // 使用原生 API 更新 URL，避免触发 Next.js 导航和 RSC 请求
+      const newUrl = params.toString()
+        ? `${window.location.pathname}?${params.toString()}`
+        : window.location.pathname;
+      window.history.replaceState(null, '', newUrl);
     },
-    [filters, router]
+    [filters]
   );
 
   /**
    * 更新分页（仅用于分页变化）
+   * 使用 window.history.replaceState 避免触发 Next.js RSC 请求
    */
   const updatePagination = useCallback(
     (newFilters: Partial<UserFilters>) => {
@@ -91,9 +96,13 @@ export function useUserFilters() {
         }
       });
 
-      router.push(`?${params.toString()}`);
+      // 使用原生 API 更新 URL，避免触发 Next.js 导航和 RSC 请求
+      const newUrl = params.toString()
+        ? `${window.location.pathname}?${params.toString()}`
+        : window.location.pathname;
+      window.history.replaceState(null, '', newUrl);
     },
-    [filters, router]
+    [filters]
   );
 
   /**

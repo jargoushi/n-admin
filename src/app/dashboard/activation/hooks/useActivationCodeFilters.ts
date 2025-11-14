@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import type { ActivationCodeFilters } from '../types';
 import { DEFAULT_FILTERS } from '../constants';
 
@@ -62,7 +62,6 @@ interface UseActivationCodeFiltersReturn {
  * ```
  */
 export function useActivationCodeFilters(): UseActivationCodeFiltersReturn {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const isUpdatingFromSearch = useRef(false);
 
@@ -116,41 +115,43 @@ export function useActivationCodeFilters(): UseActivationCodeFiltersReturn {
 
   /**
    * 同步筛选条件到 URL
+   * 使用 window.history.replaceState 避免触发 Next.js RSC 请求
    */
-  const syncFiltersToURL = useCallback(
-    (newFilters: ActivationCodeFilters) => {
-      isUpdatingFromSearch.current = true;
-      const params = new URLSearchParams();
+  const syncFiltersToURL = useCallback((newFilters: ActivationCodeFilters) => {
+    isUpdatingFromSearch.current = true;
+    const params = new URLSearchParams();
 
-      // 激活码
-      if (newFilters.activation_code) {
-        params.set('activation_code', newFilters.activation_code);
-      }
+    // 激活码
+    if (newFilters.activation_code) {
+      params.set('activation_code', newFilters.activation_code);
+    }
 
-      // 类型
-      if (newFilters.type !== undefined && newFilters.type !== 'all') {
-        params.set('type', String(newFilters.type));
-      }
+    // 类型
+    if (newFilters.type !== undefined && newFilters.type !== 'all') {
+      params.set('type', String(newFilters.type));
+    }
 
-      // 状态
-      if (newFilters.status !== undefined && newFilters.status !== 'all') {
-        params.set('status', String(newFilters.status));
-      }
+    // 状态
+    if (newFilters.status !== undefined && newFilters.status !== 'all') {
+      params.set('status', String(newFilters.status));
+    }
 
-      // 分页
-      if (newFilters.page && newFilters.page !== 1) {
-        params.set('page', String(newFilters.page));
-      }
-      if (newFilters.size && newFilters.size !== DEFAULT_FILTERS.size) {
-        params.set('size', String(newFilters.size));
-      }
+    // 分页
+    if (newFilters.page && newFilters.page !== 1) {
+      params.set('page', String(newFilters.page));
+    }
+    if (newFilters.size && newFilters.size !== DEFAULT_FILTERS.size) {
+      params.set('size', String(newFilters.size));
+    }
 
-      // 注意：时间范围不同步到 URL（使用 Date 对象）
+    // 注意：时间范围不同步到 URL（使用 Date 对象）
 
-      router.push(`?${params.toString()}`, { scroll: false });
-    },
-    [router]
-  );
+    // 使用原生 API 更新 URL，避免触发 Next.js 导航和 RSC 请求
+    const newUrl = params.toString()
+      ? `${window.location.pathname}?${params.toString()}`
+      : window.location.pathname;
+    window.history.replaceState(null, '', newUrl);
+  }, []);
 
   /**
    * 手动执行查询（更新筛选条件并同步 URL）

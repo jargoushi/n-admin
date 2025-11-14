@@ -185,11 +185,13 @@ export default function DashboardOverview() {
       <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-6 overflow-y-auto'>
         {/* 页面头部 */}
         <PageHeader
-          action={{
-            label: '刷新数据',
-            onClick: fetchStats,
-            icon: <RefreshCw className='mr-2 h-4 w-4' />
-          }}
+          actions={[
+            {
+              label: '刷新数据',
+              onClick: fetchStats,
+              icon: <RefreshCw className='mr-2 h-4 w-4' />
+            }
+          ]}
         />
 
         {/* 统计卡片 */}

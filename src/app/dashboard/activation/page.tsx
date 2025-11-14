@@ -171,7 +171,7 @@ export default function ActivationCodeManagementPage() {
           </div>
 
           {/* 分页组件 */}
-          <div className='flex-shrink-0 pt-4'>
+          <div className='shrink-0 pt-4'>
             <Pagination
               pagination={pagination}
               onPageChange={(page) => updatePagination({ page })}
