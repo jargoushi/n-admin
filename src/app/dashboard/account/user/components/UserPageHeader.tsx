@@ -14,11 +14,13 @@ interface UserPageHeaderProps {
 export function UserPageHeader({ onCreateUser }: UserPageHeaderProps) {
   return (
     <PageHeader
-      action={{
-        label: '新增用户',
-        onClick: onCreateUser,
-        icon: <Plus className='mr-2 h-4 w-4' />
-      }}
+      actions={[
+        {
+          label: '新增用户',
+          onClick: onCreateUser,
+          icon: <Plus className='mr-2 h-4 w-4' />
+        }
+      ]}
     />
   );
 }
