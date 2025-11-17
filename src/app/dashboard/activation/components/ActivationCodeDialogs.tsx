@@ -17,16 +17,27 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { ActivationCodeInitForm } from './ActivationCodeInitForm';
 import { ActivationCodeDistributeForm } from './ActivationCodeDistributeForm';
 import type {
+  ActivationCode,
   ActivationCodeDialogState,
   ActivationCodeInitFormData,
   ActivationCodeDistributeFormData,
   ActivationCodeBatchResponse
 } from '../types';
-import { CODE_TYPE_CONFIG, STATUS_BADGE_MAP } from '../constants';
+import { CODE_TYPE_CONFIG, STATUS_BADGE_MAP, MESSAGES } from '../constants';
 import { formatDateTime } from '@/lib/data-utils';
 
 /**
@@ -45,6 +56,16 @@ interface ActivationCodeDialogsProps {
   onDistribute: (
     data: ActivationCodeDistributeFormData
   ) => Promise<string[] | null>;
+  /** 确认对话框状态 */
+  confirmDialog: {
+    open: boolean;
+    type: 'activate' | 'invalidate' | null;
+    code: ActivationCode | null;
+  };
+  /** 确认操作 */
+  onConfirm: () => void;
+  /** 取消确认 */
+  onCancelConfirm: () => void;
 }
 
 /**
@@ -57,7 +78,10 @@ export function ActivationCodeDialogs({
   dialogState,
   onClose,
   onInit,
-  onDistribute
+  onDistribute,
+  confirmDialog,
+  onConfirm,
+  onCancelConfirm
 }: ActivationCodeDialogsProps) {
   return (
     <>
@@ -187,6 +211,54 @@ export function ActivationCodeDialogs({
           )}
         </DialogContent>
       </Dialog>
+
+      {/* 确认对话框 */}
+      <AlertDialog open={confirmDialog.open} onOpenChange={onCancelConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmDialog.type === 'activate' ? '确认激活' : '确认作废'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmDialog.code &&
+                (confirmDialog.type === 'activate'
+                  ? MESSAGES.CONFIRM.ACTIVATE(
+                      confirmDialog.code.activation_code
+                    )
+                  : MESSAGES.CONFIRM.INVALIDATE(
+                      confirmDialog.code.activation_code
+                    ))}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          {/* 激活码信息 */}
+          {confirmDialog.code && (
+            <div className='bg-muted space-y-2 rounded-md p-4'>
+              <div className='text-sm'>
+                <span className='text-muted-foreground'>激活码：</span>
+                <code className='ml-2 font-mono'>
+                  {confirmDialog.code.activation_code}
+                </code>
+              </div>
+              <div className='text-sm'>
+                <span className='text-muted-foreground'>类型：</span>
+                <span className='ml-2'>{confirmDialog.code.type_name}</span>
+              </div>
+              <div className='text-sm'>
+                <span className='text-muted-foreground'>当前状态：</span>
+                <span className='ml-2'>{confirmDialog.code.status_name}</span>
+              </div>
+            </div>
+          )}
+
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={onCancelConfirm}>
+              取消
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={onConfirm}>确认</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

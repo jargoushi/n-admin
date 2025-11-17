@@ -36,7 +36,7 @@ export function ActivationCodeTable({
   onInvalidate,
   onViewDetail
 }: ActivationCodeTableProps) {
-  /** 合并列配置与渲染逻辑 */
+  /** 列配置 */
   const columns = useMemo<TableColumn[]>(
     () => [
       {

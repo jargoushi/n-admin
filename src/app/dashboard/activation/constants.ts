@@ -95,19 +95,8 @@ export const MESSAGES = {
     INVALIDATE: '激活码作废成功'
   },
   ERROR: {
-    INIT: '批量初始化激活码失败',
-    DISTRIBUTE: '派发激活码失败',
-    ACTIVATE: '激活码激活失败',
-    INVALIDATE: '激活码作废失败',
-    FETCH_LIST: '获取激活码列表失败',
-    FETCH_DETAIL: '获取激活码详情失败',
     INVALID_FORM: '请填写完整的表单信息',
     DUPLICATE_TYPE: '激活码类型重复，每种类型只能出现一次'
-  },
-  EMPTY: {
-    DISTRIBUTED: '未分发',
-    ACTIVATED: '未激活',
-    EXPIRED: '永久有效'
   },
   CONFIRM: {
     ACTIVATE: (code: string) =>

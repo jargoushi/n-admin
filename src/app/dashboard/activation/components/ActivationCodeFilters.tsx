@@ -10,10 +10,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, RotateCcw, Calendar } from 'lucide-react';
-import { format } from 'date-fns';
-import { zhCN } from 'date-fns/locale';
-import { cn } from '@/lib/utils';
+import { Search, Filter, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,12 +21,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@/components/ui/popover';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { AdvancedFilterContainer } from '@/components/shared/advanced-filter-container';
 import type { ActivationCodeFilters as ActivationCodeFiltersType } from '../types';
 import {
@@ -282,110 +274,32 @@ export function ActivationCodeFilters({
 
       {/* 第三行：分发时间范围 */}
       <div className='grid grid-cols-1 gap-4'>
-        <div className='space-y-2'>
-          <Label>分发时间范围</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant='outline'
-                className={cn(
-                  'w-full justify-start text-left font-normal',
-                  !formData.distributedDateRange && 'text-muted-foreground'
-                )}
-              >
-                <Calendar className='mr-2 h-4 w-4' />
-                {formData.distributedDateRange &&
-                formData.distributedDateRange.from &&
-                formData.distributedDateRange.to
-                  ? `${format(formData.distributedDateRange.from, 'yyyy-MM-dd')} - ${format(formData.distributedDateRange.to, 'yyyy-MM-dd')}`
-                  : '选择分发时间范围'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className='w-auto p-0' align='start'>
-              <CalendarComponent
-                mode='range'
-                selected={formData.distributedDateRange}
-                onSelect={(dateRange) =>
-                  updateFormField('distributedDateRange', dateRange)
-                }
-                numberOfMonths={2}
-                locale={zhCN}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
+        <DateRangePicker
+          label='分发时间范围'
+          value={formData.distributedDateRange}
+          onChange={(range) => updateFormField('distributedDateRange', range)}
+          placeholder='选择分发时间范围'
+        />
       </div>
 
       {/* 第四行：激活时间范围 */}
       <div className='grid grid-cols-1 gap-4'>
-        <div className='space-y-2'>
-          <Label>激活时间范围</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant='outline'
-                className={cn(
-                  'w-full justify-start text-left font-normal',
-                  !formData.activatedDateRange && 'text-muted-foreground'
-                )}
-              >
-                <Calendar className='mr-2 h-4 w-4' />
-                {formData.activatedDateRange &&
-                formData.activatedDateRange.from &&
-                formData.activatedDateRange.to
-                  ? `${format(formData.activatedDateRange.from, 'yyyy-MM-dd')} - ${format(formData.activatedDateRange.to, 'yyyy-MM-dd')}`
-                  : '选择激活时间范围'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className='w-auto p-0' align='start'>
-              <CalendarComponent
-                mode='range'
-                selected={formData.activatedDateRange}
-                onSelect={(dateRange) =>
-                  updateFormField('activatedDateRange', dateRange)
-                }
-                numberOfMonths={2}
-                locale={zhCN}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
+        <DateRangePicker
+          label='激活时间范围'
+          value={formData.activatedDateRange}
+          onChange={(range) => updateFormField('activatedDateRange', range)}
+          placeholder='选择激活时间范围'
+        />
       </div>
 
       {/* 第五行：过期时间范围 */}
       <div className='grid grid-cols-1 gap-4'>
-        <div className='space-y-2'>
-          <Label>过期时间范围</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant='outline'
-                className={cn(
-                  'w-full justify-start text-left font-normal',
-                  !formData.expireDateRange && 'text-muted-foreground'
-                )}
-              >
-                <Calendar className='mr-2 h-4 w-4' />
-                {formData.expireDateRange &&
-                formData.expireDateRange.from &&
-                formData.expireDateRange.to
-                  ? `${format(formData.expireDateRange.from, 'yyyy-MM-dd')} - ${format(formData.expireDateRange.to, 'yyyy-MM-dd')}`
-                  : '选择过期时间范围'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className='w-auto p-0' align='start'>
-              <CalendarComponent
-                mode='range'
-                selected={formData.expireDateRange}
-                onSelect={(dateRange) =>
-                  updateFormField('expireDateRange', dateRange)
-                }
-                numberOfMonths={2}
-                locale={zhCN}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
+        <DateRangePicker
+          label='过期时间范围'
+          value={formData.expireDateRange}
+          onChange={(range) => updateFormField('expireDateRange', range)}
+          placeholder='选择过期时间范围'
+        />
       </div>
     </div>
   );

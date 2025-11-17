@@ -62,6 +62,17 @@ export default function ActivationCodeManagementPage() {
     open: false
   });
 
+  // ========== 确认对话框状态 ==========
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    type: 'activate' | 'invalidate' | null;
+    code: ActivationCode | null;
+  }>({
+    open: false,
+    type: null,
+    code: null
+  });
+
   // ========== 监听筛选条件变化 ==========
   useEffect(() => {
     fetchActivationCodes(filters);
@@ -107,35 +118,56 @@ export default function ActivationCodeManagementPage() {
   /**
    * 激活激活码
    */
-  const handleActivateCode = async (code: ActivationCode) => {
-    // 确认对话框
-    const confirmed = window.confirm(
-      MESSAGES.CONFIRM.ACTIVATE(code.activation_code)
-    );
-    if (!confirmed) return;
-
-    const success = await activateCode(code.activation_code);
-    if (success) {
-      // 刷新列表
-      fetchActivationCodes(filters);
-    }
+  const handleActivateCode = (code: ActivationCode) => {
+    // 打开确认对话框
+    setConfirmDialog({
+      open: true,
+      type: 'activate',
+      code
+    });
   };
 
   /**
    * 作废激活码
    */
-  const handleInvalidateCode = async (code: ActivationCode) => {
-    // 确认对话框
-    const confirmed = window.confirm(
-      MESSAGES.CONFIRM.INVALIDATE(code.activation_code)
-    );
-    if (!confirmed) return;
+  const handleInvalidateCode = (code: ActivationCode) => {
+    // 打开确认对话框
+    setConfirmDialog({
+      open: true,
+      type: 'invalidate',
+      code
+    });
+  };
 
-    const success = await invalidateCode(code.activation_code);
+  /**
+   * 确认对话框 - 确认操作
+   */
+  const handleConfirmAction = async () => {
+    if (!confirmDialog.code) return;
+
+    const { type, code } = confirmDialog;
+    let success = false;
+
+    if (type === 'activate') {
+      success = await activateCode(code.activation_code);
+    } else if (type === 'invalidate') {
+      success = await invalidateCode(code.activation_code);
+    }
+
     if (success) {
       // 刷新列表
       fetchActivationCodes(filters);
     }
+
+    // 关闭确认对话框
+    setConfirmDialog({ open: false, type: null, code: null });
+  };
+
+  /**
+   * 确认对话框 - 取消操作
+   */
+  const handleCancelConfirm = () => {
+    setConfirmDialog({ open: false, type: null, code: null });
   };
 
   // ========== 页面渲染 ==========
@@ -186,6 +218,9 @@ export default function ActivationCodeManagementPage() {
         onClose={handleCloseDialog}
         onInit={initActivationCodes}
         onDistribute={distributeActivationCodes}
+        confirmDialog={confirmDialog}
+        onConfirm={handleConfirmAction}
+        onCancelConfirm={handleCancelConfirm}
       />
     </PageContainer>
   );
