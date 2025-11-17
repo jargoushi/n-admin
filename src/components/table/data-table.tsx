@@ -9,8 +9,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-import { FileX, Database, Search, Users } from 'lucide-react';
-import { TableSkeleton } from './table-skeleton';
+import { Database, Loader2 } from 'lucide-react';
 
 interface Column<T> {
   key: string;
@@ -39,16 +38,6 @@ export function DataTable<T extends Record<string, any>>({
     return record[rowKey] || index.toString();
   };
 
-  if (loading) {
-    return (
-      <TableSkeleton
-        columnCount={columns.length}
-        rowCount={8}
-        showHeader={true}
-      />
-    );
-  }
-
   return (
     <div className='bg-background relative h-full overflow-hidden rounded-md border'>
       <div className='h-full overflow-auto'>
@@ -71,7 +60,16 @@ export function DataTable<T extends Record<string, any>>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length === 0 ? (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className='text-center'>
+                  <div className='flex min-h-[400px] flex-col items-center justify-center space-y-4'>
+                    <Loader2 className='text-primary h-8 w-8 animate-spin' />
+                    <p className='text-muted-foreground text-sm'>加载中...</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : data.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length} className='text-center'>
                   <div className='flex min-h-[200px] flex-col items-center justify-center space-y-4'>
