@@ -15,8 +15,8 @@ import {
   ActionDropdown,
   type ActionItem
 } from '@/components/table/action-dropdown';
-import type { ActivationCode, PaginationInfo, TableColumn } from '../types';
-import { CODE_TYPE_CONFIG, STATUS_BADGE_MAP, MESSAGES } from '../constants';
+import type { ActivationCode, TableColumn } from '../types';
+import { CODE_TYPE_CONFIG, STATUS_BADGE_MAP } from '../constants';
 
 /**
  * 表格组件属性

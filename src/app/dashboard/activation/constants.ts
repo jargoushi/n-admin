@@ -6,11 +6,7 @@
  * 表格列定义、消息文案等
  */
 
-import type {
-  PaginationInfo,
-  ActivationCodeFilters,
-  TableColumn
-} from './types';
+import type { PaginationInfo, ActivationCodeFilters } from './types';
 
 // ==================== 分页配置 ====================
 
@@ -23,11 +19,6 @@ export const DEFAULT_PAGINATION: PaginationInfo = {
   total: 0,
   totalPages: 0
 };
-
-/**
- * 分页大小选项
- */
-export const PAGE_SIZE_OPTIONS = [10, 20, 30, 50, 100];
 
 // ==================== 激活码类型配置 ====================
 

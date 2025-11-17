@@ -167,13 +167,8 @@ export function ActivationCodeInitForm({
       )
       .join('\n\n');
 
-    try {
-      await navigator.clipboard.writeText(allCodes);
-      toast.success(MESSAGES.SUCCESS.COPY);
-    } catch (error) {
-      console.error('[handleCopyAllCodes] Error:', error);
-      toast.error(MESSAGES.ERROR.COPY);
-    }
+    await navigator.clipboard.writeText(allCodes);
+    toast.success(MESSAGES.SUCCESS.COPY);
   };
 
   // 如果有结果，显示结果页面
@@ -206,14 +201,10 @@ export function ActivationCodeInitForm({
                   size='sm'
                   variant='outline'
                   onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(
-                        typeResult.activation_codes.join('\n')
-                      );
-                      toast.success(MESSAGES.SUCCESS.COPY);
-                    } catch {
-                      toast.error(MESSAGES.ERROR.COPY);
-                    }
+                    await navigator.clipboard.writeText(
+                      typeResult.activation_codes.join('\n')
+                    );
+                    toast.success(MESSAGES.SUCCESS.COPY);
                   }}
                 >
                   <Copy className='mr-2 h-3 w-3' />

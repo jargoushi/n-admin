@@ -35,6 +35,27 @@ pnpm release      # 自动版本发布
 pnpm changelog    # 生成变更日志
 ```
 
+### Git 工作流
+
+项目配置了 Husky + lint-staged 实现提交前自动化:
+
+```bash
+# 提交时自动触发
+git add .
+git commit -m "your message"
+# → 自动执行 Prettier 格式化 (*.ts, *.tsx, *.jsx, *.json, *.md)
+# → 自动执行 commitlint 验证提交信息格式
+
+# 推荐使用 Commitizen 生成规范的提交信息
+pnpm commit
+```
+
+**commitlint 规范**: 遵循 Conventional Commits，提交信息格式为 `<type>(<scope>): <subject>`
+
+- type: feat, fix, docs, style, refactor, test, chore 等
+- scope: 可选，影响范围
+- subject: 简短描述
+
 ## 架构设计
 
 ### 技术栈核心
@@ -77,6 +98,36 @@ src/
 - @/*  -> src/*    # 项目源码目录
 - ~/*  -> public/* # 静态资源目录
 ```
+
+### 功能模块标准组织方式
+
+以激活码管理模块 (`src/app/dashboard/activation`) 为例，展示标准的功能模块结构:
+
+```
+activation/
+├── components/          # 模块专属组件
+│   ├── ActivationCodeTable.tsx      # 数据表格组件
+│   ├── ActivationCodeFilters.tsx    # 筛选器组件
+│   ├── ActivationCodeDialogs.tsx    # 对话框组件
+│   ├── ActivationCodeInitForm.tsx   # 初始化表单
+│   ├── ActivationCodeDistributeForm.tsx # 分发表单
+│   └── index.ts         # 组件导出索引
+├── hooks/              # 模块专属 Hooks
+│   ├── useActivationCodeManagement.ts # 业务逻辑 Hook
+│   ├── useActivationCodeFilters.ts    # 筛选逻辑 Hook
+│   └── index.ts        # Hooks 导出索引
+├── types.ts            # TypeScript 类型定义
+├── constants.ts        # 常量定义（如枚举、配置项）
+└── page.tsx           # 页面入口组件
+```
+
+**组织原则**:
+
+- **types.ts**: 定义所有 TypeScript 接口和类型，确保类型安全
+- **constants.ts**: 集中管理枚举值、选项列表、配置常量
+- **hooks/**: 封装可复用的业务逻辑，保持组件简洁
+- **components/**: 按职责拆分组件，每个组件单一职责
+- **index.ts**: 统一导出，简化导入路径
 
 ### 权限系统架构
 
@@ -246,6 +297,52 @@ await db.update(users).set({ status: 'disabled' }).where(eq(users.id, userId));
 // 删除
 await db.delete(users).where(eq(users.id, userId));
 ```
+
+### 自定义 Hook 开发
+
+项目使用 Hook 封装业务逻辑，典型模式如下:
+
+```typescript
+// hooks/useFeatureManagement.ts
+export function useFeatureManagement() {
+  const [data, setData] = useState<DataType[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // 数据获取
+  const fetchData = async (filters: FilterType) => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/feature', {
+        method: 'POST',
+        body: JSON.stringify(filters)
+      });
+      const result = await response.json();
+      setData(result.data);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 操作方法
+  const createItem = async (data: FormData) => {
+    // 实现创建逻辑
+  };
+
+  return {
+    data,
+    loading,
+    fetchData,
+    createItem
+  };
+}
+```
+
+**Hook 设计原则**:
+
+- 封装完整的业务逻辑（数据获取、状态管理、操作方法）
+- 返回数据和操作方法的对象，便于解构使用
+- 处理加载状态和错误处理
+- 使用 TypeScript 定义清晰的参数和返回值类型
 
 ## 重要提醒
 

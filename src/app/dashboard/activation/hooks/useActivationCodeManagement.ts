@@ -61,9 +61,9 @@ export function useActivationCodeManagement(): UseActivationCodeManagementReturn
    */
   const fetchActivationCodes = useCallback(
     async (filters: ActivationCodeFilters) => {
-      try {
-        setLoading(true);
+      setLoading(true);
 
+      try {
         // 构建查询参数
         const queryParams: Record<string, string | number | undefined> = {
           page: filters.page || 1,
@@ -109,7 +109,6 @@ export function useActivationCodeManagement(): UseActivationCodeManagementReturn
             filters.expireDateRange.to.toISOString();
         }
 
-        // 调用 API（拦截器已解包 ApiResponse，直接返回 PageResponse）
         const response = await ActivationApiService.getPageList(queryParams);
 
         setCodes(response.items);
@@ -119,11 +118,6 @@ export function useActivationCodeManagement(): UseActivationCodeManagementReturn
           total: response.total,
           totalPages: response.pages
         });
-      } catch (error) {
-        console.error('[fetchActivationCodes] Error:', error);
-        toast.error(MESSAGES.ERROR.FETCH_LIST);
-        setCodes([]);
-        setPagination(DEFAULT_PAGINATION);
       } finally {
         setLoading(false);
       }
@@ -135,21 +129,15 @@ export function useActivationCodeManagement(): UseActivationCodeManagementReturn
    * 批量初始化激活码
    *
    * @param data - 初始化表单数据
-   * @returns 批量初始化响应或 null
+   * @returns 批量初始化响应
    */
   const initActivationCodes = useCallback(
     async (
       data: ActivationCodeInitFormData
-    ): Promise<ActivationCodeBatchResponse | null> => {
-      try {
-        const response = await ActivationApiService.init(data);
-        toast.success(MESSAGES.SUCCESS.INIT);
-        return response;
-      } catch (error) {
-        console.error('[initActivationCodes] Error:', error);
-        toast.error(MESSAGES.ERROR.INIT);
-        return null;
-      }
+    ): Promise<ActivationCodeBatchResponse> => {
+      const response = await ActivationApiService.init(data);
+      toast.success(MESSAGES.SUCCESS.INIT);
+      return response;
     },
     []
   );
@@ -164,15 +152,9 @@ export function useActivationCodeManagement(): UseActivationCodeManagementReturn
     async (
       data: ActivationCodeDistributeFormData
     ): Promise<string[] | null> => {
-      try {
-        const response = await ActivationApiService.distribute(data);
-        toast.success(MESSAGES.SUCCESS.DISTRIBUTE);
-        return response;
-      } catch (error) {
-        console.error('[distributeActivationCodes] Error:', error);
-        toast.error(MESSAGES.ERROR.DISTRIBUTE);
-        return null;
-      }
+      const response = await ActivationApiService.distribute(data);
+      toast.success(MESSAGES.SUCCESS.DISTRIBUTE);
+      return response;
     },
     []
   );
@@ -185,15 +167,9 @@ export function useActivationCodeManagement(): UseActivationCodeManagementReturn
    */
   const activateCode = useCallback(
     async (activationCode: string): Promise<boolean> => {
-      try {
-        await ActivationApiService.activate(activationCode);
-        toast.success(MESSAGES.SUCCESS.ACTIVATE);
-        return true;
-      } catch (error) {
-        console.error('[activateCode] Error:', error);
-        toast.error(MESSAGES.ERROR.ACTIVATE);
-        return false;
-      }
+      await ActivationApiService.activate(activationCode);
+      toast.success(MESSAGES.SUCCESS.ACTIVATE);
+      return true;
     },
     []
   );
@@ -206,17 +182,11 @@ export function useActivationCodeManagement(): UseActivationCodeManagementReturn
    */
   const invalidateCode = useCallback(
     async (activationCode: string): Promise<boolean> => {
-      try {
-        await ActivationApiService.invalidate({
-          activation_code: activationCode
-        });
-        toast.success(MESSAGES.SUCCESS.INVALIDATE);
-        return true;
-      } catch (error) {
-        console.error('[invalidateCode] Error:', error);
-        toast.error(MESSAGES.ERROR.INVALIDATE);
-        return false;
-      }
+      await ActivationApiService.invalidate({
+        activation_code: activationCode
+      });
+      toast.success(MESSAGES.SUCCESS.INVALIDATE);
+      return true;
     },
     []
   );
@@ -229,14 +199,8 @@ export function useActivationCodeManagement(): UseActivationCodeManagementReturn
    */
   const getCodeDetail = useCallback(
     async (activationCode: string): Promise<ActivationCode | null> => {
-      try {
-        const response = await ActivationApiService.getDetail(activationCode);
-        return response;
-      } catch (error) {
-        console.error('[getCodeDetail] Error:', error);
-        toast.error(MESSAGES.ERROR.FETCH_DETAIL);
-        return null;
-      }
+      const response = await ActivationApiService.getDetail(activationCode);
+      return response;
     },
     []
   );

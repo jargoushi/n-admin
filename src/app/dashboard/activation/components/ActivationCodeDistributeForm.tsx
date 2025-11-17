@@ -103,13 +103,8 @@ export function ActivationCodeDistributeForm({
   const handleCopyAll = async () => {
     if (!result) return;
 
-    try {
-      await navigator.clipboard.writeText(result.join('\n'));
-      toast.success(MESSAGES.SUCCESS.COPY);
-    } catch (error) {
-      console.error('[handleCopyAll] Error:', error);
-      toast.error(MESSAGES.ERROR.COPY);
-    }
+    await navigator.clipboard.writeText(result.join('\n'));
+    toast.success(MESSAGES.SUCCESS.COPY);
   };
 
   // 如果有结果，显示结果页面
