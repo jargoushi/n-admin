@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { copyToClipboard } from '@/lib/utils';
 import type { ActivationCodeDistributeFormData } from '../types';
 import {
   ACTIVATION_CODE_TYPE_OPTIONS,
@@ -103,8 +104,7 @@ export function ActivationCodeDistributeForm({
   const handleCopyAll = async () => {
     if (!result) return;
 
-    await navigator.clipboard.writeText(result.join('\n'));
-    toast.success(MESSAGES.SUCCESS.COPY);
+    await copyToClipboard(result.join('\n'));
   };
 
   // 如果有结果，显示结果页面
@@ -135,14 +135,7 @@ export function ActivationCodeDistributeForm({
                   size='sm'
                   variant='ghost'
                   className='h-6 w-6 p-0'
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(code);
-                      toast.success(MESSAGES.SUCCESS.COPY);
-                    } catch {
-                      toast.error(MESSAGES.ERROR.COPY);
-                    }
-                  }}
+                  onClick={() => copyToClipboard(code)}
                 >
                   <Copy className='h-3 w-3' />
                 </Button>

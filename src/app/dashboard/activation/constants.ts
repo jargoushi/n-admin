@@ -92,8 +92,7 @@ export const MESSAGES = {
     INIT: '批量初始化激活码成功',
     DISTRIBUTE: '派发激活码成功',
     ACTIVATE: '激活码激活成功',
-    INVALIDATE: '激活码作废成功',
-    COPY: '复制成功'
+    INVALIDATE: '激活码作废成功'
   },
   ERROR: {
     INIT: '批量初始化激活码失败',
@@ -102,7 +101,6 @@ export const MESSAGES = {
     INVALIDATE: '激活码作废失败',
     FETCH_LIST: '获取激活码列表失败',
     FETCH_DETAIL: '获取激活码详情失败',
-    COPY: '复制失败',
     INVALID_FORM: '请填写完整的表单信息',
     DUPLICATE_TYPE: '激活码类型重复，每种类型只能出现一次'
   },

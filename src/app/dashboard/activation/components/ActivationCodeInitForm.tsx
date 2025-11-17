@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { copyToClipboard } from '@/lib/utils';
 import type {
   ActivationCodeBatchInitItem,
   ActivationCodeInitFormData,
@@ -167,8 +168,7 @@ export function ActivationCodeInitForm({
       )
       .join('\n\n');
 
-    await navigator.clipboard.writeText(allCodes);
-    toast.success(MESSAGES.SUCCESS.COPY);
+    await copyToClipboard(allCodes);
   };
 
   // 如果有结果，显示结果页面
@@ -200,12 +200,9 @@ export function ActivationCodeInitForm({
                 <Button
                   size='sm'
                   variant='outline'
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(
-                      typeResult.activation_codes.join('\n')
-                    );
-                    toast.success(MESSAGES.SUCCESS.COPY);
-                  }}
+                  onClick={() =>
+                    copyToClipboard(typeResult.activation_codes.join('\n'))
+                  }
                 >
                   <Copy className='mr-2 h-3 w-3' />
                   复制
