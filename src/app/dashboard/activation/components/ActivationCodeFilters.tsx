@@ -3,14 +3,14 @@
  *
  * @description
  * 提供激活码列表的搜索和筛选功能
- * - 快速搜索：激活码精确匹配
- * - 高级筛选：类型、状态、时间范围
+ * - 第一行：常用筛选字段（激活码、类型、状态）+ 操作按钮
+ * - 第二行：时间范围筛选（可展开/收起）
  */
 
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, RotateCcw } from 'lucide-react';
+import { Search, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,7 +22,6 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { DateRangePicker } from '@/components/ui/date-range-picker';
-import { AdvancedFilterContainer } from '@/components/shared/advanced-filter-container';
 import type { ActivationCodeFilters as ActivationCodeFiltersType } from '../types';
 import {
   ACTIVATION_CODE_TYPE_OPTIONS,
@@ -47,11 +46,6 @@ interface ActivationCodeFiltersProps {
 /**
  * 激活码筛选组件
  *
- * @description
- * 双层筛选架构：
- * 1. 快速搜索栏：激活码精确匹配
- * 2. 高级筛选抽屉：类型、状态、时间范围
- *
  * @param props - 组件属性
  * @returns 筛选组件
  */
@@ -73,8 +67,8 @@ export function ActivationCodeFilters({
     size: 10
   });
 
-  // 控制高级筛选抽屉
-  const [isAdvancedFilterOpen, setIsAdvancedFilterOpen] = useState(false);
+  // 控制展开/收起
+  const [showMore, setShowMore] = useState(false);
 
   // 同步外部 filters 到本地表单状态
   useEffect(() => {
@@ -153,88 +147,33 @@ export function ActivationCodeFilters({
       formData.expireDateRange
   );
 
-  /**
-   * 渲染快速搜索栏
-   */
-  const renderQuickSearch = () => (
-    <div className='flex items-center gap-3'>
-      {/* 激活码搜索 */}
-      <div className='relative max-w-sm flex-1'>
-        <Search className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
-        <Input
-          placeholder={MESSAGES.PLACEHOLDER.SEARCH}
-          value={formData.activation_code || ''}
-          onChange={(e) => updateFormField('activation_code', e.target.value)}
-          onKeyDown={handleKeyPress}
-          disabled={loading}
-          className='pl-10'
-        />
-      </div>
-
-      {/* 查询按钮 */}
-      <Button
-        onClick={handleSearch}
-        disabled={loading}
-        className='shrink-0 cursor-pointer'
-      >
-        <Search className='mr-2 h-4 w-4' />
-        查询
-      </Button>
-
-      {/* 高级筛选按钮 */}
-      <Button
-        variant='outline'
-        onClick={() => setIsAdvancedFilterOpen(true)}
-        className='shrink-0 cursor-pointer'
-      >
-        <Filter className='mr-2 h-4 w-4' />
-        高级筛选
-        {hasActiveFilters && (
-          <span className='bg-primary ml-2 h-2 w-2 rounded-full' />
-        )}
-      </Button>
-
-      {/* 重置按钮 */}
-      {hasActiveFilters && (
-        <Button
-          variant='ghost'
-          onClick={handleReset}
-          disabled={loading}
-          className='text-muted-foreground hover:text-foreground shrink-0 cursor-pointer'
-        >
-          <RotateCcw className='mr-1 h-4 w-4' />
-          重置
-        </Button>
-      )}
-    </div>
-  );
-
-  /**
-   * 渲染高级筛选表单内容
-   */
-  const renderAdvancedFilterForm = () => (
-    <div className='grid gap-4'>
-      {/* 第一行：激活码和类型 */}
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-        <div className='space-y-2'>
+  return (
+    <div className='space-y-4'>
+      {/* 第一行：常显筛选字段 + 操作按钮 */}
+      <div className='grid grid-cols-1 items-end gap-4 md:grid-cols-12'>
+        {/* 激活码 */}
+        <div className='space-y-2 md:col-span-3'>
           <Label>激活码</Label>
           <Input
             placeholder={MESSAGES.PLACEHOLDER.SEARCH}
             value={formData.activation_code || ''}
             onChange={(e) => updateFormField('activation_code', e.target.value)}
             onKeyDown={handleKeyPress}
+            disabled={loading}
           />
         </div>
 
-        <div className='space-y-2'>
-          <Label>激活码类型</Label>
+        {/* 激活码类型 */}
+        <div className='space-y-2 md:col-span-2'>
+          <Label>类型</Label>
           <Select
             value={String(formData.type)}
             onValueChange={(value) =>
               updateFormField('type', value === 'all' ? 'all' : Number(value))
             }
+            disabled={loading}
           >
-            <SelectTrigger className='w-full'>
+            <SelectTrigger>
               <SelectValue placeholder={MESSAGES.PLACEHOLDER.SELECT_TYPE} />
             </SelectTrigger>
             <SelectContent>
@@ -246,19 +185,18 @@ export function ActivationCodeFilters({
             </SelectContent>
           </Select>
         </div>
-      </div>
 
-      {/* 第二行：状态 */}
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-        <div className='space-y-2'>
-          <Label>激活码状态</Label>
+        {/* 激活码状态 */}
+        <div className='space-y-2 md:col-span-2'>
+          <Label>状态</Label>
           <Select
             value={String(formData.status)}
             onValueChange={(value) =>
               updateFormField('status', value === 'all' ? 'all' : Number(value))
             }
+            disabled={loading}
           >
-            <SelectTrigger className='w-full'>
+            <SelectTrigger>
               <SelectValue placeholder={MESSAGES.PLACEHOLDER.SELECT_STATUS} />
             </SelectTrigger>
             <SelectContent>
@@ -270,57 +208,75 @@ export function ActivationCodeFilters({
             </SelectContent>
           </Select>
         </div>
+
+        {/* 操作按钮区域 */}
+        <div className='flex items-center justify-end gap-2 md:col-span-5'>
+          <Button onClick={handleSearch} disabled={loading} size='default'>
+            <Search className='mr-2 h-4 w-4' />
+            查询
+          </Button>
+
+          {hasActiveFilters && (
+            <Button
+              variant='outline'
+              onClick={handleReset}
+              disabled={loading}
+              size='default'
+            >
+              <RotateCcw className='mr-2 h-4 w-4' />
+              重置
+            </Button>
+          )}
+
+          <Button
+            variant='ghost'
+            onClick={() => setShowMore(!showMore)}
+            size='default'
+            className='gap-1'
+          >
+            {showMore ? (
+              <>
+                收起
+                <ChevronUp className='h-4 w-4' />
+              </>
+            ) : (
+              <>
+                展开
+                <ChevronDown className='h-4 w-4' />
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
-      {/* 第三行：分发时间范围 */}
-      <div className='grid grid-cols-1 gap-4'>
-        <DateRangePicker
-          label='分发时间范围'
-          value={formData.distributedDateRange}
-          onChange={(range) => updateFormField('distributedDateRange', range)}
-          placeholder='选择分发时间范围'
-        />
-      </div>
+      {/* 第二行：时间范围筛选（展开区域） */}
+      {showMore && (
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
+          <DateRangePicker
+            label='分发时间范围'
+            value={formData.distributedDateRange}
+            onChange={(range) => updateFormField('distributedDateRange', range)}
+            placeholder='选择分发时间范围'
+            disabled={loading}
+          />
 
-      {/* 第四行：激活时间范围 */}
-      <div className='grid grid-cols-1 gap-4'>
-        <DateRangePicker
-          label='激活时间范围'
-          value={formData.activatedDateRange}
-          onChange={(range) => updateFormField('activatedDateRange', range)}
-          placeholder='选择激活时间范围'
-        />
-      </div>
+          <DateRangePicker
+            label='激活时间范围'
+            value={formData.activatedDateRange}
+            onChange={(range) => updateFormField('activatedDateRange', range)}
+            placeholder='选择激活时间范围'
+            disabled={loading}
+          />
 
-      {/* 第五行：过期时间范围 */}
-      <div className='grid grid-cols-1 gap-4'>
-        <DateRangePicker
-          label='过期时间范围'
-          value={formData.expireDateRange}
-          onChange={(range) => updateFormField('expireDateRange', range)}
-          placeholder='选择过期时间范围'
-        />
-      </div>
-    </div>
-  );
-
-  return (
-    <div className='space-y-4'>
-      {/* 快速搜索栏 */}
-      {renderQuickSearch()}
-
-      {/* 高级筛选弹窗 */}
-      <AdvancedFilterContainer
-        open={isAdvancedFilterOpen}
-        onClose={() => setIsAdvancedFilterOpen(false)}
-        title='激活码筛选'
-        hasActiveFilters={hasActiveFilters}
-        onSearch={handleSearch}
-        onReset={handleReset}
-        loading={loading}
-      >
-        {renderAdvancedFilterForm()}
-      </AdvancedFilterContainer>
+          <DateRangePicker
+            label='过期时间范围'
+            value={formData.expireDateRange}
+            onChange={(range) => updateFormField('expireDateRange', range)}
+            placeholder='选择过期时间范围'
+            disabled={loading}
+          />
+        </div>
+      )}
     </div>
   );
 }
