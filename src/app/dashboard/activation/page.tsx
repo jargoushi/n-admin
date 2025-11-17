@@ -163,7 +163,6 @@ export default function ActivationCodeManagementPage() {
             <ActivationCodeTable
               data={codes}
               loading={loading}
-              pagination={pagination}
               onActivate={handleActivateCode}
               onInvalidate={handleInvalidateCode}
               onViewDetail={handleOpenDetailDialog}
@@ -176,7 +175,6 @@ export default function ActivationCodeManagementPage() {
               pagination={pagination}
               onPageChange={(page) => updatePagination({ page })}
               onPageSizeChange={(limit) => updatePagination({ limit, page: 1 })}
-              pageSizeOptions={[10, 20, 30, 50, 100]}
             />
           </div>
         </div>

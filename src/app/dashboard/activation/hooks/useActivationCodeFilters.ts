@@ -38,28 +38,6 @@ interface UseActivationCodeFiltersReturn {
  * - 分页信息独立管理
  *
  * @returns {UseActivationCodeFiltersReturn} 筛选状态和操作方法
- *
- * @example
- * ```tsx
- * const {
- *   filters,
- *   searchFilters,
- *   updatePagination,
- *   clearFilters,
- *   hasActiveFilters
- * } = useActivationCodeFilters();
- *
- * // 手动查询
- * <Button onClick={() => searchFilters({ type: 0, status: 1 })}>
- *   查询
- * </Button>
- *
- * // 更新分页
- * <Pagination
- *   onPageChange={(page) => updatePagination({ page })}
- *   onPageSizeChange={(limit) => updatePagination({ limit, page: 1 })}
- * />
- * ```
  */
 export function useActivationCodeFilters(): UseActivationCodeFiltersReturn {
   const searchParams = useSearchParams();

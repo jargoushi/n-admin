@@ -91,59 +91,6 @@ export const DEFAULT_FILTERS: ActivationCodeFilters = {
   size: 10
 };
 
-// ==================== 表格列配置 ====================
-
-/**
- * 激活码表格列配置
- */
-export const TABLE_COLUMNS: TableColumn[] = [
-  {
-    key: 'index',
-    title: 'ID',
-    className: 'w-[60px] text-center'
-  },
-  {
-    key: 'activation_code',
-    title: '激活码',
-    className: 'min-w-[280px] font-mono font-medium'
-  },
-  {
-    key: 'type',
-    title: '类型',
-    className: 'w-[100px] text-center'
-  },
-  {
-    key: 'status',
-    title: '状态',
-    className: 'w-[100px] text-center'
-  },
-  {
-    key: 'distributed_at',
-    title: '分发时间',
-    className: 'w-[180px]'
-  },
-  {
-    key: 'activated_at',
-    title: '激活时间',
-    className: 'w-[180px]'
-  },
-  {
-    key: 'expire_time',
-    title: '过期时间',
-    className: 'w-[180px]'
-  },
-  {
-    key: 'created_at',
-    title: '创建时间',
-    className: 'w-[180px]'
-  },
-  {
-    key: 'actions',
-    title: '操作',
-    className: 'w-[120px] text-center'
-  }
-];
-
 // ==================== 消息文案 ====================
 
 /**

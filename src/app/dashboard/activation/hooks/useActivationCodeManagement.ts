@@ -46,29 +46,6 @@ interface UseActivationCodeManagementReturn
  * - 获取详情
  *
  * @returns {UseActivationCodeManagementReturn} 激活码数据和操作方法
- *
- * @example
- * ```tsx
- * const {
- *   codes,
- *   loading,
- *   pagination,
- *   fetchActivationCodes,
- *   initActivationCodes,
- *   distributeActivationCodes,
- *   activateCode,
- *   invalidateCode,
- *   getCodeDetail
- * } = useActivationCodeManagement();
- *
- * // 获取列表
- * useEffect(() => {
- *   fetchActivationCodes(filters);
- * }, [filters]);
- *
- * // 批量初始化
- * const result = await initActivationCodes({ items: [{ type: 0, count: 10 }] });
- * ```
  */
 export function useActivationCodeManagement(): UseActivationCodeManagementReturn {
   // 状态管理
