@@ -36,10 +36,6 @@ interface ActivationCodeDistributeFormProps {
   onSubmit: (
     data: ActivationCodeDistributeFormData
   ) => Promise<string[] | null>;
-  /** 取消回调 */
-  onCancel?: () => void;
-  /** 提交中状态 */
-  submitting?: boolean;
 }
 
 /**
@@ -49,9 +45,7 @@ interface ActivationCodeDistributeFormProps {
  * @returns 表单组件
  */
 export function ActivationCodeDistributeForm({
-  onSubmit,
-  onCancel,
-  submitting = false
+  onSubmit
 }: ActivationCodeDistributeFormProps) {
   // 表单数据
   const [formData, setFormData] = useState<ActivationCodeDistributeFormData>({
@@ -161,10 +155,6 @@ export function ActivationCodeDistributeForm({
             ))}
           </div>
         </Card>
-
-        <div className='flex justify-end'>
-          <Button onClick={onCancel}>关闭</Button>
-        </div>
       </div>
     );
   }
@@ -214,12 +204,7 @@ export function ActivationCodeDistributeForm({
 
       {/* 操作按钮 */}
       <div className='flex justify-end gap-2'>
-        <Button variant='outline' onClick={onCancel} disabled={submitting}>
-          取消
-        </Button>
-        <Button onClick={handleSubmit} disabled={submitting}>
-          {submitting ? '派发中...' : '确认派发'}
-        </Button>
+        <Button onClick={handleSubmit}>确认派发</Button>
       </div>
     </div>
   );

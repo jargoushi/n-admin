@@ -34,7 +34,8 @@ import {
   ACTIVATION_CODE_TYPE_OPTIONS,
   MAX_INIT_ITEMS,
   INIT_COUNT_RANGE,
-  MESSAGES
+  MESSAGES,
+  CODE_TYPE_CONFIG
 } from '../constants';
 
 /**
@@ -45,10 +46,6 @@ interface ActivationCodeInitFormProps {
   onSubmit: (
     data: ActivationCodeInitFormData
   ) => Promise<ActivationCodeBatchResponse | null>;
-  /** 取消回调 */
-  onCancel?: () => void;
-  /** 提交中状态 */
-  submitting?: boolean;
 }
 
 /**
@@ -58,9 +55,7 @@ interface ActivationCodeInitFormProps {
  * @returns 表单组件
  */
 export function ActivationCodeInitForm({
-  onSubmit,
-  onCancel,
-  submitting = false
+  onSubmit
 }: ActivationCodeInitFormProps) {
   // 初始化项列表
   const [items, setItems] = useState<ActivationCodeBatchInitItem[]>([
@@ -77,35 +72,24 @@ export function ActivationCodeInitForm({
    * 自动选择一个未使用的类型
    */
   const handleAddItem = () => {
-    if (items.length >= MAX_INIT_ITEMS) {
-      toast.error(`最多添加 ${MAX_INIT_ITEMS} 个初始化项`);
-      return;
-    }
+    const usedCodes = new Set(items.map((item) => item.type));
 
-    // 找出未使用的类型（动态从类型选项中获取）
-    const usedTypes = new Set(items.map((item) => item.type));
-    const allTypes = ACTIVATION_CODE_TYPE_OPTIONS.filter(
-      (opt) => opt.value !== 'all'
-    ).map((opt) => opt.value as number);
-    const availableType = allTypes.find((type) => !usedTypes.has(type));
+    const nextTypeCode = Object.keys(CODE_TYPE_CONFIG)
+      .map((key) => Number(key))
+      .find((code) => !usedCodes.has(code));
 
-    if (availableType === undefined) {
+    if (!nextTypeCode) {
       toast.error('所有激活码类型已添加');
       return;
     }
 
-    setItems([...items, { type: availableType, count: 10 }]);
+    setItems((prev) => [...prev, { type: nextTypeCode, count: 10 }]);
   };
 
   /**
    * 移除初始化项
    */
   const handleRemoveItem = (index: number) => {
-    if (items.length === 1) {
-      toast.error('至少保留一个初始化项');
-      return;
-    }
-
     setItems(items.filter((_, i) => i !== index));
   };
 
@@ -246,10 +230,6 @@ export function ActivationCodeInitForm({
             </Card>
           ))}
         </div>
-
-        <div className='flex justify-end'>
-          <Button onClick={onCancel}>关闭</Button>
-        </div>
       </div>
     );
   }
@@ -341,12 +321,7 @@ export function ActivationCodeInitForm({
 
       {/* 操作按钮 */}
       <div className='flex justify-end gap-2'>
-        <Button variant='outline' onClick={onCancel} disabled={submitting}>
-          取消
-        </Button>
-        <Button onClick={handleSubmit} disabled={submitting}>
-          {submitting ? '生成中...' : '开始生成'}
-        </Button>
+        <Button onClick={handleSubmit}>开始生成</Button>
       </div>
     </div>
   );

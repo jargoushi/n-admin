@@ -178,8 +178,9 @@ export function useActivationCodeFilters(): UseActivationCodeFiltersReturn {
     (pagination: { page?: number; limit?: number }) => {
       const updatedFilters: ActivationCodeFilters = {
         ...filters,
-        page: pagination.page,
-        size: pagination.limit // 前端使用 limit，转换为 size 存储
+        // 只有传入了新值才更新，否则保留原值
+        ...(pagination.page !== undefined && { page: pagination.page }),
+        ...(pagination.limit !== undefined && { size: pagination.limit })
       };
 
       setFilters(updatedFilters);

@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import { generatePageNumbers } from '@/lib/pagination-utils';
 
 interface PaginationInfo {
   page: number;
@@ -23,15 +24,13 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
   pageSizeOptions?: number[];
-  showPageSizeSelector?: boolean;
 }
 
 export function Pagination({
   pagination,
   onPageChange,
   onPageSizeChange,
-  pageSizeOptions = [10, 20, 30, 50, 100],
-  showPageSizeSelector = true
+  pageSizeOptions = [10, 20, 30, 50, 100]
 }: PaginationProps) {
   const { page, limit, total, totalPages } = pagination;
   const [jumpPage, setJumpPage] = useState(String(page));
@@ -47,46 +46,10 @@ export function Pagination({
    * 生成页码数组
    * 智能显示当前页附近的页码，用省略号表示跳过的页码
    */
-  const generatePageNumbers = (): (number | string)[] => {
-    const delta = 2; // 当前页前后显示的页码数量
-    const range: (number | string)[] = [];
-    const rangeWithDots: (number | string)[] = [];
-
-    // 总页数小于等于7时，显示所有页码
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) {
-        range.push(i);
-      }
-      return range;
-    }
-
-    // 生成页码范围
-    for (let i = 1; i <= totalPages; i++) {
-      if (
-        i === 1 || // 第一页
-        i === totalPages || // 最后一页
-        (i >= page - delta && i <= page + delta) // 当前页附近
-      ) {
-        range.push(i);
-      }
-    }
-
-    // 添加省略号
-    let prev = 0;
-    for (const i of range) {
-      if (typeof i === 'number') {
-        if (prev && i - prev > 1) {
-          rangeWithDots.push('...');
-        }
-        rangeWithDots.push(i);
-        prev = i;
-      }
-    }
-
-    return rangeWithDots;
-  };
-
-  const pageNumbers = generatePageNumbers();
+  const pageNumbers = generatePageNumbers({
+    currentPage: page,
+    totalPages
+  });
 
   /**
    * 处理页码输入变化（只允许输入数字）
@@ -125,31 +88,29 @@ export function Pagination({
             总共 <span className='text-primary font-semibold'>{total}</span>{' '}
             条记录
           </span>
-          {showPageSizeSelector && (
-            <div className='flex items-center gap-2'>
-              <span className='text-muted-foreground text-sm'>每页显示</span>
-              <Select
-                value={String(limit)}
-                onValueChange={(value) => onPageSizeChange(parseInt(value))}
-              >
-                <SelectTrigger className='h-8 w-[75px] cursor-pointer'>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {pageSizeOptions.map((pageSize) => (
-                    <SelectItem
-                      key={pageSize}
-                      value={String(pageSize)}
-                      className='cursor-pointer'
-                    >
-                      {pageSize}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <span className='text-muted-foreground text-sm'>条</span>
-            </div>
-          )}
+          <div className='flex items-center gap-2'>
+            <span className='text-muted-foreground text-sm'>每页显示</span>
+            <Select
+              value={String(limit)}
+              onValueChange={(value) => onPageSizeChange(parseInt(value))}
+            >
+              <SelectTrigger className='h-8 w-[75px] cursor-pointer'>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {pageSizeOptions.map((pageSize) => (
+                  <SelectItem
+                    key={pageSize}
+                    value={String(pageSize)}
+                    className='cursor-pointer'
+                  >
+                    {pageSize}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className='text-muted-foreground text-sm'>条</span>
+          </div>
         </div>
 
         {/* 右侧：分页控制 */}
@@ -217,7 +178,7 @@ export function Pagination({
               type='text'
               value={jumpPage}
               onChange={(e) => handleJumpPageChange(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               className='h-8 w-16 text-center'
             />
             <span className='text-muted-foreground text-sm'>页</span>

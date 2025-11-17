@@ -45,7 +45,7 @@ export const ACTIVATION_CODE_TYPE_OPTIONS = [
 /**
  * 激活码类型徽章样式映射
  */
-export const TYPE_BADGE_MAP = {
+export const CODE_TYPE_CONFIG = {
   0: { label: '日卡', variant: 'secondary' as const },
   1: { label: '月卡', variant: 'default' as const },
   2: { label: '年卡', variant: 'outline' as const },
@@ -187,18 +187,6 @@ export const MESSAGES = {
   }
 };
 
-// ==================== 日期时间格式 ====================
-
-/**
- * 日期时间显示格式
- */
-export const DATE_TIME_FORMAT = 'yyyy-MM-dd HH:mm:ss';
-
-/**
- * 日期显示格式
- */
-export const DATE_FORMAT = 'yyyy-MM-dd';
-
 // ==================== 验证规则 ====================
 
 /**
@@ -224,20 +212,4 @@ export const INIT_COUNT_RANGE = {
 export const DISTRIBUTE_COUNT_RANGE = {
   MIN: 1,
   MAX: 100
-} as const;
-
-/**
- * 激活码类型范围
- */
-export const CODE_TYPE_RANGE = {
-  MIN: 0,
-  MAX: 3
-} as const;
-
-/**
- * 激活码状态范围
- */
-export const CODE_STATUS_RANGE = {
-  MIN: 0,
-  MAX: 3
 } as const;

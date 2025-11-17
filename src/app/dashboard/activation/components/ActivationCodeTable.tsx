@@ -21,11 +21,11 @@ import { toast } from 'sonner';
 import type { ActivationCode, PaginationInfo, TableColumn } from '../types';
 import {
   TABLE_COLUMNS,
-  TYPE_BADGE_MAP,
+  CODE_TYPE_CONFIG,
   STATUS_BADGE_MAP,
-  DATE_TIME_FORMAT,
   MESSAGES
 } from '../constants';
+import { formatDateTime } from '@/lib/data-utils';
 
 /**
  * 表格组件属性
@@ -80,18 +80,6 @@ export function ActivationCodeTable({
   };
 
   /**
-   * 格式化日期时间
-   */
-  const formatDateTime = (dateString: string | undefined): string => {
-    if (!dateString) return '-';
-    try {
-      return format(new Date(dateString), DATE_TIME_FORMAT);
-    } catch {
-      return dateString;
-    }
-  };
-
-  /**
    * 动态列配置（基于 TABLE_COLUMNS）
    */
   const columns = useMemo(() => {
@@ -138,7 +126,7 @@ export function ActivationCodeTable({
           ...col,
           render: (_: unknown, record: ActivationCode) => {
             const badgeInfo =
-              TYPE_BADGE_MAP[record.type as keyof typeof TYPE_BADGE_MAP];
+              CODE_TYPE_CONFIG[record.type as keyof typeof CODE_TYPE_CONFIG];
             return (
               <Badge variant={badgeInfo?.variant || 'secondary'}>
                 {record.type_name}

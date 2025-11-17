@@ -10,7 +10,6 @@
 
 'use client';
 
-import { format } from 'date-fns';
 import {
   Dialog,
   DialogContent,
@@ -27,11 +26,8 @@ import type {
   ActivationCodeDistributeFormData,
   ActivationCodeBatchResponse
 } from '../types';
-import {
-  TYPE_BADGE_MAP,
-  STATUS_BADGE_MAP,
-  DATE_TIME_FORMAT
-} from '../constants';
+import { CODE_TYPE_CONFIG, STATUS_BADGE_MAP } from '../constants';
+import { formatDateTime } from '@/lib/data-utils';
 
 /**
  * 对话框组件属性
@@ -63,18 +59,6 @@ export function ActivationCodeDialogs({
   onInit,
   onDistribute
 }: ActivationCodeDialogsProps) {
-  /**
-   * 格式化日期时间
-   */
-  const formatDateTime = (dateString: string | undefined): string => {
-    if (!dateString) return '-';
-    try {
-      return format(new Date(dateString), DATE_TIME_FORMAT);
-    } catch {
-      return dateString;
-    }
-  };
-
   return (
     <>
       {/* 批量初始化对话框 */}
@@ -86,7 +70,7 @@ export function ActivationCodeDialogs({
               批量生成不同类型的激活码，每种类型只能出现一次
             </DialogDescription>
           </DialogHeader>
-          <ActivationCodeInitForm onSubmit={onInit} onCancel={onClose} />
+          <ActivationCodeInitForm onSubmit={onInit} />
         </DialogContent>
       </Dialog>
 
@@ -99,10 +83,7 @@ export function ActivationCodeDialogs({
               根据类型派发指定数量的未使用激活码，派发后状态将变为"已分发"
             </DialogDescription>
           </DialogHeader>
-          <ActivationCodeDistributeForm
-            onSubmit={onDistribute}
-            onCancel={onClose}
-          />
+          <ActivationCodeDistributeForm onSubmit={onDistribute} />
         </DialogContent>
       </Dialog>
 
@@ -127,8 +108,8 @@ export function ActivationCodeDialogs({
                   <span className='text-muted-foreground text-sm'>类型</span>
                   <Badge
                     variant={
-                      TYPE_BADGE_MAP[
-                        dialogState.data.type as keyof typeof TYPE_BADGE_MAP
+                      CODE_TYPE_CONFIG[
+                        dialogState.data.type as keyof typeof CODE_TYPE_CONFIG
                       ]?.variant || 'secondary'
                     }
                   >

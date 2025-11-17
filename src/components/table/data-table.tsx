@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-import { Database, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 interface Column<T> {
   key: string;
@@ -66,24 +66,6 @@ export function DataTable<T extends Record<string, any>>({
                   <div className='flex min-h-[400px] flex-col items-center justify-center space-y-4'>
                     <Loader2 className='text-primary h-8 w-8 animate-spin' />
                     <p className='text-muted-foreground text-sm'>加载中...</p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : data.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className='text-center'>
-                  <div className='flex min-h-[200px] flex-col items-center justify-center space-y-4'>
-                    <div className='bg-muted/50 rounded-full p-4'>
-                      <Database className='text-muted-foreground h-8 w-8' />
-                    </div>
-                    <div className='space-y-2 text-center'>
-                      <p className='text-foreground text-sm font-medium'>
-                        暂无数据
-                      </p>
-                      <p className='text-muted-foreground max-w-sm text-xs'>
-                        尝试调整筛选条件或添加新数据
-                      </p>
-                    </div>
                   </div>
                 </TableCell>
               </TableRow>
