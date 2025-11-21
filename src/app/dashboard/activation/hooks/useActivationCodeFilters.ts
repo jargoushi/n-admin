@@ -26,6 +26,6 @@ export function useActivationCodeFilters() {
     filters,
     searchFilters,
     updatePagination,
-    clearFilters: resetFilters
+    resetFilters
   };
 }
