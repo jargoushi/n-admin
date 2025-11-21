@@ -24,7 +24,6 @@ import {
 } from './components';
 import { useActivationCodeFilters, useActivationCodeManagement } from './hooks';
 import type { ActivationCode, ActivationCodeDialogState } from './types';
-import { MESSAGES } from './constants';
 
 /**
  * 激活码管理页面组件

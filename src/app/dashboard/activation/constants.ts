@@ -95,20 +95,13 @@ export const MESSAGES = {
     INVALIDATE: '激活码作废成功'
   },
   ERROR: {
-    INVALID_FORM: '请填写完整的表单信息',
-    DUPLICATE_TYPE: '激活码类型重复，每种类型只能出现一次'
+    INVALID_FORM: '请填写完整的表单信息'
   },
   CONFIRM: {
     ACTIVATE: (code: string) =>
       `确定要激活激活码 "${code.substring(0, 20)}..." 吗？`,
     INVALIDATE: (code: string) =>
       `确定要作废激活码 "${code.substring(0, 20)}..." 吗？\n\n作废后将无法恢复！`
-  },
-  PLACEHOLDER: {
-    SEARCH: '请输入激活码进行精确搜索',
-    SELECT_TYPE: '请选择激活码类型',
-    SELECT_STATUS: '请选择激活码状态',
-    INPUT_COUNT: '请输入生成数量'
   }
 };
 

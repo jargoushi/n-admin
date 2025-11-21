@@ -1,133 +1,142 @@
-/**
- * 日期范围选择器组件
- *
- * @description
- * 通用的日期范围选择器，支持选择开始和结束日期
- * 基于 Popover + Calendar 组件实现
- *
- * @example
- * ```typescript
- * <DateRangePicker
- *   label="创建时间"
- *   value={dateRange}
- *   onChange={setDateRange}
- *   placeholder="选择时间范围"
- * />
- * ```
- */
-
 'use client';
 
 import * as React from 'react';
 import { format } from 'date-fns';
-import { zhCN } from 'date-fns/locale';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, X } from 'lucide-react';
+import { SelectRangeEventHandler } from 'react-day-picker';
+
+// 导入 shadcn/ui 基础组件
 import { cn } from '@/lib/utils';
+import { Button } from './button';
+import { Calendar } from './calendar';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
+export type DateRangeValue = {
+  from: Date | undefined;
+  to: Date | undefined;
+};
 
-/**
- * 日期范围类型
- */
-export interface DateRange {
-  /** 开始日期 */
-  from: Date;
-  /** 结束日期 */
-  to: Date;
-}
-
-/**
- * 日期范围选择器组件属性
- */
-export interface DateRangePickerProps {
-  /** 标签文本（可选） */
-  label?: string;
-  /** 日期范围值 */
-  value?: DateRange;
-  /** 值变化回调 */
-  onChange: (range?: DateRange) => void;
+interface DateRangePickerProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+  /** 当前选中的日期范围 */
+  value?: DateRangeValue;
+  /** 日期范围变化时的回调 (只在 from/to 完整时触发) */
+  onChange: (range: DateRangeValue | undefined) => void;
   /** 占位符文本 */
   placeholder?: string;
   /** 是否禁用 */
   disabled?: boolean;
-  /** 自定义类名 */
-  className?: string;
-  /** 日期格式（默认：'yyyy-MM-dd'） */
-  dateFormat?: string;
-  /** 显示月份数量（默认：2） */
-  numberOfMonths?: number;
+  /** Popover 对齐方式 */
+  align?: 'start' | 'center' | 'end';
 }
 
 /**
  * 日期范围选择器组件
- *
- * @param props - 组件属性
- * @returns 日期范围选择器组件
  */
 export function DateRangePicker({
-  label,
+  className,
   value,
   onChange,
   placeholder = '选择日期范围',
-  disabled = false,
-  className,
-  dateFormat = 'yyyy-MM-dd',
-  numberOfMonths = 2
+  disabled,
+  align = 'start',
+  ...props
 }: DateRangePickerProps) {
-  /**
-   * 格式化日期范围显示文本
-   */
-  const getDisplayText = (): string => {
-    if (value?.from && value?.to) {
-      const fromStr = format(value.from, dateFormat);
-      const toStr = format(value.to, dateFormat);
-      return `${fromStr} - ${toStr}`;
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  // 1. 内部状态：用于跟踪日历的实时选择（包括部分选择），以确保日历功能正常
+  const [internalRange, setInternalRange] = React.useState<
+    DateRangeValue | undefined
+  >(value);
+
+  // 2. 外部 value 变化时，同步到内部状态
+  React.useEffect(() => {
+    setInternalRange(value);
+  }, [value]);
+
+  // 处理日期选择变化
+  const handleSelect: SelectRangeEventHandler = (range) => {
+    // 始终更新内部状态，以确保日历组件能正确显示和继续选择
+    const newInternalRange = range
+      ? { from: range.from, to: range.to }
+      : undefined;
+    setInternalRange(newInternalRange);
+
+    // 🚀 核心逻辑：只在完整选择或清空时调用外部 onChange
+    if (range?.from && range.to) {
+      // 完整选择：通知父组件，关闭 Popover
+      onChange(newInternalRange);
+      setIsOpen(false);
+    } else if (!range) {
+      // 清空选择：通知父组件，关闭 Popover
+      onChange(undefined);
+      setIsOpen(false);
     }
-    return placeholder;
+    // 如果是部分选择 (只有 from)，则不调用外部 onChange，Popover 保持打开
   };
 
-  /**
-   * 处理日期范围选择
-   */
-  const handleSelect = (dateRange: DateRange | undefined) => {
-    onChange(dateRange);
+  // 清空按钮逻辑 (需要同时清空外部和内部 state)
+  const handleClear = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onChange(undefined);
+    setInternalRange(undefined);
+    setIsOpen(false);
   };
+
+  // 格式化显示的值 (使用内部状态进行显示)
+  const displayValue = React.useMemo(() => {
+    if (!internalRange?.from) {
+      return placeholder;
+    }
+    const formattedFrom = format(internalRange.from, 'yyyy-MM-dd');
+
+    // 移除 '至今'，显示提示
+    const formattedTo = internalRange.to
+      ? format(internalRange.to, 'yyyy-MM-dd')
+      : '请选择结束日期';
+
+    return `${formattedFrom} - ${formattedTo}`;
+  }, [internalRange, placeholder]);
+
+  // hasCompleteValue 依赖外部 value，因为外部 value 只有在完整选择时才会更新
+  const hasCompleteValue = !!value?.from && !!value?.to;
 
   return (
-    <div className={cn('space-y-2', className)}>
-      {/* 标签 */}
-      {label && <Label>{label}</Label>}
-
-      {/* 日期选择器 */}
-      <Popover>
+    <div className={cn('grid w-full', className)} {...props}>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant='outline'
-            disabled={disabled}
+            id='date'
+            variant={'outline'}
             className={cn(
-              'w-full justify-start text-left font-normal',
-              !value && 'text-muted-foreground'
+              'h-9 w-full justify-start pr-3 text-left font-normal',
+              !hasCompleteValue && 'text-muted-foreground' // 使用 hasCompleteValue
             )}
+            disabled={disabled}
           >
-            <CalendarIcon className='mr-2 h-4 w-4' />
-            {getDisplayText()}
+            <CalendarIcon className='mr-2 h-4 w-4 shrink-0' />
+            <span className='flex-1 truncate overflow-hidden'>
+              {displayValue}
+            </span>
+
+            {/* 只有在完整选择时才显示清空按钮 */}
+            {hasCompleteValue && (
+              <X
+                className='text-muted-foreground hover:text-foreground ml-2 h-4 w-4 shrink-0 transition-colors'
+                onClick={handleClear}
+              />
+            )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className='w-auto p-0' align='start'>
+        <PopoverContent className='w-auto p-0' align={align}>
           <Calendar
+            initialFocus
             mode='range'
-            selected={value}
+            defaultMonth={internalRange?.from} // 使用 internalRange
+            selected={internalRange} // 使用 internalRange
             onSelect={handleSelect}
-            numberOfMonths={numberOfMonths}
-            locale={zhCN}
-            disabled={disabled}
+            numberOfMonths={2}
           />
         </PopoverContent>
       </Popover>

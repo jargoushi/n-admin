@@ -2,16 +2,12 @@
  * 激活码批量初始化表单组件
  *
  * @description
- * 支持批量生成多种类型的激活码
- * - 动态添加/移除初始化项
- * - 每种类型只能出现一次（自动禁用已选择类型）
- * - 最多4个初始化项（对应4种激活码类型）
- * - 最少保留1个初始化项
+ * 使用 BaseFormLayout 封装通用逻辑，专注于处理动态列表和业务校验。
  */
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Plus, Trash2, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,7 +25,8 @@ import { copyToClipboard } from '@/lib/utils';
 import type {
   ActivationCodeBatchInitItem,
   ActivationCodeInitFormData,
-  ActivationCodeBatchResponse
+  ActivationCodeBatchResponse,
+  ActivationCodeTypeResult
 } from '../types';
 import {
   ACTIVATION_CODE_TYPE_OPTIONS,
@@ -38,6 +35,15 @@ import {
   MESSAGES,
   CODE_TYPE_CONFIG
 } from '../constants';
+import { BaseFormLayout } from '@/components/shared/base-form-layout';
+
+/**
+ * 默认初始化项
+ */
+const DEFAULT_ITEM: ActivationCodeBatchInitItem = {
+  type: 0, // 默认为日卡
+  count: INIT_COUNT_RANGE.MIN
+};
 
 /**
  * 表单组件属性
@@ -47,6 +53,8 @@ interface ActivationCodeInitFormProps {
   onSubmit: (
     data: ActivationCodeInitFormData
   ) => Promise<ActivationCodeBatchResponse | null>;
+  /** 取消回调（关闭对话框） */
+  onCancel: () => void;
 }
 
 /**
@@ -56,220 +64,210 @@ interface ActivationCodeInitFormProps {
  * @returns 表单组件
  */
 export function ActivationCodeInitForm({
-  onSubmit
+  onSubmit,
+  onCancel
 }: ActivationCodeInitFormProps) {
-  // 初始化项列表
+  // 表单数据：初始化项列表
   const [items, setItems] = useState<ActivationCodeBatchInitItem[]>([
-    { type: 0, count: 10 }
+    DEFAULT_ITEM
   ]);
 
-  // 批量初始化结果
+  // 提交结果
   const [result, setResult] = useState<ActivationCodeBatchResponse | null>(
     null
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   /**
-   * 添加初始化项
-   * 自动选择一个未使用的类型
+   * 获取当前已选中的类型列表
    */
-  const handleAddItem = () => {
-    const usedCodes = new Set(items.map((item) => item.type));
-
-    const nextTypeCode = Object.keys(CODE_TYPE_CONFIG)
-      .map((key) => Number(key))
-      .find((code) => !usedCodes.has(code));
-
-    if (!nextTypeCode) {
-      toast.error('所有激活码类型已添加');
-      return;
-    }
-
-    setItems((prev) => [...prev, { type: nextTypeCode, count: 10 }]);
-  };
+  const selectedTypes = useMemo(
+    () => new Set(items.map((item) => item.type)),
+    [items]
+  );
 
   /**
-   * 移除初始化项
+   * 处理添加初始化项
    */
-  const handleRemoveItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
-  };
+  const handleAddItem = useCallback(() => {
+    if (items.length >= MAX_INIT_ITEMS) return;
+
+    // 尝试找到一个未被使用的类型作为新项的默认值
+    const nextType = ACTIVATION_CODE_TYPE_OPTIONS.find(
+      (opt) => opt.value !== 'all' && !selectedTypes.has(opt.value as number)
+    )?.value as number | undefined;
+
+    // 如果找不到未使用的类型，则默认使用第一个未使用的类型，如果所有类型都用完了，则默认给 0
+    const newType = nextType !== undefined ? nextType : DEFAULT_ITEM.type;
+
+    setItems((prev) => [...prev, { ...DEFAULT_ITEM, type: newType }]);
+  }, [items.length, selectedTypes]);
 
   /**
-   * 更新初始化项
+   * 处理移除初始化项
    */
-  const handleUpdateItem = (
-    index: number,
-    field: keyof ActivationCodeBatchInitItem,
-    value: number
-  ) => {
-    const newItems = [...items];
-    newItems[index] = { ...newItems[index], [field]: value };
-    setItems(newItems);
-  };
+  const handleRemoveItem = useCallback(
+    (index: number) => {
+      if (items.length === 1) return;
+      setItems((prev) => prev.filter((_, i) => i !== index));
+    },
+    [items.length]
+  );
 
   /**
-   * 验证表单
+   * 处理更新初始化项字段
    */
-  const validateForm = (): boolean => {
-    // 检查是否有空项
-    const hasEmptyItem = items.some((item) => !item.type && item.type !== 0);
-    if (hasEmptyItem) {
-      toast.error(MESSAGES.ERROR.INVALID_FORM);
-      return false;
-    }
+  const handleUpdateItem = useCallback(
+    (index: number, key: keyof ActivationCodeBatchInitItem, value: number) => {
+      setItems((prev) =>
+        prev.map((item, i) => {
+          if (i === index) {
+            // 如果修改的是类型，需要进行重复校验
+            if (
+              key === 'type' &&
+              selectedTypes.has(value) &&
+              value !== item.type
+            ) {
+              return item; // 阻止更新
+            }
+            return { ...item, [key]: value };
+          }
+          return item;
+        })
+      );
+    },
+    [selectedTypes]
+  );
 
-    // 检查类型是否重复
-    const types = items.map((item) => item.type);
-    const uniqueTypes = new Set(types);
-    if (types.length !== uniqueTypes.size) {
-      toast.error(MESSAGES.ERROR.DUPLICATE_TYPE);
+  /**
+   * 表单校验逻辑
+   * 1. 至少一个项
+   * 2. 所有项的 type 不重复
+   * 3. 所有项的 count 在有效范围内
+   */
+  const isValid = useMemo(() => {
+    if (items.length === 0) return false;
+
+    // 检查重复类型 (已在 handleUpdateItem 中处理，但此处做最终校验)
+    if (selectedTypes.size !== items.length) {
+      // 理论上不会发生，除非在 handleUpdateItem 校验前修改了 items
       return false;
     }
 
     // 检查数量范围
-    const invalidCount = items.some(
+    return items.every(
       (item) =>
-        item.count < INIT_COUNT_RANGE.MIN || item.count > INIT_COUNT_RANGE.MAX
+        item.count >= INIT_COUNT_RANGE.MIN && item.count <= INIT_COUNT_RANGE.MAX
     );
-    if (invalidCount) {
-      toast.error(
-        `生成数量必须在 ${INIT_COUNT_RANGE.MIN}-${INIT_COUNT_RANGE.MAX} 之间`
-      );
-      return false;
-    }
-
-    return true;
-  };
+  }, [items, selectedTypes.size]);
 
   /**
-   * 提交表单
+   * 提交处理
    */
-  const handleSubmit = async () => {
-    if (!validateForm()) {
+  const handleSubmit = useCallback(async () => {
+    if (!isValid) {
+      toast.error(MESSAGES.ERROR.INVALID_FORM);
       return;
     }
 
-    const response = await onSubmit({ items });
-    if (response) {
-      setResult(response);
+    setIsLoading(true);
+    try {
+      const data: ActivationCodeInitFormData = { items };
+      const response = await onSubmit(data);
+      if (response) {
+        setResult(response);
+      }
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [items, isValid, onSubmit]);
 
   /**
-   * 复制所有激活码
+   * 结果展示区
    */
-  const handleCopyAllCodes = async () => {
-    if (!result) return;
-
-    const allCodes = result.results
-      .map(
-        (r) =>
-          `# ${r.type_name} (${r.count}个)\n${r.activation_codes.join('\n')}`
-      )
-      .join('\n\n');
-
-    await copyToClipboard(allCodes);
-  };
-
-  // 如果有结果，显示结果页面
-  if (result) {
-    return (
-      <div className='space-y-4'>
-        <div className='flex items-center justify-between'>
-          <h3 className='text-lg font-semibold'>生成结果</h3>
-          <Button size='sm' onClick={handleCopyAllCodes}>
-            <Copy className='mr-2 h-4 w-4' />
-            复制全部
-          </Button>
-        </div>
-
-        <div className='space-y-2 text-sm'>
-          <div className='flex justify-between'>
-            <span className='text-muted-foreground'>总数量:</span>
-            <span className='font-semibold'>{result.total_count} 个</span>
-          </div>
-        </div>
-
-        <div className='space-y-3'>
-          {result.results.map((typeResult) => (
-            <Card key={typeResult.type} className='p-4'>
-              <div className='mb-2 flex items-center justify-between'>
-                <h4 className='font-medium'>
-                  {typeResult.type_name} ({typeResult.count}个)
-                </h4>
-                <Button
-                  size='sm'
-                  variant='outline'
-                  onClick={() =>
-                    copyToClipboard(typeResult.activation_codes.join('\n'))
-                  }
-                >
-                  <Copy className='mr-2 h-3 w-3' />
-                  复制
-                </Button>
-              </div>
-              <div className='max-h-40 space-y-1 overflow-y-auto'>
-                {typeResult.activation_codes.map((code, index) => (
-                  <div key={index} className='font-mono text-xs'>
-                    {code}
-                  </div>
-                ))}
-              </div>
-            </Card>
-          ))}
-        </div>
+  const resultContent = result && (
+    <div className='space-y-4'>
+      <div className='text-sm text-green-600'>
+        批量初始化激活码成功，共初始化 {result.total_count} 个激活码。
       </div>
-    );
-  }
+
+      {/* 结果明细列表 */}
+      {result.results.map((typeResult: ActivationCodeTypeResult) => (
+        <Card key={typeResult.type} className='p-4'>
+          <div className='flex justify-between border-b pb-2'>
+            <h4 className='font-semibold'>
+              {typeResult.type_name} ({typeResult.count} 个)
+            </h4>
+            <Button
+              variant='ghost'
+              type='button'
+              size='sm'
+              onClick={() => {
+                copyToClipboard(typeResult.activation_codes.join('\n'));
+              }}
+            >
+              <Copy className='mr-2 h-4 w-4' />
+              复制
+            </Button>
+          </div>
+          <div className='mt-2 max-h-24 space-y-1 overflow-y-auto text-xs'>
+            {typeResult.activation_codes.map((code) => (
+              <code
+                key={code}
+                className='text-muted-foreground block font-mono'
+              >
+                {code}
+              </code>
+            ))}
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
 
   // 表单输入页面
-  return (
+  const formContent = (
     <div className='space-y-4'>
       {/* 初始化项列表 */}
-      <div className='space-y-3'>
+      <div className='max-h-[300px] space-y-4 overflow-y-auto'>
         {items.map((item, index) => (
           <Card key={index} className='p-4'>
-            <div className='grid gap-4 md:grid-cols-[1fr_1fr_auto]'>
-              {/* 激活码类型 */}
-              <div className='space-y-2'>
+            <div className='grid grid-cols-12 gap-4'>
+              {/* 激活码类型 Select (占据 5/12) */}
+              <div className='col-span-12 space-y-2 sm:col-span-5'>
                 <Label>激活码类型</Label>
                 <Select
                   value={String(item.type)}
                   onValueChange={(value) =>
                     handleUpdateItem(index, 'type', Number(value))
                   }
+                  disabled={isLoading}
                 >
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder='请选择激活码类型' />
                   </SelectTrigger>
                   <SelectContent>
                     {ACTIVATION_CODE_TYPE_OPTIONS.filter(
                       (opt) => opt.value !== 'all'
-                    ).map((option) => {
-                      // 检查该类型是否已被其他项使用
-                      const isUsedByOther = items.some(
-                        (otherItem, otherIndex) =>
-                          otherIndex !== index &&
-                          otherItem.type === option.value
-                      );
-
-                      return (
-                        <SelectItem
-                          key={option.value}
-                          value={String(option.value)}
-                          disabled={isUsedByOther}
-                        >
-                          {option.label}
-                          {isUsedByOther && ' (已使用)'}
-                        </SelectItem>
-                      );
-                    })}
+                    ).map((option) => (
+                      <SelectItem
+                        key={option.value}
+                        value={String(option.value)}
+                        // 禁用已选中的类型（排除当前项的类型）
+                        disabled={
+                          selectedTypes.has(option.value as number) &&
+                          option.value !== item.type
+                        }
+                      >
+                        {option.label} ({CODE_TYPE_CONFIG[option.value].label}))
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              {/* 生成数量 */}
-              <div className='space-y-2'>
+              {/* 生成数量 Input (占据 5/12) */}
+              <div className='col-span-12 space-y-2 sm:col-span-5'>
                 <Label>生成数量</Label>
                 <Input
                   type='number'
@@ -279,17 +277,18 @@ export function ActivationCodeInitForm({
                   onChange={(e) =>
                     handleUpdateItem(index, 'count', Number(e.target.value))
                   }
-                  placeholder={MESSAGES.PLACEHOLDER.INPUT_COUNT}
+                  placeholder='请输入生成数量'
+                  disabled={isLoading}
                 />
               </div>
 
-              {/* 删除按钮 */}
-              <div className='flex items-end'>
+              {/* 删除按钮 (占据 2/12) */}
+              <div className='col-span-12 flex items-end justify-end sm:col-span-2'>
                 <Button
                   size='icon'
-                  variant='ghost'
+                  variant='destructive' // 使用危险按钮样式
                   onClick={() => handleRemoveItem(index)}
-                  disabled={items.length === 1}
+                  disabled={items.length === 1 || isLoading}
                 >
                   <Trash2 className='h-4 w-4' />
                 </Button>
@@ -301,16 +300,34 @@ export function ActivationCodeInitForm({
 
       {/* 添加按钮 */}
       {items.length < MAX_INIT_ITEMS && (
-        <Button variant='outline' onClick={handleAddItem} className='w-full'>
+        <Button
+          variant='outline'
+          onClick={handleAddItem}
+          className='w-full'
+          type='button' // 确保不触发 form 提交
+          disabled={isLoading || selectedTypes.size === MAX_INIT_ITEMS} // 如果所有4种类型都选完了，则禁用
+        >
           <Plus className='mr-2 h-4 w-4' />
           添加初始化项 ({items.length}/{MAX_INIT_ITEMS})
         </Button>
       )}
 
-      {/* 操作按钮 */}
-      <div className='flex justify-end gap-2'>
-        <Button onClick={handleSubmit}>开始生成</Button>
-      </div>
+      <p className='text-muted-foreground text-xs'>
+        每种激活码类型只能初始化一次，共 {MAX_INIT_ITEMS} 种类型。
+      </p>
     </div>
+  );
+
+  return (
+    <BaseFormLayout
+      onSubmit={handleSubmit}
+      onCancel={onCancel}
+      isValid={isValid}
+      submitText='开始生成'
+      isLoading={isLoading}
+      resultContent={resultContent}
+    >
+      {formContent}
+    </BaseFormLayout>
   );
 }

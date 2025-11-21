@@ -9,7 +9,6 @@
 
 import { useMemo } from 'react';
 import { Check, X, Eye } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/table/data-table';
 import {
   ActionDropdown,
@@ -17,6 +16,7 @@ import {
 } from '@/components/table/action-dropdown';
 import type { ActivationCode, TableColumn } from '../types';
 import { CODE_TYPE_CONFIG, STATUS_BADGE_MAP } from '../constants';
+import { StatusBadge } from '@/components/shared/status-badge';
 
 /**
  * 表格组件属性
@@ -48,29 +48,17 @@ export function ActivationCodeTable({
         key: 'type',
         title: '类型',
         className: 'w-[100px] text-center',
-        render: (_: unknown, record: ActivationCode) => {
-          const badgeInfo =
-            CODE_TYPE_CONFIG[record.type as keyof typeof CODE_TYPE_CONFIG];
-          return (
-            <Badge variant={badgeInfo?.variant || 'secondary'}>
-              {record.type_name}
-            </Badge>
-          );
-        }
+        render: (_, record) => (
+          <StatusBadge value={record.type} mapping={CODE_TYPE_CONFIG} />
+        )
       },
       {
         key: 'status',
         title: '状态',
         className: 'w-[100px] text-center',
-        render: (_: unknown, record: ActivationCode) => {
-          const badgeInfo =
-            STATUS_BADGE_MAP[record.status as keyof typeof STATUS_BADGE_MAP];
-          return (
-            <Badge variant={badgeInfo?.variant || 'secondary'}>
-              {record.status_name}
-            </Badge>
-          );
-        }
+        render: (_, record) => (
+          <StatusBadge value={record.status} mapping={STATUS_BADGE_MAP} />
+        )
       },
       {
         key: 'distributed_at',
