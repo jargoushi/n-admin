@@ -6,12 +6,13 @@ import type {
 import { toast } from 'sonner';
 import { TokenManager } from './token';
 import type { ApiResponse, HttpError } from './types';
+import { convertDatesInObject } from '@/lib/utils';
 
 /**
  * 请求拦截器 - 成功处理
  * 主要功能：
  * 1. 注入 Authorization Token
- * 2. 打印请求日志（开发环境）
+ * 2. 转换 ISO 日期格式为后端需要的格式 (YYYY-MM-DD HH:mm:ss)
  */
 export function requestInterceptor(
   config: InternalAxiosRequestConfig
@@ -24,9 +25,14 @@ export function requestInterceptor(
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  // 开发环境打印请求日志
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[HTTP Request]', config.method?.toUpperCase(), config.url);
+  // 转换请求参数中的 ISO 日期格式
+  if (config.params) {
+    config.params = convertDatesInObject(config.params);
+  }
+
+  // 转换请求体中的 ISO 日期格式
+  if (config.data) {
+    config.data = convertDatesInObject(config.data);
   }
 
   return config;
@@ -54,7 +60,11 @@ export function responseInterceptor<T = unknown>(
 
   // 开发环境打印响应日志
   if (process.env.NODE_ENV === 'development') {
-    console.log('[HTTP Response]', config.url, data);
+    console.log(
+      `%c[HTTP Response] ${config.url}`,
+      'color: #10b981; font-weight: bold',
+      data
+    );
   }
 
   // 业务成功判断（优先使用 success 字段，兼容 code）

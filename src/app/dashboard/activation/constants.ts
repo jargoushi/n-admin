@@ -6,7 +6,7 @@
  * 表格列定义、消息文案等
  */
 
-import type { PaginationInfo, ActivationCodeFilters } from './types';
+import type { PaginationInfo, ActivationCodeQueryRequest } from './types';
 
 // ==================== 分页配置 ====================
 
@@ -66,18 +66,12 @@ export const STATUS_BADGE_MAP = {
   3: { label: '作废', variant: 'destructive' as const }
 };
 
-// ==================== 默认筛选条件 ====================
+// ==================== 默认查询参数 ====================
 
 /**
- * 默认筛选条件
+ * 默认查询参数（与后端 API 一致）
  */
-export const DEFAULT_FILTERS: ActivationCodeFilters = {
-  activation_code: '',
-  type: 'all',
-  status: 'all',
-  distributedDateRange: undefined,
-  activatedDateRange: undefined,
-  expireDateRange: undefined,
+export const DEFAULT_QUERY_PARAMS: ActivationCodeQueryRequest = {
   page: 1,
   size: 10
 };

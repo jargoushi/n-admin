@@ -51,12 +51,13 @@ export function useUrlFilters<T extends Record<string, any>>(
     const params = new URLSearchParams();
 
     Object.entries(newFilters).forEach(([key, value]) => {
-      // 过滤掉 undefined, null, 空字符串 和 "all"
+      // 过滤掉 undefined, null, 空字符串, "all" 和 NaN
       if (
         value !== undefined &&
         value !== null &&
         value !== '' &&
-        value !== 'all'
+        value !== 'all' &&
+        !Number.isNaN(value)
       ) {
         params.set(key, String(value));
       }

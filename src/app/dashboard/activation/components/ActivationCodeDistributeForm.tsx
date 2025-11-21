@@ -22,7 +22,7 @@ import {
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { copyToClipboard } from '@/lib/utils';
-import type { ActivationCodeDistributeFormData } from '../types';
+import type { ActivationCodeGetRequest } from '../types';
 import {
   ACTIVATION_CODE_TYPE_OPTIONS,
   DISTRIBUTE_COUNT_RANGE,
@@ -35,9 +35,7 @@ import { BaseFormLayout } from '@/components/shared/base-form-layout';
  */
 interface ActivationCodeDistributeFormProps {
   /** 提交回调 */
-  onSubmit: (
-    data: ActivationCodeDistributeFormData
-  ) => Promise<string[] | null>;
+  onSubmit: (data: ActivationCodeGetRequest) => Promise<string[] | null>;
   /** 取消回调（关闭对话框） */
   onCancel: () => void;
 }
@@ -53,7 +51,7 @@ export function ActivationCodeDistributeForm({
   onCancel
 }: ActivationCodeDistributeFormProps) {
   // 表单数据
-  const [formData, setFormData] = useState<ActivationCodeDistributeFormData>({
+  const [formData, setFormData] = useState<ActivationCodeGetRequest>({
     type: 0,
     count: 1
   });
@@ -66,7 +64,7 @@ export function ActivationCodeDistributeForm({
    * 更新单个字段
    */
   const updateField = useCallback(
-    (key: keyof ActivationCodeDistributeFormData, value: number) => {
+    (key: keyof ActivationCodeGetRequest, value: number) => {
       setFormData((prev) => ({ ...prev, [key]: value }));
     },
     []
@@ -79,6 +77,7 @@ export function ActivationCodeDistributeForm({
     return (
       formData.type !== undefined &&
       formData.type !== null &&
+      formData.count !== undefined &&
       formData.count >= DISTRIBUTE_COUNT_RANGE.MIN &&
       formData.count <= DISTRIBUTE_COUNT_RANGE.MAX
     );

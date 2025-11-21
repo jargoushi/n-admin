@@ -11,167 +11,17 @@
  */
 
 import { http } from '@/lib/http';
-import type { ApiResponse, PageResponse, PageRequest } from '@/lib/http';
+import type { PageResponse } from '@/lib/http';
 
-// ==================== 枚举类型 ====================
-
-/**
- * 激活码类型（与后端 ActivationTypeEnum 一致）
- * - 0: 日卡
- * - 1: 月卡
- * - 2: 年卡
- * - 3: 永久卡
- */
-export type ActivationCodeType = 0 | 1 | 2 | 3;
-
-/**
- * 激活码状态
- * - 0: 未使用
- * - 1: 已分发
- * - 2: 已激活
- * - 3: 作废
- */
-export type ActivationCodeStatus = 0 | 1 | 2 | 3;
-
-/**
- * 激活码类型名称映射
- */
-export const ActivationTypeNames: Record<ActivationCodeType, string> = {
-  0: '日卡',
-  1: '月卡',
-  2: '年卡',
-  3: '永久卡'
-};
-
-/**
- * 激活码状态名称映射
- */
-export const ActivationStatusNames: Record<ActivationCodeStatus, string> = {
-  0: '未使用',
-  1: '已分发',
-  2: '已激活',
-  3: '作废'
-};
-
-// ==================== 数据模型 ====================
-
-/**
- * 激活码数据结构
- */
-export interface ActivationCode {
-  /** 激活码 ID */
-  id: number;
-  /** 激活码字符串 */
-  activation_code: string;
-  /** 激活码类型码 */
-  type: number;
-  /** 激活码类型名称 */
-  type_name: string;
-  /** 激活码状态码 */
-  status: number;
-  /** 激活码状态名称 */
-  status_name: string;
-  /** 分发时间 */
-  distributed_at?: string;
-  /** 激活时间 */
-  activated_at?: string;
-  /** 过期时间 */
-  expire_time?: string;
-  /** 创建时间 */
-  created_at: string;
-  /** 更新时间 */
-  updated_at: string;
-}
-
-// ==================== 请求/响应模型 ====================
-
-/**
- * 单个激活码创建项
- */
-export interface ActivationCodeCreateItem {
-  /** 激活码类型 (0-3) */
-  type: number;
-  /** 生成数量 (1-1000) */
-  count: number;
-}
-
-/**
- * 批量创建激活码请求
- */
-export interface ActivationCodeBatchCreateRequest {
-  /** 激活码创建项列表（最多10项，每种类型只能出现一次） */
-  items: ActivationCodeCreateItem[];
-}
-
-/**
- * 单个类型的激活码结果
- */
-export interface ActivationCodeTypeResult {
-  /** 类型码 */
-  type: number;
-  /** 类型名称 */
-  type_name: string;
-  /** 激活码字符串列表 */
-  activation_codes: string[];
-  /** 数量 */
-  count: number;
-}
-
-/**
- * 批量激活码响应
- */
-export interface ActivationCodeBatchResponse {
-  /** 各类型激活码结果列表 */
-  results: ActivationCodeTypeResult[];
-  /** 总数量 */
-  total_count: number;
-  /** 各类型数量汇总 */
-  summary: Record<string, number>;
-}
-
-/**
- * 获取/派发激活码请求
- */
-export interface ActivationCodeGetRequest {
-  /** 激活码类型 (0-3) */
-  type: number;
-  /** 查询/派发数量，默认1条 (1-100) */
-  count?: number;
-}
-
-/**
- * 作废激活码请求
- */
-export interface ActivationCodeInvalidateRequest {
-  /** 激活码字符串 */
-  activation_code: string;
-}
-
-/**
- * 激活码列表查询参数
- */
-export interface ActivationCodeQueryRequest extends PageRequest {
-  /** 激活码类型 (0-3) */
-  type?: number;
-  /** 激活码（精准匹配） */
-  activation_code?: string;
-  /** 激活码状态 (0-3) */
-  status?: number;
-  /** 分发时间开始（包含） */
-  distributed_at_start?: string;
-  /** 分发时间结束（包含） */
-  distributed_at_end?: string;
-  /** 激活时间开始（包含） */
-  activated_at_start?: string;
-  /** 激活时间结束（包含） */
-  activated_at_end?: string;
-  /** 过期时间开始（包含） */
-  expire_time_start?: string;
-  /** 过期时间结束（包含） */
-  expire_time_end?: string;
-  /** QueryParams 兼容索引签名 */
-  [key: string]: string | number | undefined;
-}
+// 从模块 types.ts 导入所有类型定义
+import type {
+  ActivationCode,
+  ActivationCodeBatchCreateRequest,
+  ActivationCodeBatchResponse,
+  ActivationCodeGetRequest,
+  ActivationCodeInvalidateRequest,
+  ActivationCodeQueryRequest
+} from '@/app/dashboard/activation/types';
 
 // ==================== API 服务类 ====================
 

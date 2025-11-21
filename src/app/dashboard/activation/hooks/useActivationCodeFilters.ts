@@ -1,14 +1,14 @@
-import type { ActivationCodeFilters } from '../types';
-import { DEFAULT_FILTERS } from '../constants';
+import type { ActivationCodeQueryRequest } from '../types';
+import { DEFAULT_QUERY_PARAMS } from '../constants';
 import { useUrlFilters } from '@/components/shared/use-url-filters';
 
 export function useActivationCodeFilters() {
   // ✅ 核心逻辑直接托管给通用 Hook
   const { filters, setFilters, resetFilters } =
-    useUrlFilters<ActivationCodeFilters>(DEFAULT_FILTERS);
+    useUrlFilters<ActivationCodeQueryRequest>(DEFAULT_QUERY_PARAMS);
 
   // 封装业务特有的操作方法
-  const searchFilters = (newFilters: Partial<ActivationCodeFilters>) => {
+  const searchFilters = (newFilters: Partial<ActivationCodeQueryRequest>) => {
     setFilters({
       ...newFilters,
       page: 1

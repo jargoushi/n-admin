@@ -23,8 +23,8 @@ import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { copyToClipboard } from '@/lib/utils';
 import type {
-  ActivationCodeBatchInitItem,
-  ActivationCodeInitFormData,
+  ActivationCodeCreateItem,
+  ActivationCodeBatchCreateRequest,
   ActivationCodeBatchResponse,
   ActivationCodeTypeResult
 } from '../types';
@@ -40,7 +40,7 @@ import { BaseFormLayout } from '@/components/shared/base-form-layout';
 /**
  * 默认初始化项
  */
-const DEFAULT_ITEM: ActivationCodeBatchInitItem = {
+const DEFAULT_ITEM: ActivationCodeCreateItem = {
   type: 0, // 默认为日卡
   count: INIT_COUNT_RANGE.MIN
 };
@@ -51,7 +51,7 @@ const DEFAULT_ITEM: ActivationCodeBatchInitItem = {
 interface ActivationCodeInitFormProps {
   /** 提交回调 */
   onSubmit: (
-    data: ActivationCodeInitFormData
+    data: ActivationCodeBatchCreateRequest
   ) => Promise<ActivationCodeBatchResponse | null>;
   /** 取消回调（关闭对话框） */
   onCancel: () => void;
@@ -68,7 +68,7 @@ export function ActivationCodeInitForm({
   onCancel
 }: ActivationCodeInitFormProps) {
   // 表单数据：初始化项列表
-  const [items, setItems] = useState<ActivationCodeBatchInitItem[]>([
+  const [items, setItems] = useState<ActivationCodeCreateItem[]>([
     DEFAULT_ITEM
   ]);
 
@@ -118,7 +118,7 @@ export function ActivationCodeInitForm({
    * 处理更新初始化项字段
    */
   const handleUpdateItem = useCallback(
-    (index: number, key: keyof ActivationCodeBatchInitItem, value: number) => {
+    (index: number, key: keyof ActivationCodeCreateItem, value: number) => {
       setItems((prev) =>
         prev.map((item, i) => {
           if (i === index) {
@@ -172,7 +172,7 @@ export function ActivationCodeInitForm({
 
     setIsLoading(true);
     try {
-      const data: ActivationCodeInitFormData = { items };
+      const data: ActivationCodeBatchCreateRequest = { items };
       const response = await onSubmit(data);
       if (response) {
         setResult(response);
@@ -249,19 +249,22 @@ export function ActivationCodeInitForm({
                   <SelectContent>
                     {ACTIVATION_CODE_TYPE_OPTIONS.filter(
                       (opt) => opt.value !== 'all'
-                    ).map((option) => (
-                      <SelectItem
-                        key={option.value}
-                        value={String(option.value)}
-                        // 禁用已选中的类型（排除当前项的类型）
-                        disabled={
-                          selectedTypes.has(option.value as number) &&
-                          option.value !== item.type
-                        }
-                      >
-                        {option.label} ({CODE_TYPE_CONFIG[option.value].label}))
-                      </SelectItem>
-                    ))}
+                    ).map((option) => {
+                      const typeValue = option.value as 0 | 1 | 2 | 3;
+                      return (
+                        <SelectItem
+                          key={option.value}
+                          value={String(option.value)}
+                          // 禁用已选中的类型（排除当前项的类型）
+                          disabled={
+                            selectedTypes.has(typeValue) &&
+                            typeValue !== item.type
+                          }
+                        >
+                          {option.label} ({CODE_TYPE_CONFIG[typeValue].label})
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>

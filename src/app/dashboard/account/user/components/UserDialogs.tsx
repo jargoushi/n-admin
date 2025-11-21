@@ -72,7 +72,7 @@ export function UserDialogs({
         <div className='px-6 py-4'>
           {open && (
             <UserForm
-              initialData={type === 'edit' ? user : undefined}
+              initialData={type === 'edit' ? (user ?? undefined) : undefined}
               onSubmit={handleSubmit}
               onCancel={onClose}
             />

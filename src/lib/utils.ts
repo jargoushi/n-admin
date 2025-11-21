@@ -66,3 +66,74 @@ export async function copyToClipboard(
     return false;
   }
 }
+
+// ==================== 日期格式转换工具 ====================
+
+/**
+ * ISO 8601 日期时间格式正则表达式
+ * 匹配格式：2025-11-06T16:00:00.000Z 或 2025-11-06T16:00:00Z
+ */
+const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/;
+
+/**
+ * 格式化日期时间为后端需要的格式
+ *
+ * @param date - Date 对象或 ISO 字符串
+ * @returns 格式化后的字符串 (YYYY-MM-DD HH:mm:ss)
+ */
+export function formatDateTimeForBackend(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  const seconds = String(d.getSeconds()).padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+/**
+ * 检查字符串是否为 ISO 8601 日期格式
+ *
+ * @param value - 要检查的字符串
+ * @returns 是否为 ISO 日期格式
+ */
+export function isISODateString(value: string): boolean {
+  return ISO_DATE_REGEX.test(value);
+}
+
+/**
+ * 转换对象中的所有 ISO 日期字符串为后端格式
+ *
+ * @param obj - 需要转换的对象
+ * @returns 转换后的对象
+ */
+export function convertDatesInObject(obj: unknown): unknown {
+  if (obj === null || obj === undefined) {
+    return obj;
+  }
+
+  // 字符串类型：检查是否为 ISO 日期格式
+  if (typeof obj === 'string' && isISODateString(obj)) {
+    return formatDateTimeForBackend(obj);
+  }
+
+  // 数组类型：递归处理每个元素
+  if (Array.isArray(obj)) {
+    return obj.map((item) => convertDatesInObject(item));
+  }
+
+  // 对象类型：递归处理每个属性
+  if (typeof obj === 'object') {
+    const result: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      result[key] = convertDatesInObject(value);
+    }
+    return result;
+  }
+
+  // 其他类型：原样返回
+  return obj;
+}

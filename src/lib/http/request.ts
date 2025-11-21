@@ -51,9 +51,6 @@ const axiosInstance = createInstance();
  * @param path - 路径字符串
  * @param params - 路径参数对象
  * @returns 替换后的路径
- * @example
- * replacePath('/api/user/{id}', { id: 1 }) -> '/api/user/1'
- * replacePath('/api/user/{id}/role/{roleId}', { id: 1, roleId: 2 }) -> '/api/user/1/role/2'
  */
 function replacePath(path: string, params: PathParams): string {
   let result = path;
@@ -75,16 +72,6 @@ export class HttpRequest {
    * @param params - 查询参数
    * @param config - 请求配置
    * @returns Promise<T> - 拦截器已解包 ApiResponse，直接返回业务数据
-   *
-   * @example
-   * // 基础用法
-   * const users = await http.get<User[]>('/users');
-   *
-   * // 带查询参数
-   * const users = await http.get<User[]>('/users', { page: 1, limit: 10 });
-   *
-   * // RESTful 路径参数
-   * const user = await http.get<User>('/users/{id}', undefined, { pathParams: { id: 1 } });
    */
   static async get<T = unknown>(
     url: string,
@@ -107,17 +94,6 @@ export class HttpRequest {
    * @param data - 请求体数据
    * @param config - 请求配置
    * @returns Promise<T> - 拦截器已解包 ApiResponse，直接返回业务数据
-   *
-   * @example
-   * interface CreateUserDto {
-   *   username: string;
-   *   email: string;
-   * }
-   *
-   * const user = await http.post<User, CreateUserDto>('/users', {
-   *   username: 'admin',
-   *   email: 'admin@example.com'
-   * });
    */
   static async post<T = unknown, D = unknown>(
     url: string,

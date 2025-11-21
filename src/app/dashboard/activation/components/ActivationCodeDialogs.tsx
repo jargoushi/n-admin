@@ -31,8 +31,8 @@ import type {
   // 导入 ActivationCode 和其他类型
   ActivationCode,
   ActivationCodeDialogState,
-  ActivationCodeInitFormData,
-  ActivationCodeDistributeFormData,
+  ActivationCodeBatchCreateRequest,
+  ActivationCodeGetRequest,
   ActivationCodeBatchResponse
 } from '../types';
 import { CODE_TYPE_CONFIG, STATUS_BADGE_MAP, MESSAGES } from '../constants';
@@ -48,12 +48,10 @@ interface ActivationCodeDialogsProps {
   onClose: () => void;
   /** 批量初始化 */
   onInit: (
-    data: ActivationCodeInitFormData
+    data: ActivationCodeBatchCreateRequest
   ) => Promise<ActivationCodeBatchResponse | null>;
   /** 派发激活码 */
-  onDistribute: (
-    data: ActivationCodeDistributeFormData
-  ) => Promise<string[] | null>;
+  onDistribute: (data: ActivationCodeGetRequest) => Promise<string[] | null>;
   /** 确认对话框数据 */
   confirmDialog: {
     open: boolean;

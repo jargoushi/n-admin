@@ -3,8 +3,48 @@
  *
  * @description
  * 定义激活码模块所需的所有 TypeScript 接口和类型
- * 包括实体类型、筛选条件、表单数据、Hook 返回值等
+ * 包括后端 API 约定的类型和前端特有的类型
  */
+
+// ==================== 后端 API 类型定义 ====================
+
+/**
+ * 激活码类型（与后端 ActivationTypeEnum 一致）
+ * - 0: 日卡
+ * - 1: 月卡
+ * - 2: 年卡
+ * - 3: 永久卡
+ */
+export type ActivationCodeType = 0 | 1 | 2 | 3;
+
+/**
+ * 激活码状态
+ * - 0: 未使用
+ * - 1: 已分发
+ * - 2: 已激活
+ * - 3: 作废
+ */
+export type ActivationCodeStatus = 0 | 1 | 2 | 3;
+
+/**
+ * 激活码类型名称映射
+ */
+export const ActivationTypeNames: Record<ActivationCodeType, string> = {
+  0: '日卡',
+  1: '月卡',
+  2: '年卡',
+  3: '永久卡'
+};
+
+/**
+ * 激活码状态名称映射
+ */
+export const ActivationStatusNames: Record<ActivationCodeStatus, string> = {
+  0: '未使用',
+  1: '已分发',
+  2: '已激活',
+  3: '作废'
+};
 
 /**
  * 激活码实体（与后端 ActivationCodeResponse 一致）
@@ -35,26 +75,98 @@ export interface ActivationCode {
 }
 
 /**
- * 激活码筛选条件
+ * 单个激活码创建项
  */
-export interface ActivationCodeFilters {
-  /** 激活码（精准匹配） */
-  activation_code?: string;
+export interface ActivationCodeCreateItem {
   /** 激活码类型 (0-3) */
-  type?: number | 'all';
-  /** 激活码状态 (0-3) */
-  status?: number | 'all';
-  /** 分发时间范围 */
-  distributedDateRange?: { from: Date; to: Date } | undefined;
-  /** 激活时间范围 */
-  activatedDateRange?: { from: Date; to: Date } | undefined;
-  /** 过期时间范围 */
-  expireDateRange?: { from: Date; to: Date } | undefined;
+  type: number;
+  /** 生成数量 (1-1000) */
+  count: number;
+}
+
+/**
+ * 批量创建激活码请求
+ */
+export interface ActivationCodeBatchCreateRequest {
+  /** 激活码创建项列表（最多10项，每种类型只能出现一次） */
+  items: ActivationCodeCreateItem[];
+}
+
+/**
+ * 单个类型的激活码结果
+ */
+export interface ActivationCodeTypeResult {
+  /** 类型码 */
+  type: number;
+  /** 类型名称 */
+  type_name: string;
+  /** 激活码字符串列表 */
+  activation_codes: string[];
+  /** 数量 */
+  count: number;
+}
+
+/**
+ * 批量激活码响应
+ */
+export interface ActivationCodeBatchResponse {
+  /** 各类型激活码结果列表 */
+  results: ActivationCodeTypeResult[];
+  /** 总数量 */
+  total_count: number;
+  /** 各类型数量汇总 */
+  summary: Record<string, number>;
+}
+
+/**
+ * 获取/派发激活码请求
+ */
+export interface ActivationCodeGetRequest {
+  /** 激活码类型 (0-3) */
+  type: number;
+  /** 查询/派发数量，默认1条 (1-100) */
+  count?: number;
+}
+
+/**
+ * 作废激活码请求
+ */
+export interface ActivationCodeInvalidateRequest {
+  /** 激活码字符串 */
+  activation_code: string;
+}
+
+/**
+ * 激活码列表查询参数
+ */
+export interface ActivationCodeQueryRequest {
   /** 当前页码 */
   page?: number;
   /** 每页数量 */
   size?: number;
+  /** 激活码类型 (0-3) */
+  type?: number;
+  /** 激活码（精准匹配） */
+  activation_code?: string;
+  /** 激活码状态 (0-3) */
+  status?: number;
+  /** 分发时间开始（包含） */
+  distributed_at_start?: string;
+  /** 分发时间结束（包含） */
+  distributed_at_end?: string;
+  /** 激活时间开始（包含） */
+  activated_at_start?: string;
+  /** 激活时间结束（包含） */
+  activated_at_end?: string;
+  /** 过期时间开始（包含） */
+  expire_time_start?: string;
+  /** 过期时间结束（包含） */
+  expire_time_end?: string;
+  /** QueryParams 兼容索引签名 */
+  [key: string]: string | number | undefined;
 }
+
+// ==================== 前端特有类型定义 ====================
 
 /**
  * 分页信息
@@ -71,72 +183,18 @@ export interface PaginationInfo {
 }
 
 /**
- * 批量初始化单个创建项
- */
-export interface ActivationCodeBatchInitItem {
-  /** 激活码类型 (0-3) */
-  type: number;
-  /** 生成数量 (1-1000) */
-  count: number;
-}
-
-/**
- * 批量初始化表单数据
- */
-export interface ActivationCodeInitFormData {
-  /** 创建项列表（最多10项，每种类型只能出现一次） */
-  items: ActivationCodeBatchInitItem[];
-}
-
-/**
- * 派发激活码表单数据
- */
-export interface ActivationCodeDistributeFormData {
-  /** 激活码类型 (0-3) */
-  type: number;
-  /** 派发数量 (1-100) */
-  count: number;
-}
-
-/**
- * 批量初始化响应结果（单个类型）
- */
-export interface ActivationCodeTypeResult {
-  /** 类型码 */
-  type: number;
-  /** 类型名称 */
-  type_name: string;
-  /** 激活码字符串列表 */
-  activation_codes: string[];
-  /** 数量 */
-  count: number;
-}
-
-/**
- * 批量初始化响应
- */
-export interface ActivationCodeBatchResponse {
-  /** 各类型激活码结果列表 */
-  results: ActivationCodeTypeResult[];
-  /** 总数量 */
-  total_count: number;
-  /** 各类型数量汇总 */
-  summary: Record<string, number>;
-}
-
-/**
  * 激活码管理操作方法集合
  */
 export interface ActivationCodeManagementActions {
   /** 获取激活码列表 */
-  fetchActivationCodes: (filters: ActivationCodeFilters) => Promise<void>;
+  fetchActivationCodes: (params: ActivationCodeQueryRequest) => Promise<void>;
   /** 批量初始化激活码 */
   initActivationCodes: (
-    data: ActivationCodeInitFormData
+    data: ActivationCodeBatchCreateRequest
   ) => Promise<ActivationCodeBatchResponse | null>;
   /** 派发激活码 */
   distributeActivationCodes: (
-    data: ActivationCodeDistributeFormData
+    data: ActivationCodeGetRequest
   ) => Promise<string[] | null>;
   /** 激活激活码 */
   activateCode: (activationCode: string) => Promise<boolean>;

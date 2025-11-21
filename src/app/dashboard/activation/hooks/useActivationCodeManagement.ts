@@ -11,10 +11,10 @@ import { toast } from 'sonner';
 import { ActivationApiService } from '@/service/api/activation.api';
 import type {
   ActivationCode,
-  ActivationCodeFilters,
+  ActivationCodeQueryRequest,
   PaginationInfo,
-  ActivationCodeInitFormData,
-  ActivationCodeDistributeFormData,
+  ActivationCodeBatchCreateRequest,
+  ActivationCodeGetRequest,
   ActivationCodeBatchResponse,
   ActivationCodeManagementActions
 } from '../types';
@@ -57,59 +57,15 @@ export function useActivationCodeManagement(): UseActivationCodeManagementReturn
   /**
    * 获取激活码列表
    *
-   * @param filters - 筛选条件
+   * @param params - 查询参数（与后端 API 一致）
    */
   const fetchActivationCodes = useCallback(
-    async (filters: ActivationCodeFilters) => {
+    async (params: ActivationCodeQueryRequest) => {
       setLoading(true);
 
       try {
-        // 构建查询参数
-        const queryParams: Record<string, string | number | undefined> = {
-          page: filters.page || 1,
-          size: filters.size || 10
-        };
-
-        // 激活码精确匹配
-        if (filters.activation_code) {
-          queryParams.activation_code = filters.activation_code;
-        }
-
-        // 类型筛选
-        if (filters.type !== undefined && filters.type !== 'all') {
-          queryParams.type = filters.type;
-        }
-
-        // 状态筛选
-        if (filters.status !== undefined && filters.status !== 'all') {
-          queryParams.status = filters.status;
-        }
-
-        // 分发时间范围
-        if (filters.distributedDateRange) {
-          queryParams.distributed_at_start =
-            filters.distributedDateRange.from.toISOString();
-          queryParams.distributed_at_end =
-            filters.distributedDateRange.to.toISOString();
-        }
-
-        // 激活时间范围
-        if (filters.activatedDateRange) {
-          queryParams.activated_at_start =
-            filters.activatedDateRange.from.toISOString();
-          queryParams.activated_at_end =
-            filters.activatedDateRange.to.toISOString();
-        }
-
-        // 过期时间范围
-        if (filters.expireDateRange) {
-          queryParams.expire_time_start =
-            filters.expireDateRange.from.toISOString();
-          queryParams.expire_time_end =
-            filters.expireDateRange.to.toISOString();
-        }
-
-        const response = await ActivationApiService.getPageList(queryParams);
+        // 直接将参数传给 API
+        const response = await ActivationApiService.getPageList(params);
 
         setCodes(response.items);
         setPagination({
@@ -133,7 +89,7 @@ export function useActivationCodeManagement(): UseActivationCodeManagementReturn
    */
   const initActivationCodes = useCallback(
     async (
-      data: ActivationCodeInitFormData
+      data: ActivationCodeBatchCreateRequest
     ): Promise<ActivationCodeBatchResponse> => {
       const response = await ActivationApiService.init(data);
       toast.success(MESSAGES.SUCCESS.INIT);
@@ -149,9 +105,7 @@ export function useActivationCodeManagement(): UseActivationCodeManagementReturn
    * @returns 派发的激活码字符串数组或 null
    */
   const distributeActivationCodes = useCallback(
-    async (
-      data: ActivationCodeDistributeFormData
-    ): Promise<string[] | null> => {
+    async (data: ActivationCodeGetRequest): Promise<string[] | null> => {
       const response = await ActivationApiService.distribute(data);
       toast.success(MESSAGES.SUCCESS.DISTRIBUTE);
       return response;
