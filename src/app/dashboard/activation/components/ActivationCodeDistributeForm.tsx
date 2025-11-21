@@ -148,9 +148,7 @@ export function ActivationCodeDistributeForm({
           </SelectTrigger>
           <SelectContent>
             {/* 过滤掉“全部”选项 */}
-            {ACTIVATION_CODE_TYPE_OPTIONS.filter(
-              (opt) => opt.value !== 'all'
-            ).map((option) => (
+            {ACTIVATION_CODE_TYPE_OPTIONS.map((option) => (
               <SelectItem key={option.value} value={String(option.value)}>
                 {option.label}
               </SelectItem>

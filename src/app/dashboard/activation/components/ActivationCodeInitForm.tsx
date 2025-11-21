@@ -94,7 +94,7 @@ export function ActivationCodeInitForm({
 
     // 尝试找到一个未被使用的类型作为新项的默认值
     const nextType = ACTIVATION_CODE_TYPE_OPTIONS.find(
-      (opt) => opt.value !== 'all' && !selectedTypes.has(opt.value as number)
+      (opt) => !selectedTypes.has(opt.value as number)
     )?.value as number | undefined;
 
     // 如果找不到未使用的类型，则默认使用第一个未使用的类型，如果所有类型都用完了，则默认给 0
@@ -247,9 +247,7 @@ export function ActivationCodeInitForm({
                     <SelectValue placeholder='请选择激活码类型' />
                   </SelectTrigger>
                   <SelectContent>
-                    {ACTIVATION_CODE_TYPE_OPTIONS.filter(
-                      (opt) => opt.value !== 'all'
-                    ).map((option) => {
+                    {ACTIVATION_CODE_TYPE_OPTIONS.map((option) => {
                       const typeValue = option.value as 0 | 1 | 2 | 3;
                       return (
                         <SelectItem

@@ -26,7 +26,6 @@ export const DEFAULT_PAGINATION: PaginationInfo = {
  * 激活码类型选项（用于下拉选择）
  */
 export const ACTIVATION_CODE_TYPE_OPTIONS = [
-  { label: '全部', value: 'all' },
   { label: '日卡', value: 0 },
   { label: '月卡', value: 1 },
   { label: '年卡', value: 2 },
@@ -49,7 +48,6 @@ export const CODE_TYPE_CONFIG = {
  * 激活码状态选项（用于下拉选择）
  */
 export const ACTIVATION_CODE_STATUS_OPTIONS = [
-  { label: '全部', value: 'all' },
   { label: '未使用', value: 0 },
   { label: '已分发', value: 1 },
   { label: '已激活', value: 2 },
@@ -94,12 +92,10 @@ export const MESSAGES = {
 
 /**
  * 批量初始化最大项数
- * 根据激活码类型数量动态计算（排除"全部"选项）
+ * 根据激活码类型数量动态计算
  * 每种激活码类型只能初始化一次
  */
-export const MAX_INIT_ITEMS = ACTIVATION_CODE_TYPE_OPTIONS.filter(
-  (opt) => opt.value !== 'all'
-).length;
+export const MAX_INIT_ITEMS = ACTIVATION_CODE_TYPE_OPTIONS.length;
 
 /**
  * 单次生成数量范围
