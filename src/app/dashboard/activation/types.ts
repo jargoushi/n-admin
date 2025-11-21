@@ -7,45 +7,6 @@
  */
 
 // ==================== 后端 API 类型定义 ====================
-
-/**
- * 激活码类型（与后端 ActivationTypeEnum 一致）
- * - 0: 日卡
- * - 1: 月卡
- * - 2: 年卡
- * - 3: 永久卡
- */
-export type ActivationCodeType = 0 | 1 | 2 | 3;
-
-/**
- * 激活码状态
- * - 0: 未使用
- * - 1: 已分发
- * - 2: 已激活
- * - 3: 作废
- */
-export type ActivationCodeStatus = 0 | 1 | 2 | 3;
-
-/**
- * 激活码类型名称映射
- */
-export const ActivationTypeNames: Record<ActivationCodeType, string> = {
-  0: '日卡',
-  1: '月卡',
-  2: '年卡',
-  3: '永久卡'
-};
-
-/**
- * 激活码状态名称映射
- */
-export const ActivationStatusNames: Record<ActivationCodeStatus, string> = {
-  0: '未使用',
-  1: '已分发',
-  2: '已激活',
-  3: '作废'
-};
-
 /**
  * 激活码实体（与后端 ActivationCodeResponse 一致）
  */
@@ -180,28 +141,6 @@ export interface PaginationInfo {
   total: number;
   /** 总页数 */
   totalPages: number;
-}
-
-/**
- * 激活码管理操作方法集合
- */
-export interface ActivationCodeManagementActions {
-  /** 获取激活码列表 */
-  fetchActivationCodes: (params: ActivationCodeQueryRequest) => Promise<void>;
-  /** 批量初始化激活码 */
-  initActivationCodes: (
-    data: ActivationCodeBatchCreateRequest
-  ) => Promise<ActivationCodeBatchResponse | null>;
-  /** 派发激活码 */
-  distributeActivationCodes: (
-    data: ActivationCodeGetRequest
-  ) => Promise<string[] | null>;
-  /** 激活激活码 */
-  activateCode: (activationCode: string) => Promise<boolean>;
-  /** 作废激活码 */
-  invalidateCode: (activationCode: string) => Promise<boolean>;
-  /** 获取激活码详情 */
-  getCodeDetail: (activationCode: string) => Promise<ActivationCode | null>;
 }
 
 /**

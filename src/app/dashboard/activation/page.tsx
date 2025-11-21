@@ -145,18 +145,15 @@ export default function ActivationCodeManagementPage() {
     if (!confirmDialog.code) return;
 
     const { type, code } = confirmDialog;
-    let success = false;
 
     if (type === 'activate') {
-      success = await activateCode(code.activation_code);
+      await activateCode(code.activation_code);
     } else if (type === 'invalidate') {
-      success = await invalidateCode(code.activation_code);
+      await invalidateCode(code.activation_code);
     }
 
-    if (success) {
-      // 刷新列表
-      fetchActivationCodes(filters);
-    }
+    // 刷新列表
+    fetchActivationCodes(filters);
 
     // 关闭确认对话框
     setConfirmDialog({ open: false, type: null, code: null });

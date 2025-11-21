@@ -166,7 +166,7 @@ export function ActivationCodeInitForm({
    */
   const handleSubmit = useCallback(async () => {
     if (!isValid) {
-      toast.error(MESSAGES.ERROR.INVALID_FORM);
+      toast.error('请填写完整的表单信息');
       return;
     }
 

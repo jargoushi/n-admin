@@ -82,15 +82,6 @@ export const DEFAULT_QUERY_PARAMS: ActivationCodeQueryRequest = {
  * 统一消息文案
  */
 export const MESSAGES = {
-  SUCCESS: {
-    INIT: '批量初始化激活码成功',
-    DISTRIBUTE: '派发激活码成功',
-    ACTIVATE: '激活码激活成功',
-    INVALIDATE: '激活码作废成功'
-  },
-  ERROR: {
-    INVALID_FORM: '请填写完整的表单信息'
-  },
   CONFIRM: {
     ACTIVATE: (code: string) =>
       `确定要激活激活码 "${code.substring(0, 20)}..." 吗？`,

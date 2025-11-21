@@ -104,7 +104,7 @@ export function ActivationCodeDistributeForm({
   const resultContent = result && (
     <div className='space-y-4'>
       <div className='text-sm text-green-600'>
-        {MESSAGES.SUCCESS.DISTRIBUTE}，共派发 {result.length} 个激活码。
+        派发激活码成功，共派发 {result.length} 个激活码。
       </div>
       <Card className='p-4'>
         <div className='flex justify-between border-b pb-2'>
