@@ -12,41 +12,42 @@ import {
 } from '@/components/ui/dialog';
 import { GenericDialogState } from '@/hooks/useGenericDialogs';
 
-// 1. 定义组件配置类型
+// ... DialogConfig 接口保持不变 ...
 export interface DialogConfig {
   title: string;
   description?: string;
-  // component 是需要渲染的 React 组件类型
   component: ComponentType<any>;
-  // 可以添加 max-width, full-screen 等样式配置
   className?: string;
 }
 
 interface GenericDialogsProps {
-  /** Hook 返回的对话框状态 */
   dialogState: GenericDialogState;
-  /** 关闭对话框的回调函数 (通常是 useGenericDialogs 提供的 closeDialog) */
   onClose: (callback?: () => void) => void;
-  /** 业务模块定义的配置映射表 */
   configs: Record<string, DialogConfig>;
-  /** 传递给所有子组件的通用 Props (如 onSubmit, onCancel, 业务 Hook 的方法等) */
+
+  /** * 通用 Props (所有弹窗都会收到的)
+   * 比如: onCancel, userSession 等全局通用的
+   */
   commonProps?: Record<string, any>;
-  /** 关闭后执行的回调（例如：刷新列表） */
+
+  /**
+   * 🔥 新增：按类型注入的 Props (特定弹窗独享的)
+   * key 对应 dialogState.type
+   * value 是要传递给该组件的 props 对象
+   */
+  propsMap?: Record<string, Record<string, any>>;
+
   onCloseCallback?: () => void;
 }
 
-/**
- * 统一对话框渲染组件
- * 根据 dialogState.type 动态渲染配置的组件
- */
 export function GenericDialogs({
   dialogState,
   onClose,
   configs,
   commonProps = {},
+  propsMap = {}, // 🔥 默认为空对象
   onCloseCallback
 }: GenericDialogsProps) {
-  // 仅在 type 存在时查找配置
   const currentConfig = useMemo(() => {
     if (!dialogState.type) return null;
     return configs[dialogState.type];
@@ -56,17 +57,17 @@ export function GenericDialogs({
     return null;
   }
 
-  // 动态获取要渲染的组件
   const ComponentToRender = currentConfig.component;
 
-  // 统一的关闭处理，执行传入的业务回调
   const handleClose = () => {
     onClose(onCloseCallback);
   };
 
+  // 🔥 核心逻辑：获取当前类型对应的专属 Props
+  const specificProps = dialogState.type ? propsMap[dialogState.type] : {};
+
   return (
     <Dialog open={dialogState.open} onOpenChange={handleClose}>
-      {/* 使用配置的 className 或默认值 */}
       <DialogContent className={currentConfig.className || 'max-w-2xl'}>
         <DialogHeader>
           <DialogTitle>{currentConfig.title}</DialogTitle>
@@ -75,14 +76,14 @@ export function GenericDialogs({
           )}
         </DialogHeader>
 
-        {/* 渲染动态组件，并传递必要的 props */}
         <ComponentToRender
-          // 1. 传入对话框打开时携带的数据 (例如详情对象)
+          // 1. 传入数据
           data={dialogState.data}
-          // 2. 传入通用的取消回调，即关闭对话框
+          // 2. 传入通用 Props
           onCancel={handleClose}
-          // 3. 传入业务模块提供的其他 Props (onSubmit, onInit, onDistribute 等)
           {...commonProps}
+          // 3. 🔥 传入专属 Props (优先级最高，放在最后可以覆盖通用 props)
+          {...specificProps}
         />
       </DialogContent>
     </Dialog>

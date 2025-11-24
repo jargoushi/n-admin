@@ -20,8 +20,6 @@ export interface FieldConfig<T> {
   label: string;
   // 自定义渲染函数，接受整个数据对象和当前字段的值
   render?: (value: any, data: T) => React.ReactNode;
-  // 是否隐藏（例如：数据为空时隐藏）
-  hideIfEmpty?: boolean;
 }
 
 /**
@@ -32,8 +30,6 @@ interface EntityDetailViewProps<T extends Record<string, any>> {
   data: T;
   /** 字段配置列表 */
   config: FieldConfig<T>[];
-  /** 标题 */
-  title: string;
 }
 
 /**
@@ -44,26 +40,14 @@ interface EntityDetailViewProps<T extends Record<string, any>> {
  */
 export function EntityDetailView<T extends Record<string, any>>({
   data,
-  config,
-  title
+  config
 }: EntityDetailViewProps<T>) {
   return (
     <Card className='mt-4'>
-      <CardHeader>
-        <CardTitle className='text-lg'>{title}</CardTitle>
-      </CardHeader>
       <CardContent className='pt-0'>
         <div className='grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2'>
           {config.map((field) => {
             const value = data[field.key as keyof T];
-
-            // 检查是否需要隐藏（如果值是 null, undefined, 或空字符串）
-            if (
-              field.hideIfEmpty &&
-              (value === undefined || value === null || value === '')
-            ) {
-              return null;
-            }
 
             const content = field.render ? (
               field.render(value, data)

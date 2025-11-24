@@ -1,83 +1,64 @@
-/**
- * 通用确认对话框组件
- *
- * @description
- * 封装 AlertDialog 结构，用于各种危险/确认操作前的二次确认。
- */
-
 'use client';
 
-import * as React from 'react';
+import React, { ReactNode } from 'react';
+import { Loader2 } from 'lucide-react';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle
-} from '@/components/ui/alert-dialog';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
-/**
- * 确认对话框组件属性
- */
-interface ConfirmationDialogProps {
-  /** 是否打开对话框 */
+export interface ConfirmationDialogProps {
   isOpen: boolean;
-  /** 对话框标题 */
+  isLoading: boolean;
   title: string;
-  /** 描述内容 (可以是 React 节点) */
-  description: React.ReactNode;
-  /** 确认按钮文本 */
+  description?: ReactNode;
   confirmText?: string;
-  /** 取消按钮文本 */
   cancelText?: string;
-  /** 确认操作回调 */
+  variant?: 'default' | 'destructive';
   onConfirm: () => void;
-  /** 取消/关闭操作回调 */
   onCancel: () => void;
-  /** 自定义内容（位于描述和页脚之间，例如：要操作的实体信息） */
-  children?: React.ReactNode;
-  /** 确认按钮是否禁用 */
-  confirmDisabled?: boolean;
 }
 
-/**
- * 通用确认对话框组件
- *
- * @param props - 组件属性
- * @returns 确认对话框
- */
 export function ConfirmationDialog({
   isOpen,
+  isLoading,
   title,
   description,
   confirmText = '确认',
   cancelText = '取消',
+  variant = 'default',
   onConfirm,
-  onCancel,
-  children,
-  confirmDisabled = false
+  onCancel
 }: ConfirmationDialogProps) {
   return (
-    <AlertDialog open={isOpen} onOpenChange={onCancel}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
-        </AlertDialogHeader>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
+      <DialogContent className='sm:max-w-[425px]'>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          {description && (
+            <DialogDescription asChild>
+              <div className='text-muted-foreground pt-2 text-sm'>
+                {description}
+              </div>
+            </DialogDescription>
+          )}
+        </DialogHeader>
 
-        {/* 自定义内容区 */}
-        {children}
-
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel}>{cancelText}</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm} disabled={confirmDisabled}>
+        <DialogFooter className='gap-2 sm:gap-0'>
+          <Button variant='outline' onClick={onCancel} disabled={isLoading}>
+            {cancelText}
+          </Button>
+          <Button variant={variant} onClick={onConfirm} disabled={isLoading}>
+            {isLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
             {confirmText}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

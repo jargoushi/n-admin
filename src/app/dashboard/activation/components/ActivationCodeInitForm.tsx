@@ -32,7 +32,6 @@ import {
   ACTIVATION_CODE_TYPE_OPTIONS,
   MAX_INIT_ITEMS,
   INIT_COUNT_RANGE,
-  MESSAGES,
   CODE_TYPE_CONFIG
 } from '../constants';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';

@@ -1,9 +1,6 @@
-// app/dashboard/activation/components/ActivationCodeDetailView.tsx
-
 'use client';
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 // 引入公共组件和类型
@@ -11,7 +8,6 @@ import {
   EntityDetailView,
   FieldConfig
 } from '@/components/shared/EntityDetailView';
-// 假设该工具函数存在于此路径，来自 ActivationCodeDialogs.tsx 的导入
 import { formatDateTime } from '@/lib/data-utils';
 import type { ActivationCode } from '../types';
 // 引入常量配置，使其内聚
@@ -33,7 +29,7 @@ const CODE_DETAIL_CONFIG: FieldConfig<ActivationCode>[] = [
     // 显式断言 key 的类型
     key: 'activation_code' as ActivationCodeKey,
     render: (value: string) => (
-      <code className='font-mono text-lg font-medium'>{value}</code>
+      <code className='font-mono text-lg font-medium break-all'>{value}</code>
     )
   },
   {
@@ -92,14 +88,12 @@ const CODE_DETAIL_CONFIG: FieldConfig<ActivationCode>[] = [
   {
     label: '分发时间',
     key: 'distributed_at' as ActivationCodeKey,
-    render: (value: string) => formatDateTime(value),
-    hideIfEmpty: true // 如果为空则隐藏该字段
+    render: (value: string) => formatDateTime(value)
   },
   {
     label: '激活时间',
     key: 'activated_at' as ActivationCodeKey,
-    render: (value: string) => formatDateTime(value),
-    hideIfEmpty: true // 如果为空则隐藏该字段
+    render: (value: string) => formatDateTime(value)
   }
 ];
 
@@ -110,35 +104,22 @@ const CODE_DETAIL_CONFIG: FieldConfig<ActivationCode>[] = [
 interface ActivationCodeDetailViewProps {
   /** 详情数据，由 GenericDialogs/父级对话框传入 */
   data: ActivationCode | null;
-  /** 关闭对话框的回调函数，由 GenericDialogs/父级对话框传入 */
-  onCancel: () => void;
 }
 
 /**
  * 激活码详情视图组件
  */
 export function ActivationCodeDetailView({
-  data,
-  onCancel
+  data
 }: ActivationCodeDetailViewProps) {
   if (!data) {
-    // 匹配原始逻辑，当 data 为空时，不渲染详情内容
     return null;
   }
 
   return (
-    <>
-      <EntityDetailView
-        title='基本信息'
-        data={data}
-        config={CODE_DETAIL_CONFIG} // 使用内聚的配置
-      />
-
-      <div className='flex justify-end pt-4'>
-        <Button variant='outline' onClick={onCancel}>
-          关闭
-        </Button>
-      </div>
-    </>
+    <EntityDetailView
+      data={data}
+      config={CODE_DETAIL_CONFIG} // 使用内聚的配置
+    />
   );
 }
