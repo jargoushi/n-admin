@@ -12,26 +12,26 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
+/**
+ * 确认对话框 Props - 极简设计
+ */
 export interface ConfirmationDialogProps {
   isOpen: boolean;
   isLoading: boolean;
-  title: string;
-  description?: ReactNode;
-  confirmText?: string;
-  cancelText?: string;
-  variant?: 'default' | 'destructive';
+  description: ReactNode;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
+/**
+ * 确认对话框组件
+ *
+ * 极简设计：固定标题、按钮文本，只需传入确认消息和回调
+ */
 export function ConfirmationDialog({
   isOpen,
   isLoading,
-  title,
   description,
-  confirmText = '确认',
-  cancelText = '取消',
-  variant = 'default',
   onConfirm,
   onCancel
 }: ConfirmationDialogProps) {
@@ -39,23 +39,18 @@ export function ConfirmationDialog({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          {description && (
-            <DialogDescription asChild>
-              <div className='text-muted-foreground pt-2 text-sm'>
-                {description}
-              </div>
-            </DialogDescription>
-          )}
+          <DialogTitle>操作确认</DialogTitle>
+          <DialogDescription asChild>
+            <div className='text-muted-foreground pt-2 text-sm'>
+              {description}
+            </div>
+          </DialogDescription>
         </DialogHeader>
 
         <DialogFooter className='gap-2 sm:gap-0'>
-          <Button variant='outline' onClick={onCancel} disabled={isLoading}>
-            {cancelText}
-          </Button>
-          <Button variant={variant} onClick={onConfirm} disabled={isLoading}>
+          <Button onClick={onConfirm} disabled={isLoading}>
             {isLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-            {confirmText}
+            确认
           </Button>
         </DialogFooter>
       </DialogContent>

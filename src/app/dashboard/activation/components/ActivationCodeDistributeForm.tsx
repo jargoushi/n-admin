@@ -20,22 +20,19 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
-import { toast } from 'sonner';
 import { copyToClipboard } from '@/lib/utils';
 import type { ActivationCodeGetRequest } from '../types';
 import {
   ACTIVATION_CODE_TYPE_OPTIONS,
-  DISTRIBUTE_COUNT_RANGE,
-  MESSAGES
+  DISTRIBUTE_COUNT_RANGE
 } from '../constants';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
+import { useActivationCodeManagement } from '../hooks/useActivationCodeManagement';
 
 /**
  * 表单组件属性
  */
 interface ActivationCodeDistributeFormProps {
-  /** 提交回调 */
-  onSubmit: (data: ActivationCodeGetRequest) => Promise<string[] | null>;
   /** 取消回调（关闭对话框） */
   onCancel: () => void;
 }
@@ -47,9 +44,10 @@ interface ActivationCodeDistributeFormProps {
  * @returns 表单组件
  */
 export function ActivationCodeDistributeForm({
-  onSubmit,
   onCancel
 }: ActivationCodeDistributeFormProps) {
+  // ✅ 组件内部直接调用业务 Hook
+  const { distributeActivationCodes } = useActivationCodeManagement();
   // 表单数据
   const [formData, setFormData] = useState<ActivationCodeGetRequest>({
     type: 0,
@@ -89,14 +87,15 @@ export function ActivationCodeDistributeForm({
   const handleSubmit = useCallback(async () => {
     setIsLoading(true);
     try {
-      const distributedCodes = await onSubmit(formData);
+      // ✅ 直接调用 Hook 方法
+      const distributedCodes = await distributeActivationCodes(formData);
       if (distributedCodes) {
         setResult(distributedCodes);
       }
     } finally {
       setIsLoading(false);
     }
-  }, [formData, onSubmit]);
+  }, [formData, distributeActivationCodes]);
 
   /**
    * 结果展示区

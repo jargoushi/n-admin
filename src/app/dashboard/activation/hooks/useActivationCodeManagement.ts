@@ -17,7 +17,7 @@ import type {
   ActivationCodeGetRequest,
   ActivationCodeBatchResponse
 } from '../types';
-import { DEFAULT_PAGINATION, MESSAGES } from '../constants';
+import { DEFAULT_PAGINATION } from '../constants';
 
 /**
  * 激活码管理 Hook 返回值

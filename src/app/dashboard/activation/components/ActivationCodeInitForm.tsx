@@ -35,6 +35,7 @@ import {
   CODE_TYPE_CONFIG
 } from '../constants';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
+import { useActivationCodeManagement } from '../hooks/useActivationCodeManagement';
 
 /**
  * 默认初始化项
@@ -48,10 +49,6 @@ const DEFAULT_ITEM: ActivationCodeCreateItem = {
  * 表单组件属性
  */
 interface ActivationCodeInitFormProps {
-  /** 提交回调 */
-  onSubmit: (
-    data: ActivationCodeBatchCreateRequest
-  ) => Promise<ActivationCodeBatchResponse | null>;
   /** 取消回调（关闭对话框） */
   onCancel: () => void;
 }
@@ -63,9 +60,10 @@ interface ActivationCodeInitFormProps {
  * @returns 表单组件
  */
 export function ActivationCodeInitForm({
-  onSubmit,
   onCancel
 }: ActivationCodeInitFormProps) {
+  // ✅ 组件内部直接调用业务 Hook
+  const { initActivationCodes } = useActivationCodeManagement();
   // 表单数据：初始化项列表
   const [items, setItems] = useState<ActivationCodeCreateItem[]>([
     DEFAULT_ITEM
@@ -172,14 +170,15 @@ export function ActivationCodeInitForm({
     setIsLoading(true);
     try {
       const data: ActivationCodeBatchCreateRequest = { items };
-      const response = await onSubmit(data);
+      // ✅ 直接调用 Hook 方法
+      const response = await initActivationCodes(data);
       if (response) {
         setResult(response);
       }
     } finally {
       setIsLoading(false);
     }
-  }, [items, isValid, onSubmit]);
+  }, [items, isValid, initActivationCodes]);
 
   /**
    * 结果展示区

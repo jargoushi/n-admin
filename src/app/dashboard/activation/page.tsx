@@ -15,11 +15,6 @@ import PageContainer from '@/components/layout/page-container';
 import { Pagination } from '@/components/table/pagination';
 
 // 1. 引入通用弹窗基础设施
-import {
-  GenericDialogs,
-  type DialogConfig
-} from '@/components/shared/GenericDialogs';
-import { ConfirmationDialog } from '@/components/shared/ConfirmationDialog';
 import { useGenericDialogs } from '@/hooks/useGenericDialogs';
 import { useConfirmation } from '@/hooks/useConfirmation';
 
@@ -35,33 +30,6 @@ import { ActivationCodeFilters } from './components/ActivationCodeFilters';
 import { ActivationCodePageHeader } from './components/ActivationCodePageHeader';
 import { ActivationCodeTable } from './components/ActivationCodeTable';
 
-// ===================================================================
-// 业务弹窗配置表
-// ===================================================================
-
-const ACTIVATION_DIALOG_CONFIGS: Record<string, DialogConfig> = {
-  init: {
-    title: '批量初始化激活码',
-    description: '批量生成不同类型的激活码，每种类型只能出现一次',
-    component: ActivationCodeInitForm,
-    className: 'max-w-2xl'
-  },
-  distribute: {
-    title: '派发激活码',
-    description: '根据类型派发指定数量的未使用激活码，派发后状态将变为"已分发"',
-    component: ActivationCodeDistributeForm
-  },
-  detail: {
-    title: '激活码详情',
-    component: ActivationCodeDetailView,
-    className: 'sm:max-w-[600px]'
-  }
-};
-
-// ===================================================================
-// 页面主组件
-// ===================================================================
-
 export default function ActivationCodeManagementPage() {
   // 1. 初始化业务 Hooks
   const { filters, searchFilters, updatePagination, resetFilters } =
@@ -72,35 +40,42 @@ export default function ActivationCodeManagementPage() {
     loading,
     pagination,
     fetchActivationCodes,
-    initActivationCodes,
-    distributeActivationCodes,
     activateCode,
     invalidateCode,
     getCodeDetail
   } = useActivationCodeManagement();
 
   // 2. 初始化通用弹窗 Hooks
-  const { dialogState, openDialog, closeDialog } =
-    useGenericDialogs<ActivationCode>();
+  const { openDialog, DialogsContainer } = useGenericDialogs<ActivationCode>({
+    dialogs: {
+      init: {
+        title: '批量初始化激活码',
+        description: '批量生成不同类型的激活码，每种类型只能出现一次',
+        component: ActivationCodeInitForm,
+        className: 'max-w-2xl'
+      },
+      distribute: {
+        title: '派发激活码',
+        description:
+          '根据类型派发指定数量的未使用激活码，派发后状态将变为"已分发"',
+        component: ActivationCodeDistributeForm
+      },
+      detail: {
+        title: '激活码详情',
+        component: ActivationCodeDetailView,
+        className: 'sm:max-w-[600px]'
+      }
+    },
+    onClose: () => fetchActivationCodes(filters)
+  });
 
-  // 3. 初始化确认框 Hook (新)
-  const { confirm, dialogProps } = useConfirmation();
+  // 3. 初始化确认框 Hook
+  const { confirm, ConfirmDialog } = useConfirmation();
 
   // 4. 数据加载副作用
   useEffect(() => {
     fetchActivationCodes(filters);
   }, [filters, fetchActivationCodes]);
-
-  // =================================================================
-  // 事件处理逻辑
-  // =================================================================
-
-  /**
-   * 通用关闭回调：弹窗关闭后刷新列表
-   */
-  const handleDialogCloseCallback = () => {
-    fetchActivationCodes(filters);
-  };
 
   /**
    * 处理查看详情
@@ -113,44 +88,27 @@ export default function ActivationCodeManagementPage() {
   };
 
   /**
-   * 处理激活操作 (使用 useConfirmation)
+   * 处理激活操作
    */
   const handleActivate = (code: ActivationCode) => {
     confirm({
-      title: '确认激活',
-      // 这里的 description 支持 JSX，可以展示富文本详情
-      description: (
-        <div className='space-y-2'>
-          <p>{MESSAGES.CONFIRM.ACTIVATE(code.activation_code)}</p>
-          <div className='bg-muted/50 rounded p-2 text-xs'>
-            <div className='flex gap-2'>
-              <span className='text-muted-foreground'>类型:</span>
-              <span>{code.type_name}</span>
-            </div>
-          </div>
-        </div>
-      ),
-      confirmText: '立即激活',
-      variant: 'default',
+      description: MESSAGES.CONFIRM.ACTIVATE(code.activation_code),
       onConfirm: async () => {
         await activateCode(code.activation_code);
-        fetchActivationCodes(filters); // 操作成功后刷新
+        fetchActivationCodes(filters);
       }
     });
   };
 
   /**
-   * 处理作废操作 (使用 useConfirmation)
+   * 处理作废操作
    */
   const handleInvalidate = (code: ActivationCode) => {
     confirm({
-      title: '确认作废',
       description: MESSAGES.CONFIRM.INVALIDATE(code.activation_code),
-      confirmText: '确认作废',
-      variant: 'destructive', // 危险操作标红
       onConfirm: async () => {
         await invalidateCode(code.activation_code);
-        fetchActivationCodes(filters); // 操作成功后刷新
+        fetchActivationCodes(filters);
       }
     });
   };
@@ -198,25 +156,10 @@ export default function ActivationCodeManagementPage() {
       </div>
 
       {/* 1. 通用业务弹窗 (Init / Distribute / Detail) */}
-      <GenericDialogs
-        dialogState={dialogState}
-        onClose={closeDialog}
-        configs={ACTIVATION_DIALOG_CONFIGS}
-        // 使用 propsMap 精准投喂
-        propsMap={{
-          init: {
-            onSubmit: initActivationCodes
-          },
-          distribute: {
-            onSubmit: distributeActivationCodes
-          }
-          // 'detail' 不需要额外 props，这里不用写，或者写个空对象 {}
-        }}
-        onCloseCallback={handleDialogCloseCallback}
-      />
+      <DialogsContainer />
 
       {/* 2. 通用确认弹窗 (Activate / Invalidate) */}
-      <ConfirmationDialog {...dialogProps} />
+      <ConfirmDialog />
     </PageContainer>
   );
 }
