@@ -2,13 +2,19 @@
  * 激活码数据表格组件
  *
  * @description
- * 显示激活码列表，支持复制、激活、作废、查看详情等操作
+ * 显示激活码列表,支持复制、激活、作废、查看详情等操作
+ * 组件内部管理详情弹窗和确认弹窗
  */
 
 'use client';
 
 import { useMemo } from 'react';
 import { Check, X, Eye } from 'lucide-react';
+
+// 引入弹窗基础设施
+import { useGenericDialogs } from '@/hooks/useGenericDialogs';
+import { useConfirmation } from '@/hooks/useConfirmation';
+
 import { DataTable } from '@/components/table/data-table';
 import {
   ActionDropdown,
@@ -17,6 +23,8 @@ import {
 import type { ActivationCode, TableColumn } from '../types';
 import { CODE_TYPE_CONFIG, STATUS_BADGE_MAP } from '../constants';
 import { StatusBadge } from '@/components/shared/status-badge';
+import { useActivationCodeManagement } from '../hooks/useActivationCodeManagement';
+import { ActivationCodeDetailView } from './ActivationCodeDetailView';
 
 /**
  * 表格组件属性
@@ -24,18 +32,68 @@ import { StatusBadge } from '@/components/shared/status-badge';
 interface ActivationCodeTableProps {
   data: ActivationCode[];
   loading?: boolean;
-  onActivate?: (code: ActivationCode) => void;
-  onInvalidate?: (code: ActivationCode) => void;
-  onViewDetail?: (code: ActivationCode) => void;
+  /** 操作成功后的回调(用于刷新列表) */
+  onRefresh?: () => void;
 }
 
 export function ActivationCodeTable({
   data,
   loading = false,
-  onActivate,
-  onInvalidate,
-  onViewDetail
+  onRefresh
 }: ActivationCodeTableProps) {
+  // 业务 Hook
+  const { activateCode, invalidateCode, getCodeDetail } =
+    useActivationCodeManagement();
+
+  // 管理详情弹窗
+  const { openDialog, DialogsContainer } = useGenericDialogs<ActivationCode>({
+    dialogs: {
+      detail: {
+        title: '激活码详情',
+        component: ActivationCodeDetailView,
+        className: 'sm:max-w-[600px]'
+      }
+    }
+  });
+
+  // 管理确认弹窗
+  const { confirm, ConfirmDialog } = useConfirmation();
+
+  /**
+   * 处理查看详情
+   */
+  const handleViewDetail = async (code: ActivationCode) => {
+    const detail = await getCodeDetail(code.activation_code);
+    if (detail) {
+      openDialog('detail', detail);
+    }
+  };
+
+  /**
+   * 处理激活操作
+   */
+  const handleActivate = (code: ActivationCode) => {
+    confirm({
+      description: `确定要激活激活码 "${code.activation_code}" 吗？`,
+      onConfirm: async () => {
+        await activateCode(code.activation_code);
+        onRefresh?.();
+      }
+    });
+  };
+
+  /**
+   * 处理作废操作
+   */
+  const handleInvalidate = (code: ActivationCode) => {
+    confirm({
+      description: `确定要作废激活码 "${code.activation_code}" 吗？\n\n作废后将无法恢复！`,
+      onConfirm: async () => {
+        await invalidateCode(code.activation_code);
+        onRefresh?.();
+      }
+    });
+  };
   /** 列配置 */
   const columns = useMemo<TableColumn[]>(
     () => [
@@ -95,46 +153,50 @@ export function ActivationCodeTable({
         render: (_: unknown, record: ActivationCode) => {
           const actions: ActionItem[] = [];
 
-          if (record.status === 1 && onActivate) {
+          if (record.status === 1) {
             actions.push({
               key: 'activate',
               label: '激活',
               icon: <Check className='mr-2 h-4 w-4' />,
-              onClick: () => onActivate(record)
+              onClick: () => handleActivate(record)
             });
           }
 
-          if ((record.status === 1 || record.status === 2) && onInvalidate) {
+          if (record.status === 1 || record.status === 2) {
             actions.push({
               key: 'invalidate',
               label: '作废',
               icon: <X className='mr-2 h-4 w-4' />,
-              onClick: () => onInvalidate(record)
+              onClick: () => handleInvalidate(record)
             });
           }
 
-          if (onViewDetail) {
-            actions.push({
-              key: 'detail',
-              label: '详情',
-              icon: <Eye className='mr-2 h-4 w-4' />,
-              onClick: () => onViewDetail(record)
-            });
-          }
+          actions.push({
+            key: 'detail',
+            label: '详情',
+            icon: <Eye className='mr-2 h-4 w-4' />,
+            onClick: () => handleViewDetail(record)
+          });
 
           return <ActionDropdown actions={actions} />;
         }
       }
     ],
-    [onActivate, onInvalidate, onViewDetail]
+    [handleActivate, handleInvalidate, handleViewDetail]
   );
 
   return (
-    <DataTable
-      columns={columns}
-      data={data}
-      loading={loading}
-      rowKey='activation_code'
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={data}
+        loading={loading}
+        rowKey='activation_code'
+      />
+
+      {/* 弹窗容器 */}
+      <DialogsContainer />
+      <ConfirmDialog />
+    </>
   );
 }

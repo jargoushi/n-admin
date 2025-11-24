@@ -144,18 +144,6 @@ export interface PaginationInfo {
 }
 
 /**
- * 对话框状态
- */
-export interface ActivationCodeDialogState {
-  /** 对话框类型 */
-  type: 'init' | 'distribute' | 'detail' | null;
-  /** 激活码数据（详情对话框使用） */
-  data: ActivationCode | null;
-  /** 是否打开 */
-  open: boolean;
-}
-
-/**
  * 表格列配置
  */
 export interface TableColumn {

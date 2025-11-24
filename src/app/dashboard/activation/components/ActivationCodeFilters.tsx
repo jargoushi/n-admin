@@ -29,10 +29,6 @@ interface ActivationCodeFiltersProps {
   filters: ActivationCodeQueryRequest;
   /** 查询回调（更新筛选条件执行查询） */
   onSearch: (filters: Partial<ActivationCodeQueryRequest>) => void;
-  /** 重置回调 */
-  onReset: () => void;
-  /** 加载状态 */
-  loading?: boolean;
 }
 
 /**
@@ -91,9 +87,7 @@ const FILTERS_CONFIG: FilterFieldConfig<ActivationCodeQueryRequest>[] = [
  */
 export function ActivationCodeFilters({
   filters,
-  onSearch,
-  onReset,
-  loading
+  onSearch
 }: ActivationCodeFiltersProps) {
   // 使用 react-hook-form 管理表单状态
   const { control, handleSubmit, reset } = useForm<ActivationCodeQueryRequest>({
@@ -113,10 +107,11 @@ export function ActivationCodeFilters({
     [onSearch]
   );
 
+  // 重置处理：直接调用 onSearch 传入默认参数
   const handleReset = React.useCallback(() => {
     reset(DEFAULT_QUERY_PARAMS);
-    onReset();
-  }, [onReset, reset]); // 依赖中添加 reset
+    onSearch(DEFAULT_QUERY_PARAMS);
+  }, [onSearch, reset]);
 
   return (
     <FilterLayout<ActivationCodeQueryRequest>
@@ -125,7 +120,6 @@ export function ActivationCodeFilters({
       handleSubmit={handleSubmit}
       onSearch={handleSearch}
       onReset={handleReset}
-      loading={loading}
     />
   );
 }

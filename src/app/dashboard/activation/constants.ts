@@ -74,20 +74,6 @@ export const DEFAULT_QUERY_PARAMS: ActivationCodeQueryRequest = {
   size: 10
 };
 
-// ==================== 消息文案 ====================
-
-/**
- * 统一消息文案
- */
-export const MESSAGES = {
-  CONFIRM: {
-    ACTIVATE: (code: string) =>
-      `确定要激活激活码 "${code.substring(0, 20)}..." 吗？`,
-    INVALIDATE: (code: string) =>
-      `确定要作废激活码 "${code.substring(0, 20)}..." 吗？\n\n作废后将无法恢复！`
-  }
-};
-
 // ==================== 验证规则 ====================
 
 /**
