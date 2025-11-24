@@ -2,13 +2,13 @@
  * 激活码派发表单组件
  *
  * @description
- * 使用 BaseFormLayout 封装通用逻辑
+ * 使用 BaseFormLayout 提供统一布局,组件内部管理表单/结果切换逻辑
  */
 
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import { Copy } from 'lucide-react';
+import { Copy, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,32 +29,14 @@ import {
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
 import { useActivationCodeManagement } from '../hooks/useActivationCodeManagement';
 
-/**
- * 表单组件属性
- */
-interface ActivationCodeDistributeFormProps {
-  /** 取消回调（关闭对话框） */
-  onCancel: () => void;
-}
-
-/**
- * 激活码派发表单组件
- *
- * @param props - 组件属性
- * @returns 表单组件
- */
-export function ActivationCodeDistributeForm({
-  onCancel
-}: ActivationCodeDistributeFormProps) {
-  // ✅ 组件内部直接调用业务 Hook
+export function ActivationCodeDistributeForm() {
   const { distributeActivationCodes } = useActivationCodeManagement();
+
   // 表单数据
   const [formData, setFormData] = useState<ActivationCodeGetRequest>({
     type: 0,
     count: 1
   });
-
-  // 派发结果
   const [result, setResult] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -87,7 +69,6 @@ export function ActivationCodeDistributeForm({
   const handleSubmit = useCallback(async () => {
     setIsLoading(true);
     try {
-      // ✅ 直接调用 Hook 方法
       const distributedCodes = await distributeActivationCodes(formData);
       if (distributedCodes) {
         setResult(distributedCodes);
@@ -97,13 +78,11 @@ export function ActivationCodeDistributeForm({
     }
   }, [formData, distributeActivationCodes]);
 
-  /**
-   * 结果展示区
-   */
+  // 结果内容
   const resultContent = result && (
     <div className='space-y-4'>
       <div className='text-sm text-green-600'>
-        派发激活码成功，共派发 {result.length} 个激活码。
+        派发激活码成功,共派发 {result.length} 个激活码。
       </div>
       <Card className='p-4'>
         <div className='flex justify-between border-b pb-2'>
@@ -131,62 +110,55 @@ export function ActivationCodeDistributeForm({
     </div>
   );
 
-  // 表单输入页面
-  const formContent = (
-    <div className='space-y-4'>
-      {/* 激活码类型 */}
-      <div className='space-y-2'>
-        <Label htmlFor='type'>激活码类型</Label>
-        <Select
-          value={String(formData.type)}
-          onValueChange={(value) => updateField('type', Number(value))}
-          disabled={isLoading}
-        >
-          <SelectTrigger id='type'>
-            <SelectValue placeholder='请选择激活码类型' />
-          </SelectTrigger>
-          <SelectContent>
-            {/* 过滤掉“全部”选项 */}
-            {ACTIVATION_CODE_TYPE_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={String(option.value)}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* 派发数量 */}
-      <div className='space-y-2'>
-        <Label htmlFor='count'>派发数量</Label>
-        <Input
-          id='count'
-          type='number'
-          min={DISTRIBUTE_COUNT_RANGE.MIN}
-          max={DISTRIBUTE_COUNT_RANGE.MAX}
-          value={formData.count}
-          onChange={(e) => updateField('count', Number(e.target.value))}
-          placeholder='请输入派发数量'
-          disabled={isLoading}
-        />
-        <p className='text-muted-foreground text-xs'>
-          可派发 {DISTRIBUTE_COUNT_RANGE.MIN}-{DISTRIBUTE_COUNT_RANGE.MAX}{' '}
-          个激活码
-        </p>
-      </div>
-    </div>
-  );
-
   return (
     <BaseFormLayout
-      onSubmit={handleSubmit}
-      onCancel={onCancel}
-      isValid={isValid}
-      submitText='开始派发'
-      isLoading={isLoading}
       resultContent={resultContent}
+      submit={{
+        text: '开始派发',
+        onSubmit: handleSubmit,
+        disabled: !isValid,
+        loading: isLoading
+      }}
     >
-      {formContent}
+      <div className='space-y-4'>
+        <div className='space-y-2'>
+          <Label htmlFor='type'>激活码类型</Label>
+          <Select
+            value={String(formData.type)}
+            onValueChange={(value) => updateField('type', Number(value))}
+            disabled={isLoading}
+          >
+            <SelectTrigger id='type'>
+              <SelectValue placeholder='请选择激活码类型' />
+            </SelectTrigger>
+            <SelectContent>
+              {ACTIVATION_CODE_TYPE_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={String(option.value)}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className='space-y-2'>
+          <Label htmlFor='count'>派发数量</Label>
+          <Input
+            id='count'
+            type='number'
+            min={DISTRIBUTE_COUNT_RANGE.MIN}
+            max={DISTRIBUTE_COUNT_RANGE.MAX}
+            value={formData.count}
+            onChange={(e) => updateField('count', Number(e.target.value))}
+            placeholder='请输入派发数量'
+            disabled={isLoading}
+          />
+          <p className='text-muted-foreground text-xs'>
+            可派发 {DISTRIBUTE_COUNT_RANGE.MIN}-{DISTRIBUTE_COUNT_RANGE.MAX}{' '}
+            个激活码
+          </p>
+        </div>
+      </div>
     </BaseFormLayout>
   );
 }

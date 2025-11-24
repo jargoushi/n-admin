@@ -28,7 +28,7 @@ export default function ActivationCodeManagementPage() {
 
   // 数据加载副作用
   useEffect(() => {
-    fetchActivationCodes(filters);
+    handleRefresh();
   }, [filters, fetchActivationCodes]);
 
   // 刷新列表数据

@@ -23,46 +23,46 @@ export const DEFAULT_PAGINATION: PaginationInfo = {
 // ==================== 激活码类型配置 ====================
 
 /**
- * 激活码类型选项（用于下拉选择）
+ * 激活码类型统一配置(唯一真相源)
  */
-export const ACTIVATION_CODE_TYPE_OPTIONS = [
-  { label: '日卡', value: 0 },
-  { label: '月卡', value: 1 },
-  { label: '年卡', value: 2 },
-  { label: '永久卡', value: 3 }
-] as const;
-
-/**
- * 激活码类型徽章样式映射
- */
-export const CODE_TYPE_CONFIG = {
+export const ACTIVATION_CODE_TYPES = {
   0: { label: '日卡', variant: 'secondary' as const },
   1: { label: '月卡', variant: 'default' as const },
   2: { label: '年卡', variant: 'outline' as const },
   3: { label: '永久卡', variant: 'default' as const }
-};
+} as const;
+
+/**
+ * 激活码类型选项(用于下拉选择,从统一配置派生)
+ */
+export const ACTIVATION_CODE_TYPE_OPTIONS = Object.entries(
+  ACTIVATION_CODE_TYPES
+).map(([value, config]) => ({
+  label: config.label,
+  value: Number(value)
+}));
 
 // ==================== 激活码状态配置 ====================
 
 /**
- * 激活码状态选项（用于下拉选择）
+ * 激活码状态统一配置(唯一真相源)
  */
-export const ACTIVATION_CODE_STATUS_OPTIONS = [
-  { label: '未使用', value: 0 },
-  { label: '已分发', value: 1 },
-  { label: '已激活', value: 2 },
-  { label: '作废', value: 3 }
-] as const;
-
-/**
- * 激活码状态徽章样式映射
- */
-export const STATUS_BADGE_MAP = {
+export const ACTIVATION_CODE_STATUSES = {
   0: { label: '未使用', variant: 'secondary' as const },
   1: { label: '已分发', variant: 'default' as const },
   2: { label: '已激活', variant: 'default' as const },
   3: { label: '作废', variant: 'destructive' as const }
-};
+} as const;
+
+/**
+ * 激活码状态选项(用于下拉选择,从统一配置派生)
+ */
+export const ACTIVATION_CODE_STATUS_OPTIONS = Object.entries(
+  ACTIVATION_CODE_STATUSES
+).map(([value, config]) => ({
+  label: config.label,
+  value: Number(value)
+}));
 
 // ==================== 默认查询参数 ====================
 

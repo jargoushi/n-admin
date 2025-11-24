@@ -11,7 +11,7 @@ import {
 import { formatDateTime } from '@/lib/data-utils';
 import type { ActivationCode } from '../types';
 // 引入常量配置，使其内聚
-import { CODE_TYPE_CONFIG, STATUS_BADGE_MAP } from '../constants';
+import { ACTIVATION_CODE_TYPES, ACTIVATION_CODE_STATUSES } from '../constants';
 
 // ===================================================================
 // 激活码详情配置
@@ -40,7 +40,7 @@ const CODE_DETAIL_CONFIG: FieldConfig<ActivationCode>[] = [
       <Badge
         // 使用 constants.ts 中定义的映射
         variant={
-          CODE_TYPE_CONFIG[data.type as keyof typeof CODE_TYPE_CONFIG]
+          ACTIVATION_CODE_TYPES[data.type as keyof typeof ACTIVATION_CODE_TYPES]
             ?.variant || 'secondary'
         }
       >
@@ -56,8 +56,9 @@ const CODE_DETAIL_CONFIG: FieldConfig<ActivationCode>[] = [
       <Badge
         // 使用 constants.ts 中定义的映射
         variant={
-          STATUS_BADGE_MAP[data.status as keyof typeof STATUS_BADGE_MAP]
-            ?.variant || 'secondary'
+          ACTIVATION_CODE_STATUSES[
+            data.status as keyof typeof ACTIVATION_CODE_STATUSES
+          ]?.variant || 'secondary'
         }
       >
         {data.status_name}

@@ -15,13 +15,13 @@ import { Check, X, Eye } from 'lucide-react';
 import { useGenericDialogs } from '@/hooks/useGenericDialogs';
 import { useConfirmation } from '@/hooks/useConfirmation';
 
-import { DataTable } from '@/components/table/data-table';
+import { DataTable, type Column } from '@/components/table/data-table';
 import {
   ActionDropdown,
   type ActionItem
 } from '@/components/table/action-dropdown';
-import type { ActivationCode, TableColumn } from '../types';
-import { CODE_TYPE_CONFIG, STATUS_BADGE_MAP } from '../constants';
+import type { ActivationCode } from '../types';
+import { ACTIVATION_CODE_TYPES, ACTIVATION_CODE_STATUSES } from '../constants';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { useActivationCodeManagement } from '../hooks/useActivationCodeManagement';
 import { ActivationCodeDetailView } from './ActivationCodeDetailView';
@@ -95,7 +95,7 @@ export function ActivationCodeTable({
     });
   };
   /** 列配置 */
-  const columns = useMemo<TableColumn[]>(
+  const columns = useMemo<Column<ActivationCode>[]>(
     () => [
       {
         key: 'activation_code',
@@ -107,7 +107,7 @@ export function ActivationCodeTable({
         title: '类型',
         className: 'w-[100px] text-center',
         render: (_, record) => (
-          <StatusBadge value={record.type} mapping={CODE_TYPE_CONFIG} />
+          <StatusBadge value={record.type} mapping={ACTIVATION_CODE_TYPES} />
         )
       },
       {
@@ -115,7 +115,10 @@ export function ActivationCodeTable({
         title: '状态',
         className: 'w-[100px] text-center',
         render: (_, record) => (
-          <StatusBadge value={record.status} mapping={STATUS_BADGE_MAP} />
+          <StatusBadge
+            value={record.status}
+            mapping={ACTIVATION_CODE_STATUSES}
+          />
         )
       },
       {

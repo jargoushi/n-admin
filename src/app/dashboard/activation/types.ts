@@ -142,21 +142,3 @@ export interface PaginationInfo {
   /** 总页数 */
   totalPages: number;
 }
-
-/**
- * 表格列配置
- */
-export interface TableColumn {
-  /** 列键名 */
-  key: string;
-  /** 列标题 */
-  title: string;
-  /** 列样式类名 */
-  className?: string;
-  /** 自定义渲染函数 */
-  render?: (
-    value: unknown,
-    record: ActivationCode,
-    index: number
-  ) => React.ReactNode;
-}

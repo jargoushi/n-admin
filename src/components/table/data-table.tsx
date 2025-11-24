@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table';
 import { Loader2 } from 'lucide-react';
 
-interface Column<T> {
+export interface Column<T> {
   key: string;
   title: string;
   className?: string;
