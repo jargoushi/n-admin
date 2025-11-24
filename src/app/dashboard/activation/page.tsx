@@ -23,22 +23,17 @@ import { ConfirmationDialog } from '@/components/shared/ConfirmationDialog';
 import { useGenericDialogs } from '@/hooks/useGenericDialogs';
 import { useConfirmation } from '@/hooks/useConfirmation';
 
-// 2. 引入业务组件
-import {
-  ActivationCodePageHeader,
-  ActivationCodeFilters,
-  ActivationCodeTable
-} from './components';
-
-// 3. 引入具体表单和详情视图 (用于 GenericDialogs 配置)
 import { ActivationCodeInitForm } from './components/ActivationCodeInitForm';
 import { ActivationCodeDistributeForm } from './components/ActivationCodeDistributeForm';
 import { ActivationCodeDetailView } from './components/ActivationCodeDetailView';
 
-// 4. 引入 Hooks 和类型
-import { useActivationCodeFilters, useActivationCodeManagement } from './hooks';
 import type { ActivationCode } from './types';
 import { MESSAGES } from './constants';
+import { useActivationCodeFilters } from './hooks/useActivationCodeFilters';
+import { useActivationCodeManagement } from './hooks/useActivationCodeManagement';
+import { ActivationCodeFilters } from './components/ActivationCodeFilters';
+import { ActivationCodePageHeader } from './components/ActivationCodePageHeader';
+import { ActivationCodeTable } from './components/ActivationCodeTable';
 
 // ===================================================================
 // 业务弹窗配置表
