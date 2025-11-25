@@ -7,7 +7,8 @@ import {
   Controller,
   FieldValues,
   Path,
-  UseFormHandleSubmit
+  UseFormHandleSubmit,
+  useWatch
 } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -19,12 +20,17 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import {
-  DateRangePicker,
-  DateRange // 导入 DateRange 类型 (假设它包含 from?: Date, to?: Date)
-} from '@/components/ui/date-range-picker';
+import { DateRangePicker, DateRange } from '@/components/ui/date-range-picker';
 
-// ==================== 字段配置类型 (保持不变) ====================
+// ==================== 类型常量导出 ====================
+
+export const FILTER_TYPES = {
+  INPUT: 'input',
+  SELECT: 'select',
+  DATE_RANGE: 'date-range'
+} as const;
+
+// ==================== 字段配置类型 ====================
 
 interface BaseFieldConfig {
   /** 字段标签 */
@@ -37,14 +43,14 @@ interface BaseFieldConfig {
 
 /** 输入框配置 */
 export interface InputConfig<T extends FieldValues> extends BaseFieldConfig {
-  type: 'input';
+  type: typeof FILTER_TYPES.INPUT;
   /** 字段键名 */
   key: Path<T>;
 }
 
 /** 下拉选择配置 */
 export interface SelectConfig<T extends FieldValues> extends BaseFieldConfig {
-  type: 'select';
+  type: typeof FILTER_TYPES.SELECT;
   /** 字段键名 */
   key: Path<T>;
   /** 选项列表 */
@@ -54,7 +60,7 @@ export interface SelectConfig<T extends FieldValues> extends BaseFieldConfig {
 /** 日期范围配置 */
 export interface DateRangeConfig<T extends FieldValues>
   extends BaseFieldConfig {
-  type: 'date-range';
+  type: typeof FILTER_TYPES.DATE_RANGE;
   /** 开始日期键名 */
   startKey: Path<T>;
   /** 结束日期键名 */
@@ -66,7 +72,7 @@ export type FilterFieldConfig<T extends FieldValues> =
   | SelectConfig<T>
   | DateRangeConfig<T>;
 
-// ==================== 组件属性类型 (保持不变) ====================
+// ==================== 组件属性类型 ====================
 
 interface FilterLayoutProps<T extends FieldValues> {
   config: FilterFieldConfig<T>[];
@@ -77,33 +83,35 @@ interface FilterLayoutProps<T extends FieldValues> {
   loading?: boolean;
 }
 
-// ==================== 内部组件 ====================
+// ==================== 辅助函数和组件 ====================
 
 /**
- * 辅助组件: 清除按钮 (用于 Input 和 Select)
+ * 获取字段的唯一标识键
+ */
+function getFieldKey<T extends FieldValues>(
+  config: FilterFieldConfig<T>
+): string {
+  return config.type === FILTER_TYPES.DATE_RANGE
+    ? String(config.startKey)
+    : String(config.key);
+}
+
+/**
+ * 清除按钮组件
  */
 function ClearButton({
   onClick,
-  isHidden,
-  isForSelect = false
+  show
 }: {
   onClick: () => void;
-  isHidden: boolean;
-  isForSelect?: boolean;
+  show: boolean;
 }) {
-  if (isHidden) return null;
-
-  const baseClasses =
-    'absolute top-1/2 -translate-y-1/2 rounded-sm opacity-0 transition-opacity hover:bg-accent group-hover:opacity-100 z-10';
-
-  // Select 组件特殊定位：右侧 28px，避免遮挡下拉箭头
-  const positionClass = isForSelect ? 'right-[28px]' : 'right-2';
-
+  if (!show) return null;
   return (
     <button
       type='button'
       onClick={onClick}
-      className={`${baseClasses} ${positionClass}`}
+      className='hover:bg-accent absolute top-1/2 right-2 z-10 -translate-y-1/2 rounded-sm opacity-0 transition-opacity group-hover:opacity-100'
       title='清除'
     >
       <X className='text-muted-foreground hover:text-foreground h-4 w-4' />
@@ -111,8 +119,17 @@ function ClearButton({
   );
 }
 
+/** 字段宽度映射 */
+const FIELD_WIDTH = {
+  [FILTER_TYPES.INPUT]: 'w-64',
+  [FILTER_TYPES.SELECT]: 'w-30',
+  [FILTER_TYPES.DATE_RANGE]: 'w-80'
+} as const;
+
+// ==================== 字段组件 ====================
+
 /**
- * 1. 输入框类型
+ * 输入框类型
  */
 function FilterInput<T extends FieldValues>({
   config,
@@ -138,13 +155,12 @@ function FilterInput<T extends FieldValues>({
               value={(field.value as string) ?? ''}
               placeholder={config.placeholder}
               disabled={loading}
-              className='h-9 pr-8'
-              // 清空输入时设为 undefined
+              className='h-9 w-full pr-8'
               onChange={(e) => field.onChange(e.target.value || undefined)}
             />
             <ClearButton
               onClick={() => field.onChange(undefined)}
-              isHidden={!hasValue || Boolean(loading)}
+              show={hasValue && !loading}
             />
           </div>
         );
@@ -154,7 +170,7 @@ function FilterInput<T extends FieldValues>({
 }
 
 /**
- * 2. 下拉选择类型
+ * 下拉选择类型
  */
 function FilterSelect<T extends FieldValues>({
   config,
@@ -186,8 +202,10 @@ function FilterSelect<T extends FieldValues>({
               }}
               disabled={loading}
             >
-              {/* SelectTrigger 使用 pr-10 为 ClearButton 留出空间 */}
-              <SelectTrigger id={fieldId} className='h-9 pr-10'>
+              <SelectTrigger
+                id={fieldId}
+                className={`h-9 w-full ${hasValue ? 'group-hover:[&amp;>svg]:opacity-0' : ''}`}
+              >
                 <SelectValue placeholder={config.placeholder} />
               </SelectTrigger>
               <SelectContent>
@@ -200,8 +218,7 @@ function FilterSelect<T extends FieldValues>({
             </Select>
             <ClearButton
               onClick={() => field.onChange(undefined)}
-              isHidden={!hasValue || Boolean(loading)}
-              isForSelect={true} // 启用 Select 特殊定位
+              show={hasValue && !loading}
             />
           </div>
         );
@@ -211,8 +228,7 @@ function FilterSelect<T extends FieldValues>({
 }
 
 /**
- * 3. 日期范围类型
- * 核心逻辑：将 hook-form 的 startKey/endKey 映射到 DateRangePicker 的 value/onChange。
+ * 日期范围类型
  */
 function FilterDateRange<T extends FieldValues>({
   config,
@@ -226,6 +242,19 @@ function FilterDateRange<T extends FieldValues>({
   const fieldId = String(config.startKey);
   const { startKey, endKey, placeholder } = config;
 
+  // 使用 useWatch 读取值
+  const startValue = useWatch({ control, name: startKey });
+  const endValue = useWatch({ control, name: endKey });
+
+  // 构造 DateRange
+  const value: DateRange | undefined =
+    startValue && endValue
+      ? {
+          from: new Date(startValue as string),
+          to: new Date(endValue as string)
+        }
+      : undefined;
+
   return (
     <Controller
       name={startKey}
@@ -235,26 +264,11 @@ function FilterDateRange<T extends FieldValues>({
           name={endKey}
           control={control}
           render={({ field: endField }) => {
-            // 构造 DateRangeValue 供 DateRangePicker 使用 (将 ISO 字符串转回 Date 对象)
-            const value: DateRange | undefined =
-              startField.value && endField.value
-                ? {
-                    from: new Date(startField.value as string),
-                    to: new Date(endField.value as string)
-                  }
-                : undefined;
-
-            /**
-             * 处理 DateRangePicker 返回的 DateRange | undefined
-             * @param range DateRangePicker 返回的范围，清空时为 undefined
-             */
             const handleChange = (range: DateRange | undefined) => {
               if (range?.from && range?.to) {
-                // 有效范围：将 Date 对象转换成 ISO 字符串存入 RHF 字段
                 startField.onChange(range.from.toISOString());
                 endField.onChange(range.to.toISOString());
               } else {
-                // 清空操作 (由 DateRangePicker 内部的 X 按钮触发)：将两个字段都设为 undefined
                 startField.onChange(undefined);
                 endField.onChange(undefined);
               }
@@ -278,7 +292,7 @@ function FilterDateRange<T extends FieldValues>({
   );
 }
 
-// ==================== 筛选字段渲染组件 (Dispatcher) ====================
+// ==================== 筛选字段渲染组件 ====================
 
 /**
  * 单个筛选字段渲染组件
@@ -292,22 +306,20 @@ function FilterField<T extends FieldValues>({
   control: Control<T>;
   loading?: boolean;
 }) {
-  const spanClass =
-    config.type === 'date-range'
-      ? 'col-span-full sm:col-span-6 md:col-span-4'
-      : 'col-span-full sm:col-span-6 md:col-span-3';
+  // 使用宽度映射
+  const width = FIELD_WIDTH[config.type] || 'w-64';
 
   const renderField = () => {
     switch (config.type) {
-      case 'input':
+      case FILTER_TYPES.INPUT:
         return (
           <FilterInput config={config} control={control} loading={loading} />
         );
-      case 'select':
+      case FILTER_TYPES.SELECT:
         return (
           <FilterSelect config={config} control={control} loading={loading} />
         );
-      case 'date-range':
+      case FILTER_TYPES.DATE_RANGE:
         return (
           <FilterDateRange
             config={config}
@@ -320,18 +332,17 @@ function FilterField<T extends FieldValues>({
     }
   };
 
-  const fieldId =
-    config.type === 'date-range' ? String(config.startKey) : String(config.key);
-
   return (
-    <div className={`${spanClass} space-y-2`}>
-      <Label htmlFor={fieldId}>{config.label}</Label>
-      {renderField()}
+    <div className={`${width} flex-shrink-0`}>
+      <div className='space-y-2'>
+        <Label htmlFor={getFieldKey(config)}>{config.label}</Label>
+        {renderField()}
+      </div>
     </div>
   );
 }
 
-// ==================== 主组件 (保持不变) ====================
+// ==================== 主组件 ====================
 
 /**
  * 通用筛选器布局组件
@@ -350,23 +361,22 @@ export function FilterLayout<T extends FieldValues>({
   const advancedFilters = config.filter((c) => c.advanced);
   const showToggle = advancedFilters.length > 0;
 
-  const renderFields = (fieldConfigs: FilterFieldConfig<T>[]) =>
-    fieldConfigs.map((c) => {
-      const key = c.type === 'date-range' ? String(c.startKey) : String(c.key);
-      return (
-        <FilterField key={key} config={c} control={control} loading={loading} />
-      );
-    });
-
   return (
     <form
       onSubmit={handleSubmit(onSearch)}
       className='bg-card rounded-lg border p-4 shadow-sm'
     >
-      <div className='flex flex-col gap-4 md:flex-row md:items-end'>
-        {/* 主筛选区域：12 列网格 */}
-        <div className='grid flex-1 grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 md:grid-cols-12'>
-          {renderFields(primaryFilters)}
+      <div className='flex flex-col gap-4 md:flex-row'>
+        {/* 主筛选区域：flex 布局 */}
+        <div className='flex flex-1 flex-wrap items-start gap-4'>
+          {primaryFilters.map((c) => (
+            <FilterField
+              key={getFieldKey(c)}
+              config={c}
+              control={control}
+              loading={loading}
+            />
+          ))}
         </div>
 
         {/* 操作按钮区 */}
@@ -409,8 +419,15 @@ export function FilterLayout<T extends FieldValues>({
       {/* 高级筛选区域 */}
       {isExpanded && showToggle && (
         <div className='mt-4 border-t pt-4'>
-          <div className='grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 md:grid-cols-12'>
-            {renderFields(advancedFilters)}
+          <div className='flex flex-wrap gap-4'>
+            {advancedFilters.map((c) => (
+              <FilterField
+                key={getFieldKey(c)}
+                config={c}
+                control={control}
+                loading={loading}
+              />
+            ))}
           </div>
         </div>
       )}

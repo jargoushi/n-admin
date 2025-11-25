@@ -18,7 +18,8 @@ import {
 } from '../constants';
 import {
   FilterLayout,
-  FilterFieldConfig
+  FilterFieldConfig,
+  FILTER_TYPES
 } from '@/components/shared/filter-layout';
 
 /**
@@ -40,20 +41,20 @@ const FILTERS_CONFIG: FilterFieldConfig<ActivationCodeQueryRequest>[] = [
   {
     key: 'activation_code',
     label: '激活码',
-    type: 'input',
+    type: FILTER_TYPES.INPUT,
     placeholder: '请输入激活码进行精确搜索'
   },
   {
     key: 'type',
     label: '类型',
-    type: 'select',
+    type: FILTER_TYPES.SELECT,
     options: ACTIVATION_CODE_TYPE_OPTIONS,
     placeholder: '请选择激活码类型'
   },
   {
     key: 'status',
     label: '状态',
-    type: 'select',
+    type: FILTER_TYPES.SELECT,
     options: ACTIVATION_CODE_STATUS_OPTIONS,
     placeholder: '请选择激活码状态'
   },
@@ -62,7 +63,7 @@ const FILTERS_CONFIG: FilterFieldConfig<ActivationCodeQueryRequest>[] = [
     startKey: 'distributed_at_start',
     endKey: 'distributed_at_end',
     label: '分发时间范围',
-    type: 'date-range',
+    type: FILTER_TYPES.DATE_RANGE,
     placeholder: '选择分发时间范围',
     advanced: true
   },
@@ -70,7 +71,7 @@ const FILTERS_CONFIG: FilterFieldConfig<ActivationCodeQueryRequest>[] = [
     startKey: 'activated_at_start',
     endKey: 'activated_at_end',
     label: '激活时间范围',
-    type: 'date-range',
+    type: FILTER_TYPES.DATE_RANGE,
     placeholder: '选择激活时间范围',
     advanced: true
   },
@@ -78,7 +79,7 @@ const FILTERS_CONFIG: FilterFieldConfig<ActivationCodeQueryRequest>[] = [
     startKey: 'expire_time_start',
     endKey: 'expire_time_end',
     label: '过期时间范围',
-    type: 'date-range',
+    type: FILTER_TYPES.DATE_RANGE,
     placeholder: '选择过期时间范围',
     advanced: true
   }
