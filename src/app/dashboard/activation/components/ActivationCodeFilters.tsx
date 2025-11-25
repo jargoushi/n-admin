@@ -12,8 +12,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import type { ActivationCodeQueryRequest } from '../types';
 import {
-  ACTIVATION_CODE_TYPE_OPTIONS,
-  ACTIVATION_CODE_STATUS_OPTIONS,
+  ACTIVATION_CODE_STATUSES,
+  ACTIVATION_CODE_TYPES,
   DEFAULT_QUERY_PARAMS
 } from '../constants';
 import {
@@ -48,14 +48,14 @@ const FILTERS_CONFIG: FilterFieldConfig<ActivationCodeQueryRequest>[] = [
     key: 'type',
     label: '类型',
     type: FILTER_TYPES.SELECT,
-    options: ACTIVATION_CODE_TYPE_OPTIONS,
+    options: ACTIVATION_CODE_TYPES,
     placeholder: '请选择激活码类型'
   },
   {
     key: 'status',
     label: '状态',
     type: FILTER_TYPES.SELECT,
-    options: ACTIVATION_CODE_STATUS_OPTIONS,
+    options: ACTIVATION_CODE_STATUSES,
     placeholder: '请选择激活码状态'
   },
   // --- 高级筛选：时间范围 ---

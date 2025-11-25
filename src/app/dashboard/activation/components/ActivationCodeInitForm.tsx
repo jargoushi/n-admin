@@ -20,20 +20,17 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
-import { toast } from 'sonner';
 import { copyToClipboard } from '@/lib/utils';
 import type {
   ActivationCodeCreateItem,
-  ActivationCodeBatchCreateRequest,
-  ActivationCodeBatchResponse,
   ActivationCodeTypeResult
 } from '../types';
 import {
-  ACTIVATION_CODE_TYPE_OPTIONS,
   MAX_INIT_ITEMS,
   INIT_COUNT_RANGE,
   ACTIVATION_CODE_TYPES
 } from '../constants';
+import { findDescByCode } from '@/types/common';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
 import { ActivationApiService } from '@/service/api/activation.api';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
@@ -71,9 +68,9 @@ export function ActivationCodeInitForm() {
   const handleAddItem = useCallback(() => {
     if (items.length >= MAX_INIT_ITEMS) return;
 
-    const nextType = ACTIVATION_CODE_TYPE_OPTIONS.find(
-      (opt) => !selectedTypes.has(opt.value as number)
-    )?.value as number | undefined;
+    const nextType = ACTIVATION_CODE_TYPES.find(
+      (opt) => !selectedTypes.has(opt.code as number)
+    )?.code as number | undefined;
 
     const newType = nextType !== undefined ? nextType : DEFAULT_ITEM.type;
 
@@ -199,19 +196,20 @@ export function ActivationCodeInitForm() {
                       <SelectValue placeholder='请选择激活码类型' />
                     </SelectTrigger>
                     <SelectContent>
-                      {ACTIVATION_CODE_TYPE_OPTIONS.map((option) => {
-                        const typeValue = option.value as 0 | 1 | 2 | 3;
+                      {ACTIVATION_CODE_TYPES.map((option) => {
+                        const typeValue = option.code as 0 | 1 | 2 | 3;
+
                         return (
                           <SelectItem
-                            key={option.value}
-                            value={String(option.value)}
+                            key={option.code}
+                            value={String(option.code)}
                             disabled={
                               selectedTypes.has(typeValue) &&
                               typeValue !== item.type
                             }
                           >
-                            {option.label} (
-                            {ACTIVATION_CODE_TYPES[typeValue].label})
+                            {option.desc} (
+                            {findDescByCode(ACTIVATION_CODE_TYPES, typeValue)})
                           </SelectItem>
                         );
                       })}

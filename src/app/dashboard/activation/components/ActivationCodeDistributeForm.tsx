@@ -22,10 +22,7 @@ import {
 import { Card } from '@/components/ui/card';
 import { copyToClipboard } from '@/lib/utils';
 import type { ActivationCodeGetRequest } from '../types';
-import {
-  ACTIVATION_CODE_TYPE_OPTIONS,
-  DISTRIBUTE_COUNT_RANGE
-} from '../constants';
+import { ACTIVATION_CODE_TYPES, DISTRIBUTE_COUNT_RANGE } from '../constants';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
 import { ActivationApiService } from '@/service/api/activation.api';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
@@ -119,9 +116,9 @@ export function ActivationCodeDistributeForm() {
               <SelectValue placeholder='请选择激活码类型' />
             </SelectTrigger>
             <SelectContent>
-              {ACTIVATION_CODE_TYPE_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={String(option.value)}>
-                  {option.label}
+              {ACTIVATION_CODE_TYPES.map((option) => (
+                <SelectItem key={option.code} value={String(option.code)}>
+                  {option.desc}
                 </SelectItem>
               ))}
             </SelectContent>

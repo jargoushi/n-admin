@@ -22,7 +22,7 @@ import {
 } from '@/components/table/action-dropdown';
 import type { ActivationCode } from '../types';
 import { ACTIVATION_CODE_TYPES, ACTIVATION_CODE_STATUSES } from '../constants';
-import { StatusBadge } from '@/components/shared/status-badge';
+import { findDescByCode } from '@/types/common';
 import { ActivationApiService } from '@/service/api/activation.api';
 import { ActivationCodeDetailView } from './ActivationCodeDetailView';
 
@@ -105,7 +105,9 @@ export function ActivationCodeTable({
         title: '类型',
         className: 'w-[100px] text-center',
         render: (_, record) => (
-          <StatusBadge value={record.type} mapping={ACTIVATION_CODE_TYPES} />
+          <span className='text-sm'>
+            {findDescByCode(ACTIVATION_CODE_TYPES, record.type)}
+          </span>
         )
       },
       {
@@ -113,10 +115,9 @@ export function ActivationCodeTable({
         title: '状态',
         className: 'w-[100px] text-center',
         render: (_, record) => (
-          <StatusBadge
-            value={record.status}
-            mapping={ACTIVATION_CODE_STATUSES}
-          />
+          <span className='text-sm'>
+            {findDescByCode(ACTIVATION_CODE_STATUSES, record.status)}
+          </span>
         )
       },
       {

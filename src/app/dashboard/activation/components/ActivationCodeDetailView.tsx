@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
 
 // 引入公共组件和类型
 import {
@@ -10,8 +9,8 @@ import {
 } from '@/components/shared/EntityDetailView';
 import { formatDateTime } from '@/lib/data-utils';
 import type { ActivationCode } from '../types';
-// 引入常量配置,使其内聚
 import { ACTIVATION_CODE_TYPES, ACTIVATION_CODE_STATUSES } from '../constants';
+import { findDescByCode } from '@/types/common';
 
 /**
  * 激活码详情视图配置
@@ -27,21 +26,19 @@ const CODE_DETAIL_CONFIG: FieldConfig<ActivationCode>[] = [
   {
     label: '类型',
     key: 'type',
-    render: (_: unknown, data: ActivationCode) => (
-      <Badge variant={ACTIVATION_CODE_TYPES[data.type]?.variant || 'secondary'}>
-        {data.type_name}
-      </Badge>
+    render: (_, data: ActivationCode) => (
+      <span className='text-sm'>
+        {findDescByCode(ACTIVATION_CODE_TYPES, data.type)}
+      </span>
     )
   },
   {
     label: '状态',
     key: 'status',
-    render: (_: unknown, data: ActivationCode) => (
-      <Badge
-        variant={ACTIVATION_CODE_STATUSES[data.status]?.variant || 'secondary'}
-      >
-        {data.status_name}
-      </Badge>
+    render: (_, data: ActivationCode) => (
+      <span className='text-sm'>
+        {findDescByCode(ACTIVATION_CODE_STATUSES, data.status)}
+      </span>
     )
   },
   {

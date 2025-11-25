@@ -13,7 +13,8 @@ import { ActivationApiService } from '@/service/api/activation.api';
 import { useUrlFilters } from '@/components/shared/use-url-filters';
 import type { ActivationCode, ActivationCodeQueryRequest } from '../types';
 import type { PaginationInfo } from '@/lib/http/types';
-import { DEFAULT_QUERY_PARAMS, DEFAULT_PAGINATION } from '../constants';
+import { DEFAULT_QUERY_PARAMS } from '../constants';
+import { DEFAULT_PAGINATION } from '@/constants/pagination';
 
 /**
  * Hook 返回值

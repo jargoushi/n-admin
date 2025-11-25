@@ -6,30 +6,6 @@
  * 包括后端 API 约定的类型和前端特有的类型
  */
 
-// ==================== UI 相关类型 ====================
-
-/**
- * Badge 组件变体类型
- */
-export type BadgeVariant = 'secondary' | 'default' | 'outline' | 'destructive';
-
-/**
- * 激活码类型配置
- */
-export interface CodeTypeConfig {
-  label: string;
-  variant: BadgeVariant;
-}
-
-/**
- * 激活码状态配置
- */
-export interface CodeStatusConfig {
-  label: string;
-  variant: BadgeVariant;
-}
-
-// ==================== 后端 API 类型定义 ====================
 /**
  * 激活码实体（与后端 ActivationCodeResponse 一致）
  */

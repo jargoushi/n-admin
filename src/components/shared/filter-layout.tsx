@@ -21,6 +21,7 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { DateRangePicker, DateRange } from '@/components/ui/date-range-picker';
+import { OptionConfig } from '@/types/common';
 
 // ==================== 类型常量导出 ====================
 
@@ -54,7 +55,7 @@ export interface SelectConfig<T extends FieldValues> extends BaseFieldConfig {
   /** 字段键名 */
   key: Path<T>;
   /** 选项列表 */
-  options: readonly { label: string; value: string | number }[];
+  options: OptionConfig[];
 }
 
 /** 日期范围配置 */
@@ -196,22 +197,24 @@ function FilterSelect<T extends FieldValues>({
               value={field.value !== undefined ? String(field.value) : ''}
               onValueChange={(val) => {
                 const option = config.options.find(
-                  (opt) => String(opt.value) === val
+                  (opt) => String(opt.code) === val
                 );
-                field.onChange(option?.value);
+                field.onChange(option?.code);
               }}
               disabled={loading}
             >
               <SelectTrigger
                 id={fieldId}
-                className={`h-9 w-full ${hasValue ? 'group-hover:[&amp;>svg]:opacity-0' : ''}`}
+                className={`h-9 w-full ${hasValue ? 'group-hover:[&>svg]:opacity-0' : ''}`}
               >
                 <SelectValue placeholder={config.placeholder} />
               </SelectTrigger>
               <SelectContent>
                 {config.options.map((option) => (
-                  <SelectItem key={option.value} value={String(option.value)}>
-                    {option.label}
+                  // 【修改点 3】: 渲染 Key 和 Value 使用 option.code
+                  <SelectItem key={option.code} value={String(option.code)}>
+                    {/* 【修改点 4】: 显示文本使用 option.desc */}
+                    {option.desc}
                   </SelectItem>
                 ))}
               </SelectContent>
