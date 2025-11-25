@@ -5,7 +5,11 @@
  * 定义模块所需的所有常量,包括下拉选项、表格列定义、消息文案等
  */
 
-import type { ActivationCodeQueryRequest } from './types';
+import type {
+  ActivationCodeQueryRequest,
+  CodeTypeConfig,
+  CodeStatusConfig
+} from './types';
 import {
   DEFAULT_PAGINATION,
   DEFAULT_PAGE_REQUEST
@@ -19,12 +23,12 @@ export { DEFAULT_PAGINATION };
 /**
  * 激活码类型统一配置(唯一真相源)
  */
-export const ACTIVATION_CODE_TYPES = {
-  0: { label: '日卡', variant: 'secondary' as const },
-  1: { label: '月卡', variant: 'default' as const },
-  2: { label: '年卡', variant: 'outline' as const },
-  3: { label: '永久卡', variant: 'default' as const }
-} as const;
+export const ACTIVATION_CODE_TYPES: Record<number, CodeTypeConfig> = {
+  0: { label: '日卡', variant: 'secondary' },
+  1: { label: '月卡', variant: 'default' },
+  2: { label: '年卡', variant: 'outline' },
+  3: { label: '永久卡', variant: 'default' }
+};
 
 /**
  * 激活码类型选项(用于下拉选择,从统一配置派生)
@@ -41,12 +45,12 @@ export const ACTIVATION_CODE_TYPE_OPTIONS = Object.entries(
 /**
  * 激活码状态统一配置(唯一真相源)
  */
-export const ACTIVATION_CODE_STATUSES = {
-  0: { label: '未使用', variant: 'secondary' as const },
-  1: { label: '已分发', variant: 'default' as const },
-  2: { label: '已激活', variant: 'default' as const },
-  3: { label: '作废', variant: 'destructive' as const }
-} as const;
+export const ACTIVATION_CODE_STATUSES: Record<number, CodeStatusConfig> = {
+  0: { label: '未使用', variant: 'secondary' },
+  1: { label: '已分发', variant: 'default' },
+  2: { label: '已激活', variant: 'default' },
+  3: { label: '作废', variant: 'destructive' }
+};
 
 /**
  * 激活码状态选项(用于下拉选择,从统一配置派生)

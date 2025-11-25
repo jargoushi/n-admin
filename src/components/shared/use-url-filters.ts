@@ -15,7 +15,7 @@ export function useUrlFilters<T extends Record<string, any>>(
   const isUpdatingRef = useRef(false);
 
   // 1. 初始化：优先从 URL 读取，否则使用默认值
-  const initializeState = (): T => {
+  const initializeState = useCallback((): T => {
     const state = { ...initialFilters };
 
     // 遍历默认值的 key，尝试从 URL 获取对应的值
@@ -24,7 +24,10 @@ export function useUrlFilters<T extends Record<string, any>>(
       if (value !== null) {
         // 简单的类型转换处理
         if (typeof initialFilters[key] === 'number') {
-          (state as any)[key] = Number(value);
+          const numValue = Number(value);
+          if (!Number.isNaN(numValue)) {
+            (state as any)[key] = numValue;
+          }
         } else if (typeof initialFilters[key] === 'boolean') {
           (state as any)[key] = value === 'true';
         } else {
@@ -33,17 +36,17 @@ export function useUrlFilters<T extends Record<string, any>>(
       }
     });
     return state;
-  };
+  }, [searchParams, initialFilters]);
 
-  const [filters, setFilters] = useState<T>(initializeState);
+  const [filters, setFiltersState] = useState<T>(initializeState);
 
   // 2. 监听 URL 变化同步到 State (处理浏览器前进/后退)
   useEffect(() => {
     if (!isUpdatingRef.current) {
-      setFilters(initializeState());
+      setFiltersState(initializeState());
     }
     isUpdatingRef.current = false;
-  }, [searchParams]);
+  }, [searchParams, initializeState]);
 
   // 3. 同步 State 到 URL
   const syncToURL = useCallback((newFilters: T) => {
@@ -71,9 +74,9 @@ export function useUrlFilters<T extends Record<string, any>>(
   }, []);
 
   // 4. 更新筛选的方法
-  const setFilterValue = useCallback(
+  const setFilters = useCallback(
     (newFilters: Partial<T>) => {
-      setFilters((prev) => {
+      setFiltersState((prev) => {
         const next = { ...prev, ...newFilters };
         syncToURL(next);
         return next;
@@ -84,13 +87,13 @@ export function useUrlFilters<T extends Record<string, any>>(
 
   // 5. 重置方法
   const resetFilters = useCallback(() => {
-    setFilters(initialFilters);
+    setFiltersState(initialFilters);
     syncToURL(initialFilters);
   }, [initialFilters, syncToURL]);
 
   return {
     filters,
-    setFilters: setFilterValue,
+    setFilters,
     resetFilters
   };
 }

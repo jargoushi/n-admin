@@ -35,7 +35,8 @@ import {
   ACTIVATION_CODE_TYPES
 } from '../constants';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
-import { useActivationCodeManagement } from '../hooks/useActivationCodeManagement';
+import { ActivationApiService } from '@/service/api/activation.api';
+import { useFormSubmit } from '@/hooks/useFormSubmit';
 
 /**
  * 默认初始化项
@@ -46,16 +47,15 @@ const DEFAULT_ITEM: ActivationCodeCreateItem = {
 };
 
 export function ActivationCodeInitForm() {
-  const { initActivationCodes } = useActivationCodeManagement();
+  // 使用通用 Hook 管理提交状态
+  const { result, isLoading, handleSubmit } = useFormSubmit(
+    ActivationApiService.init
+  );
 
   // 表单数据
   const [items, setItems] = useState<ActivationCodeCreateItem[]>([
     DEFAULT_ITEM
   ]);
-  const [result, setResult] = useState<ActivationCodeBatchResponse | null>(
-    null
-  );
-  const [isLoading, setIsLoading] = useState(false);
 
   /**
    * 获取当前已选中的类型列表
@@ -131,27 +131,6 @@ export function ActivationCodeInitForm() {
     );
   }, [items, selectedTypes.size]);
 
-  /**
-   * 提交处理
-   */
-  const handleSubmit = useCallback(async () => {
-    if (!isValid) {
-      toast.error('请填写完整的表单信息');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const data: ActivationCodeBatchCreateRequest = { items };
-      const response = await initActivationCodes(data);
-      if (response) {
-        setResult(response);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [items, isValid, initActivationCodes]);
-
   // 结果内容
   const resultContent = result && (
     <div className='space-y-4'>
@@ -196,8 +175,8 @@ export function ActivationCodeInitForm() {
     <BaseFormLayout
       resultContent={resultContent}
       submit={{
-        text: '开始生成',
-        onSubmit: handleSubmit,
+        text: '立即生成',
+        onSubmit: () => handleSubmit({ items }),
         disabled: !isValid,
         loading: isLoading
       }}

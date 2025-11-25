@@ -10,56 +10,35 @@ import {
 } from '@/components/shared/EntityDetailView';
 import { formatDateTime } from '@/lib/data-utils';
 import type { ActivationCode } from '../types';
-// 引入常量配置，使其内聚
+// 引入常量配置,使其内聚
 import { ACTIVATION_CODE_TYPES, ACTIVATION_CODE_STATUSES } from '../constants';
-
-// ===================================================================
-// 激活码详情配置
-// -------------------------------------------------------------------
-// 解决 TS 报错：定义一个本地类型别名，用于显式指定 key 的类型
-type ActivationCodeKey = keyof ActivationCode;
 
 /**
  * 激活码详情视图配置
- * （从 ActivationCodeDialogs.tsx 移动至此）
  */
 const CODE_DETAIL_CONFIG: FieldConfig<ActivationCode>[] = [
   {
     label: '激活码',
-    // 显式断言 key 的类型
-    key: 'activation_code' as ActivationCodeKey,
+    key: 'activation_code',
     render: (value: string) => (
       <code className='font-mono text-lg font-medium break-all'>{value}</code>
     )
   },
   {
     label: '类型',
-    // 显式断言 key 的类型
-    key: 'type' as ActivationCodeKey,
+    key: 'type',
     render: (_: unknown, data: ActivationCode) => (
-      <Badge
-        // 使用 constants.ts 中定义的映射
-        variant={
-          ACTIVATION_CODE_TYPES[data.type as keyof typeof ACTIVATION_CODE_TYPES]
-            ?.variant || 'secondary'
-        }
-      >
+      <Badge variant={ACTIVATION_CODE_TYPES[data.type]?.variant || 'secondary'}>
         {data.type_name}
       </Badge>
     )
   },
   {
     label: '状态',
-    // 显式断言 key 的类型
-    key: 'status' as ActivationCodeKey,
+    key: 'status',
     render: (_: unknown, data: ActivationCode) => (
       <Badge
-        // 使用 constants.ts 中定义的映射
-        variant={
-          ACTIVATION_CODE_STATUSES[
-            data.status as keyof typeof ACTIVATION_CODE_STATUSES
-          ]?.variant || 'secondary'
-        }
+        variant={ACTIVATION_CODE_STATUSES[data.status]?.variant || 'secondary'}
       >
         {data.status_name}
       </Badge>
@@ -67,19 +46,19 @@ const CODE_DETAIL_CONFIG: FieldConfig<ActivationCode>[] = [
   },
   {
     label: '创建时间',
-    key: 'created_at' as ActivationCodeKey,
+    key: 'created_at',
     render: (value: string) => formatDateTime(value)
   },
   {
     label: '更新时间',
-    key: 'updated_at' as ActivationCodeKey,
+    key: 'updated_at',
     render: (value: string) => formatDateTime(value)
   },
   {
     label: '过期时间',
-    key: 'expire_time' as ActivationCodeKey,
+    key: 'expire_time',
     render: (_: unknown, data: ActivationCode) => {
-      // 匹配原始逻辑：类型 3 为永久有效
+      // 匹配原始逻辑:类型 3 为永久有效
       if (data.type === 3) return <span className='text-sm'>永久有效</span>;
       return (
         <span className='text-sm'>{formatDateTime(data.expire_time)}</span>
@@ -88,22 +67,18 @@ const CODE_DETAIL_CONFIG: FieldConfig<ActivationCode>[] = [
   },
   {
     label: '分发时间',
-    key: 'distributed_at' as ActivationCodeKey,
+    key: 'distributed_at',
     render: (value: string) => formatDateTime(value)
   },
   {
     label: '激活时间',
-    key: 'activated_at' as ActivationCodeKey,
+    key: 'activated_at',
     render: (value: string) => formatDateTime(value)
   }
 ];
 
-// ===================================================================
-// ActivationCodeDetailView 组件
-// ===================================================================
-
 interface ActivationCodeDetailViewProps {
-  /** 详情数据，由 GenericDialogs/父级对话框传入 */
+  /** 详情数据 */
   data: ActivationCode | null;
 }
 
@@ -117,10 +92,5 @@ export function ActivationCodeDetailView({
     return null;
   }
 
-  return (
-    <EntityDetailView
-      data={data}
-      config={CODE_DETAIL_CONFIG} // 使用内聚的配置
-    />
-  );
+  return <EntityDetailView data={data} config={CODE_DETAIL_CONFIG} />;
 }

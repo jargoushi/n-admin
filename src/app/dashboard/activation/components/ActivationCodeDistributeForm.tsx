@@ -8,7 +8,7 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import { Copy, Loader2 } from 'lucide-react';
+import { Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,18 +27,20 @@ import {
   DISTRIBUTE_COUNT_RANGE
 } from '../constants';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
-import { useActivationCodeManagement } from '../hooks/useActivationCodeManagement';
+import { ActivationApiService } from '@/service/api/activation.api';
+import { useFormSubmit } from '@/hooks/useFormSubmit';
 
 export function ActivationCodeDistributeForm() {
-  const { distributeActivationCodes } = useActivationCodeManagement();
+  // 使用通用 Hook 管理提交状态
+  const { result, isLoading, handleSubmit } = useFormSubmit(
+    ActivationApiService.distribute
+  );
 
   // 表单数据
   const [formData, setFormData] = useState<ActivationCodeGetRequest>({
     type: 0,
     count: 1
   });
-  const [result, setResult] = useState<string[] | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   /**
    * 更新单个字段
@@ -62,21 +64,6 @@ export function ActivationCodeDistributeForm() {
       formData.count <= DISTRIBUTE_COUNT_RANGE.MAX
     );
   }, [formData]);
-
-  /**
-   * 提交处理
-   */
-  const handleSubmit = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const distributedCodes = await distributeActivationCodes(formData);
-      if (distributedCodes) {
-        setResult(distributedCodes);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [formData, distributeActivationCodes]);
 
   // 结果内容
   const resultContent = result && (
@@ -114,8 +101,8 @@ export function ActivationCodeDistributeForm() {
     <BaseFormLayout
       resultContent={resultContent}
       submit={{
-        text: '开始派发',
-        onSubmit: handleSubmit,
+        text: '立即派发',
+        onSubmit: () => handleSubmit(formData),
         disabled: !isValid,
         loading: isLoading
       }}

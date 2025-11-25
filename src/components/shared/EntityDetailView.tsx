@@ -16,9 +16,9 @@ import { Label } from '@radix-ui/react-label';
  * 字段配置项
  */
 export interface FieldConfig<T> {
-  key: keyof T | 'status' | 'type'; // 支持特殊字段
+  key: keyof T;
   label: string;
-  // 自定义渲染函数，接受整个数据对象和当前字段的值
+  // 自定义渲染函数,接受整个数据对象和当前字段的值
   render?: (value: any, data: T) => React.ReactNode;
 }
 
@@ -47,7 +47,7 @@ export function EntityDetailView<T extends Record<string, any>>({
       <CardContent className='pt-0'>
         <div className='grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2'>
           {config.map((field) => {
-            const value = data[field.key as keyof T];
+            const value = data[field.key];
 
             const content = field.render ? (
               field.render(value, data)

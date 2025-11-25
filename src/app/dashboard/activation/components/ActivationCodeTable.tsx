@@ -23,7 +23,7 @@ import {
 import type { ActivationCode } from '../types';
 import { ACTIVATION_CODE_TYPES, ACTIVATION_CODE_STATUSES } from '../constants';
 import { StatusBadge } from '@/components/shared/status-badge';
-import { useActivationCodeManagement } from '../hooks/useActivationCodeManagement';
+import { ActivationApiService } from '@/service/api/activation.api';
 import { ActivationCodeDetailView } from './ActivationCodeDetailView';
 
 /**
@@ -41,10 +41,6 @@ export function ActivationCodeTable({
   loading = false,
   onRefresh
 }: ActivationCodeTableProps) {
-  // 业务 Hook
-  const { activateCode, invalidateCode, getCodeDetail } =
-    useActivationCodeManagement();
-
   // 管理详情弹窗
   const { openDialog, DialogsContainer } = useGenericDialogs<ActivationCode>({
     dialogs: {
@@ -63,7 +59,7 @@ export function ActivationCodeTable({
    * 处理查看详情
    */
   const handleViewDetail = async (code: ActivationCode) => {
-    const detail = await getCodeDetail(code.activation_code);
+    const detail = await ActivationApiService.getDetail(code.activation_code);
     if (detail) {
       openDialog('detail', detail);
     }
@@ -74,9 +70,9 @@ export function ActivationCodeTable({
    */
   const handleActivate = (code: ActivationCode) => {
     confirm({
-      description: `确定要激活激活码 "${code.activation_code}" 吗？`,
+      description: `确定要激活"${code.activation_code}" 吗？`,
       onConfirm: async () => {
-        await activateCode(code.activation_code);
+        await ActivationApiService.activate(code.activation_code);
         onRefresh?.();
       }
     });
@@ -89,7 +85,9 @@ export function ActivationCodeTable({
     confirm({
       description: `确定要作废激活码 "${code.activation_code}" 吗？\n\n作废后将无法恢复！`,
       onConfirm: async () => {
-        await invalidateCode(code.activation_code);
+        await ActivationApiService.invalidate({
+          activation_code: code.activation_code
+        });
         onRefresh?.();
       }
     });

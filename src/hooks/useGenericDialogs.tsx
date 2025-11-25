@@ -9,8 +9,8 @@ import {
  * Hook 配置选项
  */
 export interface UseGenericDialogsOptions {
-  dialogs: Record<string, DialogConfig>; // ✅ 重命名并简化
-  onClose?: () => void; // ✅ 统一回调
+  dialogs: Record<string, DialogConfig>;
+  onClose?: () => void;
 }
 
 /**
@@ -52,7 +52,7 @@ export function useGenericDialogs<T = any>(options: UseGenericDialogsOptions) {
    */
   const closeDialog = useCallback(() => {
     setDialogState({ type: null, data: null, open: false });
-    onCloseCallback?.(); // ✅ 可选回调
+    onCloseCallback?.();
   }, [onCloseCallback]);
 
   /**
