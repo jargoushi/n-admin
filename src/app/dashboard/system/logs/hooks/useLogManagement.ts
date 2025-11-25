@@ -2,13 +2,8 @@
 
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
-import {
-  LogItem,
-  LogFilters,
-  PaginationInfo,
-  LogStats,
-  LogDialogState
-} from '../types';
+import { LogItem, LogFilters, LogStats, LogDialogState } from '../types';
+import type { PaginationInfo } from '@/lib/http/types';
 import { DEFAULT_PAGINATION, MESSAGES } from '../constants';
 import { LogAPI } from '@/service/request';
 
@@ -61,9 +56,9 @@ export function useLogManagement() {
         setLogs(res.data || []);
         setPagination({
           page: res.pager?.page || 1,
-          limit: res.pager?.limit || 20,
+          size: res.pager?.size || res.pager?.limit || 20,
           total: res.pager?.total || 0,
-          totalPages: res.pager?.totalPages || 0
+          pages: res.pager?.pages || res.pager?.totalPages || 0
         });
       } else {
         toast.error(res.message || MESSAGES.ERROR.FETCH_LOGS);

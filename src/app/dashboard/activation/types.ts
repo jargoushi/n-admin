@@ -126,19 +126,3 @@ export interface ActivationCodeQueryRequest {
   /** QueryParams 兼容索引签名 */
   [key: string]: string | number | undefined;
 }
-
-// ==================== 前端特有类型定义 ====================
-
-/**
- * 分页信息
- */
-export interface PaginationInfo {
-  /** 当前页码 */
-  page: number;
-  /** 每页数量 */
-  limit: number;
-  /** 总记录数 */
-  total: number;
-  /** 总页数 */
-  totalPages: number;
-}

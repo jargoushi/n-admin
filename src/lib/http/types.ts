@@ -18,7 +18,7 @@ export interface ApiResponse<T = unknown> {
 }
 
 /**
- * 分页响应数据结构（与后端 Python PageResponse 模型一致）
+ * 分页响应数据结构(与后端 Python PageResponse 模型一致)
  * @template T - 列表项的类型
  */
 export interface PageResponse<T = unknown> {
@@ -33,6 +33,12 @@ export interface PageResponse<T = unknown> {
   /** 当前页的数据列表 */
   items: T[];
 }
+
+/**
+ * 分页信息(不包含数据列表)
+ * 从 PageResponse 提取,用于组件 props 传递
+ */
+export type PaginationInfo = Omit<PageResponse, 'items'>;
 
 /**
  * 分页请求参数（与后端 Python PageRequest 模型一致）

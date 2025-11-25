@@ -8,7 +8,7 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import PageContainer from '@/components/layout/page-container';
 import { Pagination } from '@/components/table/pagination';
 
@@ -26,15 +26,15 @@ export default function ActivationCodeManagementPage() {
   const { codes, loading, pagination, fetchActivationCodes } =
     useActivationCodeManagement();
 
+  // 刷新列表数据
+  const handleRefresh = useCallback(() => {
+    fetchActivationCodes(filters);
+  }, [filters, fetchActivationCodes]);
+
   // 数据加载副作用
   useEffect(() => {
     handleRefresh();
-  }, [filters, fetchActivationCodes]);
-
-  // 刷新列表数据
-  const handleRefresh = () => {
-    fetchActivationCodes(filters);
-  };
+  }, [handleRefresh]);
 
   return (
     <PageContainer scrollable={false}>
@@ -59,7 +59,7 @@ export default function ActivationCodeManagementPage() {
             <Pagination
               pagination={pagination}
               onPageChange={(page) => updatePagination({ page })}
-              onPageSizeChange={(limit) => updatePagination({ limit, page: 1 })}
+              onPageSizeChange={(size) => updatePagination({ size, page: 1 })}
             />
           </div>
         </div>

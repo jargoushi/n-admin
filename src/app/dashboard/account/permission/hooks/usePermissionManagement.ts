@@ -7,9 +7,9 @@ import {
   Permission,
   PermissionFilters,
   PermissionFormData,
-  PaginationInfo,
   PermissionDialogState
 } from '../types';
+import type { PaginationInfo } from '@/lib/http/types';
 import { DEFAULT_PAGINATION, MESSAGES } from '../constants';
 
 export function usePermissionManagement() {
@@ -52,18 +52,18 @@ export function usePermissionManagement() {
         if (res.pager) {
           setPagination({
             page: res.pager.page || 1,
-            limit: res.pager.limit || 10,
+            size: res.pager.size || res.pager.limit || 10,
             total: res.pager.total || 0,
-            totalPages: res.pager.totalPages || 0
+            pages: res.pager.pages || res.pager.totalPages || 0
           });
         } else {
           // 如果API没有返回分页信息，手动计算
           const total = Array.isArray(res.data) ? res.data.length : 0;
           setPagination({
             page: 1,
-            limit: total,
+            size: total,
             total,
-            totalPages: 1
+            pages: 1
           });
         }
       } else {

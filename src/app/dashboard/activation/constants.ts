@@ -2,23 +2,17 @@
  * 激活码管理模块常量配置
  *
  * @description
- * 定义模块所需的所有常量，包括分页配置、下拉选项、
- * 表格列定义、消息文案等
+ * 定义模块所需的所有常量,包括下拉选项、表格列定义、消息文案等
  */
 
-import type { PaginationInfo, ActivationCodeQueryRequest } from './types';
+import type { ActivationCodeQueryRequest } from './types';
+import {
+  DEFAULT_PAGINATION,
+  DEFAULT_PAGE_REQUEST
+} from '@/constants/pagination';
 
-// ==================== 分页配置 ====================
-
-/**
- * 默认分页配置
- */
-export const DEFAULT_PAGINATION: PaginationInfo = {
-  page: 1,
-  limit: 10,
-  total: 0,
-  totalPages: 0
-};
+// ==================== 分页配置(从全局导入) ====================
+export { DEFAULT_PAGINATION };
 
 // ==================== 激活码类型配置 ====================
 
@@ -67,11 +61,11 @@ export const ACTIVATION_CODE_STATUS_OPTIONS = Object.entries(
 // ==================== 默认查询参数 ====================
 
 /**
- * 默认查询参数（与后端 API 一致）
+ * 默认查询参数(与后端 API 一致)
+ * 使用全局分页配置
  */
 export const DEFAULT_QUERY_PARAMS: ActivationCodeQueryRequest = {
-  page: 1,
-  size: 10
+  ...DEFAULT_PAGE_REQUEST
 };
 
 // ==================== 验证规则 ====================

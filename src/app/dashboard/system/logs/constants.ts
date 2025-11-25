@@ -1,19 +1,16 @@
-import type { LogFilters, PaginationInfo } from './types';
+import type { LogFilters } from './types';
+import {
+  DEFAULT_PAGINATION,
+  DEFAULT_PAGE_SIZE_OPTIONS
+} from '@/constants/pagination';
+
+// 从全局导入分页配置
+export { DEFAULT_PAGINATION };
 
 /**
- * 默认分页配置
+ * 分页大小选项(使用全局配置)
  */
-export const DEFAULT_PAGINATION: PaginationInfo = {
-  page: 1,
-  limit: 20,
-  total: 0,
-  totalPages: 0
-};
-
-/**
- * 分页大小选项
- */
-export const PAGE_SIZE_OPTIONS = [20, 50, 100, 200];
+export const PAGE_SIZE_OPTIONS = DEFAULT_PAGE_SIZE_OPTIONS;
 
 /**
  * 默认筛选条件

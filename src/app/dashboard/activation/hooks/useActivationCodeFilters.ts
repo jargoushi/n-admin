@@ -15,10 +15,10 @@ export function useActivationCodeFilters() {
     });
   };
 
-  const updatePagination = (pagination: { page?: number; limit?: number }) => {
+  const updatePagination = (pagination: { page?: number; size?: number }) => {
     setFilters({
       ...(pagination.page && { page: pagination.page }),
-      ...(pagination.limit && { size: pagination.limit })
+      ...(pagination.size && { size: pagination.size })
     });
   };
 

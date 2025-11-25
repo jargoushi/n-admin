@@ -32,16 +32,6 @@ export interface LogFilters {
 }
 
 /**
- * 分页信息
- */
-export interface PaginationInfo {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
-
-/**
  * 日志统计信息
  */
 export interface LogStats {

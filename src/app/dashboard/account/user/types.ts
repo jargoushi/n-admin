@@ -1,3 +1,5 @@
+import { PaginationInfo } from '@/lib/http/types';
+
 export interface User {
   id: number;
   username: string;
@@ -26,13 +28,6 @@ export interface UserFilters {
   dateRange?: { from: Date; to: Date } | undefined;
   page?: number;
   limit?: number;
-}
-
-export interface PaginationInfo {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
 }
 
 export interface UserFormData {

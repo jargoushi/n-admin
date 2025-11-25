@@ -11,8 +11,9 @@ import {
 } from '@/components/table/action-dropdown';
 import { formatDateTime } from '@/components/table/utils';
 
-import type { LogItem, PaginationInfo } from '../types';
+import type { LogItem } from '../types';
 import { LOG_LEVEL_COLORS } from '../constants';
+import { PaginationInfo } from '@/lib/http/types';
 
 interface LogTableProps {
   /** 日志列表数据 */
@@ -46,8 +47,7 @@ export function LogTable({
       className: 'text-center w-[60px] font-mono text-sm',
       render: (value: string, record: LogItem, index: number) => {
         // 计算全局序号：(当前页 - 1) * 每页大小 + 当前索引 + 1
-        const globalIndex =
-          (pagination.page - 1) * pagination.limit + index + 1;
+        const globalIndex = (pagination.page - 1) * pagination.size + index + 1;
         return <span className='font-mono text-sm'>{globalIndex}</span>;
       }
     },

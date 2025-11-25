@@ -11,13 +11,7 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { generatePageNumbers } from '@/lib/pagination-utils';
-
-interface PaginationInfo {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
+import type { PaginationInfo } from '@/lib/http/types';
 
 interface PaginationProps {
   pagination: PaginationInfo;
@@ -32,7 +26,7 @@ export function Pagination({
   onPageSizeChange,
   pageSizeOptions = [10, 20, 30, 50, 100]
 }: PaginationProps) {
-  const { page, limit, total, totalPages } = pagination;
+  const { page, size, total, pages } = pagination;
   const [jumpPage, setJumpPage] = useState(String(page));
 
   /**
@@ -48,7 +42,7 @@ export function Pagination({
    */
   const pageNumbers = generatePageNumbers({
     currentPage: page,
-    totalPages
+    totalPages: pages
   });
 
   /**
@@ -72,7 +66,7 @@ export function Pagination({
 
     const pageNumber = parseInt(jumpPage);
     if (pageNumber >= 1) {
-      const targetPage = Math.min(pageNumber, totalPages);
+      const targetPage = Math.min(pageNumber, pages);
       if (targetPage !== page) {
         onPageChange(targetPage);
       }
@@ -91,7 +85,7 @@ export function Pagination({
           <div className='flex items-center gap-2'>
             <span className='text-muted-foreground text-sm'>每页显示</span>
             <Select
-              value={String(limit)}
+              value={String(size)}
               onValueChange={(value) => onPageSizeChange(parseInt(value))}
             >
               <SelectTrigger className='h-8 w-[75px] cursor-pointer'>
@@ -165,7 +159,7 @@ export function Pagination({
             variant='outline'
             size='sm'
             onClick={() => onPageChange(page + 1)}
-            disabled={page >= totalPages}
+            disabled={page >= pages}
             className='h-8 cursor-pointer'
           >
             下一页

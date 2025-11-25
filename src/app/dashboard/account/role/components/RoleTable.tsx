@@ -11,7 +11,8 @@ import {
 } from '@/components/table/action-dropdown';
 import { formatDateTime } from '@/components/table/utils';
 import { TABLE_COLUMNS, MESSAGES } from '../constants';
-import type { Role, PaginationInfo } from '../types';
+import type { Role } from '../types';
+import { PaginationInfo } from '@/lib/http/types';
 
 interface RoleTableProps {
   data: Role[];
@@ -37,7 +38,7 @@ export function RoleTable({
         ...col,
         render: (value: any, record: Role, index: number) => {
           // 计算全局序号：(当前页 - 1) * 每页大小 + 当前索引 + 1
-          return (pagination.page - 1) * pagination.limit + index + 1;
+          return (pagination.page - 1) * pagination.size + index + 1;
         }
       };
     }

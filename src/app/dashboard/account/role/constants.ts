@@ -1,3 +1,8 @@
+import {
+  DEFAULT_PAGINATION,
+  DEFAULT_PAGE_SIZE_OPTIONS
+} from '@/constants/pagination';
+
 interface FilterField {
   key: string;
   type: string;
@@ -6,20 +11,13 @@ interface FilterField {
   width: string;
 }
 
-/**
- * 默认分页配置
- */
-export const DEFAULT_PAGINATION = {
-  page: 1,
-  limit: 10,
-  total: 0,
-  totalPages: 0
-} as const;
+// 从全局导入分页配置
+export { DEFAULT_PAGINATION };
 
 /**
- * 分页大小选项
+ * 分页大小选项(使用全局配置)
  */
-export const PAGE_SIZE_OPTIONS = [10, 20, 30, 50, 100];
+export const PAGE_SIZE_OPTIONS = DEFAULT_PAGE_SIZE_OPTIONS;
 
 /**
  * 默认筛选条件

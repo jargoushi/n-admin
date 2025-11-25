@@ -12,11 +12,11 @@ import { ActivationApiService } from '@/service/api/activation.api';
 import type {
   ActivationCode,
   ActivationCodeQueryRequest,
-  PaginationInfo,
   ActivationCodeBatchCreateRequest,
   ActivationCodeGetRequest,
   ActivationCodeBatchResponse
 } from '../types';
+import type { PaginationInfo } from '@/lib/http/types';
 import { DEFAULT_PAGINATION } from '../constants';
 
 /**
@@ -81,13 +81,9 @@ export function useActivationCodeManagement(): UseActivationCodeManagementReturn
         // 直接将参数传给 API
         const response = await ActivationApiService.getPageList(params);
 
-        setCodes(response.items);
-        setPagination({
-          page: response.page,
-          limit: response.size,
-          total: response.total,
-          totalPages: response.pages
-        });
+        const { items, ...paginationInfo } = response;
+        setCodes(items);
+        setPagination(paginationInfo);
       } finally {
         setLoading(false);
       }

@@ -8,8 +8,9 @@ import {
   type DeleteAction
 } from '@/components/table/action-dropdown';
 import { formatDateTime } from '@/components/table/utils';
-import { Permission, PaginationInfo } from '../types';
+import { Permission } from '../types';
 import { TABLE_COLUMNS, MESSAGES } from '../constants';
+import { PaginationInfo } from '@/lib/http/types';
 
 interface EmptyStateProps {
   icon?: React.ReactNode;
@@ -51,7 +52,7 @@ export function PermissionTable({
         ...col,
         render: (value: any, record: Permission, index: number) => {
           // 计算全局序号：(当前页 - 1) * 每页大小 + 当前索引 + 1
-          return (pagination.page - 1) * pagination.limit + index + 1;
+          return (pagination.page - 1) * pagination.size + index + 1;
         }
       };
     }

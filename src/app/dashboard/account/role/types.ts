@@ -1,3 +1,5 @@
+import { PaginationInfo } from '@/lib/http/types';
+
 export interface Role {
   id: number;
   name: string;
@@ -24,13 +26,6 @@ export interface RoleFilters {
   dateRange?: { from: Date; to: Date } | undefined;
   page?: number;
   limit?: number;
-}
-
-export interface PaginationInfo {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
 }
 
 export interface RoleFormData {

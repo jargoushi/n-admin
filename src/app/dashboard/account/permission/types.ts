@@ -1,3 +1,5 @@
+import { PaginationInfo } from '@/lib/http/types';
+
 export interface Permission {
   id: number;
   name: string;
@@ -13,13 +15,6 @@ export interface PermissionFilters {
   dateRange?: { from: Date; to: Date } | undefined;
   page?: number;
   limit?: number;
-}
-
-export interface PaginationInfo {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
 }
 
 export interface PermissionFormData {

@@ -1,12 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import {
-  User,
-  Role,
-  UserFilters,
-  PaginationInfo,
-  UserFormData
-} from '../types';
+import { User, Role, UserFilters, UserFormData } from '../types';
+import type { PaginationInfo } from '@/lib/http/types';
 import { DEFAULT_PAGINATION, MESSAGES } from '../constants';
 import { RoleAPI, UserAPI } from '@/service/request';
 
@@ -67,9 +62,9 @@ export function useUserManagement() {
         setUsers(res.data || []);
         setPagination({
           page: res.pager?.page || 1,
-          limit: res.pager?.limit || 10,
+          size: res.pager?.size || res.pager?.limit || 10,
           total: res.pager?.total || 0,
-          totalPages: res.pager?.totalPages || 0
+          pages: res.pager?.pages || res.pager?.totalPages || 0
         });
       } else {
         toast.error(res.message || MESSAGES.ERROR.FETCH_USERS);
