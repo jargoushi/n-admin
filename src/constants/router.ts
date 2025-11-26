@@ -6,7 +6,11 @@ import {
   ScrollText,
   Users,
   Shield,
-  Key
+  Key,
+  Activity,
+  Eye,
+  ListChecks,
+  Ticket
 } from 'lucide-react';
 
 // 系统导航列表
@@ -17,6 +21,24 @@ export const navList: NavItem[] = [
     icon: SquareTerminal,
     isActive: false,
     items: []
+  },
+  {
+    title: '数据监控',
+    url: '#',
+    icon: Activity,
+    isActive: false,
+    items: [
+      {
+        title: '监控配置',
+        url: '/dashboard/monitor',
+        icon: Eye
+      },
+      {
+        title: '任务管理',
+        url: '/dashboard/task',
+        icon: ListChecks
+      }
+    ]
   },
   {
     title: '账号管理',
@@ -48,13 +70,13 @@ export const navList: NavItem[] = [
     isActive: false,
     items: [
       {
-        title: '日志管理',
-        url: '/dashboard/system/logs',
-        icon: ScrollText
-      },
-      {
         title: '激活码管理',
         url: '/dashboard/activation',
+        icon: Ticket
+      },
+      {
+        title: '日志管理',
+        url: '/dashboard/system/logs',
         icon: ScrollText
       }
     ]
