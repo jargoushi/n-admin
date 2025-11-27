@@ -16,28 +16,37 @@ import { MonitorApiService } from '@/service/api/monitor.api';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 
 interface MonitorConfigUpdateFormProps {
-  /** 要修改的监控配置 */
-  config: MonitorConfig;
+  /** 要修改的监控配置（从 GenericDialogs 传递） */
+  data?: MonitorConfig;
+  /** 取消回调（从 GenericDialogs 传递） */
+  onCancel?: () => void;
 }
 
 export function MonitorConfigUpdateForm({
-  config
+  data: config,
+  onCancel
 }: MonitorConfigUpdateFormProps) {
   // 使用通用 Hook 管理提交状态
-  const { result, isLoading, handleSubmit } = useFormSubmit(
-    (data: MonitorConfigUpdateRequest) =>
-      MonitorApiService.update(config.id, data)
+  const { isLoading, handleSubmit } = useFormSubmit(
+    async (data: MonitorConfigUpdateRequest) => {
+      if (!config) throw new Error('配置不存在');
+      await MonitorApiService.update(config.id, data);
+      // 提交成功后直接关闭弹窗
+      onCancel?.();
+    }
   );
 
   // 表单数据
   const [formData, setFormData] = useState<MonitorConfigUpdateRequest>({
-    target_url: config.target_url
+    target_url: config?.target_url || ''
   });
 
   // 同步外部数据变化
   useEffect(() => {
-    setFormData({ target_url: config.target_url });
-  }, [config.target_url]);
+    if (config) {
+      setFormData({ target_url: config.target_url });
+    }
+  }, [config]);
 
   /**
    * 更新字段
@@ -50,29 +59,25 @@ export function MonitorConfigUpdateForm({
    * 表单校验
    */
   const isValid = useMemo(() => {
+    if (!config) return false;
     return (
       formData.target_url.trim().length > 0 &&
       formData.target_url.length <= 512 &&
       formData.target_url !== config.target_url
     );
-  }, [formData.target_url, config.target_url]);
+  }, [formData.target_url, config]);
 
-  // 结果内容
-  const resultContent = result && (
-    <div className='space-y-4'>
-      <div className='text-sm text-green-600'>修改监控配置成功！</div>
-      <div className='bg-muted space-y-2 rounded-md p-4'>
-        <div className='text-sm'>
-          <span className='text-muted-foreground'>新的目标链接：</span>
-          <span className='font-medium break-all'>{result.target_url}</span>
-        </div>
+  // 如果没有配置数据，显示加载状态
+  if (!config) {
+    return (
+      <div className='flex items-center justify-center py-8'>
+        <div className='text-muted-foreground'>加载中...</div>
       </div>
-    </div>
-  );
+    );
+  }
 
   return (
     <BaseFormLayout
-      resultContent={resultContent}
       submit={{
         text: '保存修改',
         onSubmit: () => handleSubmit(formData),

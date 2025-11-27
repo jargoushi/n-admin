@@ -49,7 +49,7 @@ export function GenericDialogs({
 
   return (
     <Dialog open={dialogState.open} onOpenChange={onClose}>
-      <DialogContent className={currentConfig.className || 'max-w-2xl'}>
+      <DialogContent className={currentConfig.className || 'sm:max-w-2xl'}>
         <DialogHeader>
           <DialogTitle>{currentConfig.title}</DialogTitle>
           {currentConfig.description && (

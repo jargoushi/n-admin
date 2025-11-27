@@ -24,10 +24,21 @@ import { BaseFormLayout } from '@/components/shared/base-form-layout';
 import { MonitorApiService } from '@/service/api/monitor.api';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 
-export function MonitorConfigCreateForm() {
+interface MonitorConfigCreateFormProps {
+  /** 取消回调（从 GenericDialogs 传递） */
+  onCancel?: () => void;
+}
+
+export function MonitorConfigCreateForm({
+  onCancel
+}: MonitorConfigCreateFormProps = {}) {
   // 使用通用 Hook 管理提交状态
-  const { result, isLoading, handleSubmit } = useFormSubmit(
-    MonitorApiService.create
+  const { isLoading, handleSubmit } = useFormSubmit(
+    async (data: MonitorConfigCreateRequest) => {
+      await MonitorApiService.create(data);
+      // 提交成功后直接关闭弹窗
+      onCancel?.();
+    }
   );
 
   // 表单数据
@@ -57,32 +68,8 @@ export function MonitorConfigCreateForm() {
     );
   }, [formData]);
 
-  // 结果内容
-  const resultContent = result && (
-    <div className='space-y-4'>
-      <div className='text-sm text-green-600'>创建监控配置成功！</div>
-      <div className='bg-muted space-y-2 rounded-md p-4'>
-        <div className='text-sm'>
-          <span className='text-muted-foreground'>渠道：</span>
-          <span className='font-medium'>{result.channel_name}</span>
-        </div>
-        <div className='text-sm'>
-          <span className='text-muted-foreground'>目标链接：</span>
-          <span className='font-medium break-all'>{result.target_url}</span>
-        </div>
-        {result.account_name && (
-          <div className='text-sm'>
-            <span className='text-muted-foreground'>账号名称：</span>
-            <span className='font-medium'>{result.account_name}</span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
   return (
     <BaseFormLayout
-      resultContent={resultContent}
       submit={{
         text: '立即创建',
         onSubmit: () => handleSubmit(formData),

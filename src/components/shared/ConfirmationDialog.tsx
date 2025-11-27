@@ -37,17 +37,17 @@ export function ConfirmationDialog({
 }: ConfirmationDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
-      <DialogContent className='sm:max-w-[425px]'>
-        <DialogHeader>
+      <DialogContent className='sm:max-w-xl'>
+        <DialogHeader className='space-y-3'>
           <DialogTitle>操作确认</DialogTitle>
           <DialogDescription asChild>
-            <div className='text-muted-foreground pt-2 text-sm'>
+            <div className='text-muted-foreground py-4 text-sm leading-relaxed'>
               {description}
             </div>
           </DialogDescription>
         </DialogHeader>
 
-        <DialogFooter className='gap-2 sm:gap-0'>
+        <DialogFooter className='gap-2 pt-2 sm:gap-0'>
           <Button onClick={onConfirm} disabled={isLoading}>
             {isLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
             确认

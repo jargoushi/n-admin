@@ -9,7 +9,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Edit, Power, Trash2 } from 'lucide-react';
+import { Edit, Power, Trash2, BarChart3 } from 'lucide-react';
 
 // 引入弹窗基础设施
 import { useGenericDialogs } from '@/hooks/useGenericDialogs';
@@ -25,6 +25,7 @@ import { CHANNEL_TYPES, ACTIVE_STATUSES } from '../constants';
 import { findDescByCode } from '@/types/common';
 import { MonitorApiService } from '@/service/api/monitor.api';
 import { MonitorConfigUpdateForm } from './MonitorConfigUpdateForm';
+import { MonitorDailyStatsChart } from './MonitorDailyStatsChart';
 import { Badge } from '@/components/ui/badge';
 
 /**
@@ -42,13 +43,19 @@ export function MonitorConfigTable({
   loading = false,
   onRefresh
 }: MonitorConfigTableProps) {
-  // 管理修改弹窗
+  // 管理修改和数据统计弹窗
   const { openDialog, DialogsContainer } = useGenericDialogs<MonitorConfig>({
     dialogs: {
       update: {
         title: '修改监控配置',
         description: '修改监控目标链接',
         component: MonitorConfigUpdateForm
+      },
+      stats: {
+        title: '每日数据统计',
+        description: '查看监控配置的每日数据趋势',
+        component: MonitorDailyStatsChart,
+        className: 'sm:max-w-6xl max-h-[90vh] overflow-y-auto'
       }
     },
     onClose: () => onRefresh?.()
@@ -62,6 +69,13 @@ export function MonitorConfigTable({
    */
   const handleUpdate = (config: MonitorConfig) => {
     openDialog('update', config);
+  };
+
+  /**
+   * 处理查看数据统计
+   */
+  const handleViewStats = (config: MonitorConfig) => {
+    openDialog('stats', config);
   };
 
   /**
@@ -167,6 +181,12 @@ export function MonitorConfigTable({
         render: (_: unknown, record: MonitorConfig) => {
           const actions: ActionItem[] = [
             {
+              key: 'stats',
+              label: '查看数据',
+              icon: <BarChart3 className='mr-2 h-4 w-4' />,
+              onClick: () => handleViewStats(record)
+            },
+            {
               key: 'update',
               label: '修改',
               icon: <Edit className='mr-2 h-4 w-4' />,
@@ -191,7 +211,7 @@ export function MonitorConfigTable({
         }
       }
     ],
-    [handleUpdate, handleToggle, handleDelete]
+    [handleViewStats, handleUpdate, handleToggle, handleDelete]
   );
 
   return (
