@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
-import { auth } from '@/lib/auth';
 import Providers from '@/contexts/providers';
 import { siteConfig } from '@/config/site';
 
@@ -27,7 +26,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
+  // const session = await auth();
+  const session = '12';
   return (
     <html lang='en' suppressHydrationWarning>
       <body

@@ -81,10 +81,13 @@ export class MonitorApiService {
     configId: number,
     request: MonitorConfigUpdateRequest
   ): Promise<MonitorConfig> {
-    return http.put<MonitorConfig, MonitorConfigUpdateRequest>(
-      `/monitor/config/${configId}`,
-      request
-    );
+    return http.post<
+      MonitorConfig,
+      MonitorConfigUpdateRequest & { config_id: number }
+    >('/monitor/config/update', {
+      ...request,
+      config_id: configId
+    });
   }
 
   /**
@@ -101,10 +104,13 @@ export class MonitorApiService {
     configId: number,
     request: MonitorConfigToggleRequest
   ): Promise<MonitorConfig> {
-    return http.patch<MonitorConfig, MonitorConfigToggleRequest>(
-      `/monitor/config/${configId}/toggle`,
-      request
-    );
+    return http.post<
+      MonitorConfig,
+      MonitorConfigToggleRequest & { config_id: number }
+    >('/monitor/config/toggle', {
+      ...request,
+      config_id: configId
+    });
   }
 
   /**
@@ -117,7 +123,9 @@ export class MonitorApiService {
    * @returns 删除结果（true=成功，false=失败）
    */
   static async delete(configId: number): Promise<boolean> {
-    return http.delete<boolean>(`/monitor/config/${configId}`);
+    return http.post<boolean, { config_id: number }>('/monitor/config/delete', {
+      config_id: configId
+    });
   }
 
   /**

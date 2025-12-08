@@ -17,7 +17,6 @@
 - **现代框架**: Next.js 15 + React 19 + TypeScript
 - **UI组件**: Tailwind CSS + Shadcn UI
 - **权限系统**: 基于 RBAC 的完整权限控制
-- **数据库**: Drizzle ORM + PostgreSQL/MySQL
 - **认证**: JWT + 中间件保护
 - **主题**: 明暗主题切换
 - **响应式**: 完美适配桌面和移动端
@@ -36,7 +35,6 @@
 
 - Node.js >= 18.0
 - pnpm >= 9.0
-- PostgreSQL/MySQL
 
 ### 安装
 
@@ -50,23 +48,12 @@ pnpm install
 
 # 环境配置
 cp .env.example .env.local
-# 编辑 .env.local 配置数据库连接
-
-# 数据库初始化
-pnpm db:generate
-pnpm db:push
-pnpm init:admin
 
 # 启动开发服务器
 pnpm dev
 ```
 
 访问 http://localhost:3000
-
-**管理员账号:**
-
-- 邮箱: `admin@example.com`
-- 密码: `Admin@123456`
 
 ## 项目结构
 
@@ -80,24 +67,16 @@ src/
 │   ├── ui/         # 基础UI组件
 │   └── layout/     # 布局组件
 ├── lib/            # 工具函数
-├── hooks/          # 自定义Hooks
-└── db/             # 数据库配置
+└── hooks/          # 自定义Hooks
 ```
 
 ## 开发命令
 
 ```bash
-# 开发
 pnpm dev          # 启动开发服务器
 pnpm build        # 构建生产版本
 pnpm start        # 启动生产服务器
 pnpm lint         # 代码检查
-
-# 数据库
-pnpm db:generate  # 生成迁移文件
-pnpm db:push      # 推送数据库结构
-pnpm db:studio    # 数据库管理界面
-pnpm init:admin   # 初始化管理员
 ```
 
 ## 技术栈
@@ -113,9 +92,7 @@ pnpm init:admin   # 初始化管理员
 ### 后端
 
 - **API**: Next.js API Routes
-- **数据库**: Drizzle ORM
 - **认证**: JWT + 中间件
-- **加密**: bcryptjs
 
 ### 开发工具
 
@@ -151,12 +128,8 @@ pnpm start
 ## 环境变量
 
 ```bash
-# 数据库
-DATABASE_URL="postgresql://user:password@localhost:5432/n_admin"
-
 # JWT
 JWT_SECRET="your-secret-key"
-JWT_REFRESH_SECRET="your-refresh-secret"
 ```
 
 ## 贡献

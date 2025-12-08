@@ -20,44 +20,37 @@ import {
 } from '@/components/ui/sidebar';
 import { getInitials } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/use-auth';
-import { useAuthStore } from '@/stores/auth';
-import { AuthAPI } from '@/service/request';
-import { toast } from 'sonner';
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const router = useRouter();
+  // const router = useRouter();
 
-  const { session } = useAuth();
-  const { logout } = useAuthStore();
+  // const { logout } = useAuthStore();
 
   const user = {
     username: '游客',
     email: '未登录',
-    avatar: '/avatars/default.jpg',
-    ...session?.user
+    avatar: '/avatars/default.jpg'
   };
 
   const handleLogout = async () => {
-    try {
-      const res = await AuthAPI.logout();
-
-      if (res.code === 0) {
-        // 清理 Zustand store 状态
-        logout();
-        toast.success(res.message || '退出登录成功');
-        router.push('/login');
-        router.refresh();
-      } else {
-        toast.error(res.message || '退出登录失败');
-      }
-    } catch (error) {
-      console.error('退出登录失败:', error);
-      // 即使API调用失败，也清理本地状态
-      logout();
-      router.push('/login');
-    }
+    // try {
+    //   const res = await AuthAPI.logout();
+    //   if (res.code === 0) {
+    //     // 清理 Zustand store 状态
+    //     logout();
+    //     toast.success(res.message || '退出登录成功');
+    //     router.push('/login');
+    //     router.refresh();
+    //   } else {
+    //     toast.error(res.message || '退出登录失败');
+    //   }
+    // } catch (error) {
+    //   console.error('退出登录失败:', error);
+    //   // 即使API调用失败，也清理本地状态
+    //   logout();
+    //   router.push('/login');
+    // }
   };
 
   return (
