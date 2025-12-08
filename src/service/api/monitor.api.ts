@@ -74,20 +74,20 @@ export class MonitorApiService {
    * 修改指定监控配置的目标链接
    *
    * @param configId - 配置ID
-   * @param request - 修改请求
+   * @param targetUrl - 新的目标链接
    * @returns 修改后的监控配置详细信息
    */
   static async update(
     configId: number,
-    request: MonitorConfigUpdateRequest
+    targetUrl: string
   ): Promise<MonitorConfig> {
-    return http.post<
-      MonitorConfig,
-      MonitorConfigUpdateRequest & { config_id: number }
-    >('/monitor/config/update', {
-      ...request,
-      config_id: configId
-    });
+    return http.post<MonitorConfig, MonitorConfigUpdateRequest>(
+      '/monitor/config/update',
+      {
+        id: configId,
+        target_url: targetUrl
+      }
+    );
   }
 
   /**
@@ -97,20 +97,20 @@ export class MonitorApiService {
    * 切换监控配置的启用/禁用状态
    *
    * @param configId - 配置ID
-   * @param request - 切换请求
+   * @param isActive - 是否启用 (0=否, 1=是)
    * @returns 切换后的监控配置详细信息
    */
   static async toggle(
     configId: number,
-    request: MonitorConfigToggleRequest
+    isActive: number
   ): Promise<MonitorConfig> {
-    return http.post<
-      MonitorConfig,
-      MonitorConfigToggleRequest & { config_id: number }
-    >('/monitor/config/toggle', {
-      ...request,
-      config_id: configId
-    });
+    return http.post<MonitorConfig, MonitorConfigToggleRequest>(
+      '/monitor/config/toggle',
+      {
+        id: configId,
+        is_active: isActive
+      }
+    );
   }
 
   /**
@@ -123,9 +123,10 @@ export class MonitorApiService {
    * @returns 删除结果（true=成功，false=失败）
    */
   static async delete(configId: number): Promise<boolean> {
-    return http.post<boolean, { config_id: number }>('/monitor/config/delete', {
-      config_id: configId
-    });
+    return http.post<boolean, undefined>(
+      `/monitor/config/delete?id=${configId}`,
+      undefined
+    );
   }
 
   /**

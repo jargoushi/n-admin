@@ -10,7 +10,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { MonitorConfig, MonitorConfigUpdateRequest } from '../types';
+import type { MonitorConfig } from '../types';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
 import { MonitorApiService } from '@/service/api/monitor.api';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
@@ -28,23 +28,21 @@ export function MonitorConfigUpdateForm({
 }: MonitorConfigUpdateFormProps) {
   // 使用通用 Hook 管理提交状态
   const { isLoading, handleSubmit } = useFormSubmit(
-    async (data: MonitorConfigUpdateRequest) => {
+    async (targetUrl: string) => {
       if (!config) throw new Error('配置不存在');
-      await MonitorApiService.update(config.id, data);
+      await MonitorApiService.update(config.id, targetUrl);
       // 提交成功后直接关闭弹窗
       onCancel?.();
     }
   );
 
   // 表单数据
-  const [formData, setFormData] = useState<MonitorConfigUpdateRequest>({
-    target_url: config?.target_url || ''
-  });
+  const [targetUrl, setTargetUrl] = useState<string>(config?.target_url || '');
 
   // 同步外部数据变化
   useEffect(() => {
     if (config) {
-      setFormData({ target_url: config.target_url });
+      setTargetUrl(config.target_url);
     }
   }, [config]);
 
@@ -52,7 +50,7 @@ export function MonitorConfigUpdateForm({
    * 更新字段
    */
   const updateField = useCallback((value: string) => {
-    setFormData({ target_url: value });
+    setTargetUrl(value);
   }, []);
 
   /**
@@ -61,11 +59,11 @@ export function MonitorConfigUpdateForm({
   const isValid = useMemo(() => {
     if (!config) return false;
     return (
-      formData.target_url.trim().length > 0 &&
-      formData.target_url.length <= 512 &&
-      formData.target_url !== config.target_url
+      targetUrl.trim().length > 0 &&
+      targetUrl.length <= 512 &&
+      targetUrl !== config.target_url
     );
-  }, [formData.target_url, config]);
+  }, [targetUrl, config]);
 
   // 如果没有配置数据，显示加载状态
   if (!config) {
@@ -80,7 +78,7 @@ export function MonitorConfigUpdateForm({
     <BaseFormLayout
       submit={{
         text: '保存修改',
-        onSubmit: () => handleSubmit(formData),
+        onSubmit: () => handleSubmit(targetUrl),
         disabled: !isValid,
         loading: isLoading
       }}
@@ -98,7 +96,7 @@ export function MonitorConfigUpdateForm({
           <Input
             id='target_url'
             type='text'
-            value={formData.target_url}
+            value={targetUrl}
             onChange={(e) => updateField(e.target.value)}
             placeholder='请输入监控目标链接'
             disabled={isLoading}

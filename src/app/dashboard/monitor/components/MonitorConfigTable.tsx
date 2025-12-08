@@ -88,7 +88,7 @@ export function MonitorConfigTable({
     confirm({
       description: `确定要${statusText}该监控配置吗？`,
       onConfirm: async () => {
-        await MonitorApiService.toggle(config.id, { is_active: newStatus });
+        await MonitorApiService.toggle(config.id, newStatus);
         onRefresh?.();
       }
     });

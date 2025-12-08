@@ -21,20 +21,18 @@ export const metadata: Metadata = {
   description: siteConfig.description
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const session = await auth();
-  const session = '12';
   return (
     <html lang='en' suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NuqsAdapter>
-          <Providers session={session}>
+          <Providers>
             <Toaster />
             {children}
           </Providers>

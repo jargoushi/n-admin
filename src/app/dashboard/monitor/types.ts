@@ -52,6 +52,8 @@ export interface MonitorConfigCreateRequest {
  * 修改监控配置请求
  */
 export interface MonitorConfigUpdateRequest {
+  /** 配置ID */
+  id: number;
   /** 监控目标链接 */
   target_url: string;
 }
@@ -60,6 +62,8 @@ export interface MonitorConfigUpdateRequest {
  * 切换监控状态请求
  */
 export interface MonitorConfigToggleRequest {
+  /** 配置ID */
+  id: number;
   /** 是否启用 (0=否, 1=是) */
   is_active: number;
 }
