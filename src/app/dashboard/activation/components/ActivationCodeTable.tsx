@@ -8,8 +8,9 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { Check, X, Eye } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 // 引入弹窗基础设施
 import { useGenericDialogs } from '@/hooks/useGenericDialogs';
@@ -58,40 +59,49 @@ export function ActivationCodeTable({
   /**
    * 处理查看详情
    */
-  const handleViewDetail = async (code: ActivationCode) => {
-    const detail = await ActivationApiService.getDetail(code.activation_code);
-    if (detail) {
-      openDialog('detail', detail);
-    }
-  };
+  const handleViewDetail = useCallback(
+    async (code: ActivationCode) => {
+      const detail = await ActivationApiService.getDetail(code.activation_code);
+      if (detail) {
+        openDialog('detail', detail);
+      }
+    },
+    [openDialog]
+  );
 
   /**
    * 处理激活操作
    */
-  const handleActivate = (code: ActivationCode) => {
-    confirm({
-      description: `确定要激活"${code.activation_code}" 吗？`,
-      onConfirm: async () => {
-        await ActivationApiService.activate(code.activation_code);
-        onRefresh?.();
-      }
-    });
-  };
+  const handleActivate = useCallback(
+    (code: ActivationCode) => {
+      confirm({
+        description: `确定要激活"${code.activation_code}" 吗？`,
+        onConfirm: async () => {
+          await ActivationApiService.activate(code.activation_code);
+          onRefresh?.();
+        }
+      });
+    },
+    [confirm, onRefresh]
+  );
 
   /**
    * 处理作废操作
    */
-  const handleInvalidate = (code: ActivationCode) => {
-    confirm({
-      description: `确定要作废激活码 "${code.activation_code}" 吗？\n\n作废后将无法恢复！`,
-      onConfirm: async () => {
-        await ActivationApiService.invalidate({
-          activation_code: code.activation_code
-        });
-        onRefresh?.();
-      }
-    });
-  };
+  const handleInvalidate = useCallback(
+    (code: ActivationCode) => {
+      confirm({
+        description: `确定要作废激活码 "${code.activation_code}" 吗？\n\n作废后将无法恢复！`,
+        onConfirm: async () => {
+          await ActivationApiService.invalidate({
+            activation_code: code.activation_code
+          });
+          onRefresh?.();
+        }
+      });
+    },
+    [confirm, onRefresh]
+  );
   /** 列配置 */
   const columns = useMemo<Column<ActivationCode>[]>(
     () => [
@@ -103,22 +113,44 @@ export function ActivationCodeTable({
       {
         key: 'type',
         title: '类型',
-        className: 'w-[100px] text-center',
-        render: (_, record) => (
-          <span className='text-sm'>
-            {findDescByCode(ACTIVATION_CODE_TYPES, record.type)}
-          </span>
-        )
+        className: 'w-[100px]',
+        render: (_, record) => {
+          const typeColors: Record<
+            number,
+            'secondary' | 'info' | 'warning' | 'default'
+          > = {
+            0: 'secondary', // 日卡
+            1: 'info', // 月卡
+            2: 'warning', // 年卡
+            3: 'default' // 永久卡
+          };
+          return (
+            <Badge variant={typeColors[record.type] || 'secondary'}>
+              {findDescByCode(ACTIVATION_CODE_TYPES, record.type)}
+            </Badge>
+          );
+        }
       },
       {
         key: 'status',
         title: '状态',
-        className: 'w-[100px] text-center',
-        render: (_, record) => (
-          <span className='text-sm'>
-            {findDescByCode(ACTIVATION_CODE_STATUSES, record.status)}
-          </span>
-        )
+        className: 'w-[100px]',
+        render: (_, record) => {
+          const statusColors: Record<
+            number,
+            'secondary' | 'info' | 'success' | 'destructive'
+          > = {
+            0: 'secondary', // 未使用
+            1: 'info', // 已分发
+            2: 'success', // 已激活
+            3: 'destructive' // 作废
+          };
+          return (
+            <Badge variant={statusColors[record.status] || 'secondary'}>
+              {findDescByCode(ACTIVATION_CODE_STATUSES, record.status)}
+            </Badge>
+          );
+        }
       },
       {
         key: 'distributed_at',

@@ -32,13 +32,13 @@ export function PageHeader({ actions = [] }: PageHeaderProps) {
   }
 
   return (
-    <div className='flex items-center justify-end gap-2'>
+    <div className='flex items-center justify-end gap-3'>
       {actions.map((action, index) => (
         <Button
           key={index}
           onClick={action.onClick}
           variant={action.variant || 'default'}
-          className='cursor-pointer'
+          className='cursor-pointer gap-2'
         >
           {action.icon}
           {action.label}

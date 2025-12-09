@@ -39,19 +39,19 @@ export function DataTable<T extends Record<string, any>>({
   };
 
   return (
-    <div className='bg-background relative h-full overflow-hidden rounded-md border'>
+    <div className='bg-card border-border/50 relative h-full overflow-hidden rounded-xl border shadow-sm'>
       <div className='h-full overflow-auto'>
         <Table className='h-full'>
-          <TableHeader className='bg-background sticky top-0'>
-            <TableRow className='bg-muted/50 hover:bg-muted/50'>
+          <TableHeader className='bg-muted/30 sticky top-0 z-10'>
+            <TableRow className='bg-muted/30 hover:bg-muted/30 border-border/50'>
               {columns.map((column) => (
                 <TableHead
                   key={column.key}
-                  className={`bg-muted/50 font-semibold ${column.className || ''}`}
+                  className={`bg-muted/30 font-semibold ${column.className || ''}`}
                   style={{
                     position: 'sticky',
                     top: 0,
-                    backgroundColor: 'hsl(var(--muted) / 0.5)'
+                    backgroundColor: 'hsl(var(--muted) / 0.3)'
                   }}
                 >
                   {column.title}
@@ -61,11 +61,25 @@ export function DataTable<T extends Record<string, any>>({
           </TableHeader>
           <TableBody>
             {loading ? (
-              <TableRow>
+              <TableRow className='hover:bg-transparent'>
                 <TableCell colSpan={columns.length} className='text-center'>
                   <div className='flex min-h-[400px] flex-col items-center justify-center space-y-4'>
-                    <Loader2 className='text-primary h-8 w-8 animate-spin' />
-                    <p className='text-muted-foreground text-sm'>加载中...</p>
+                    <div className='relative'>
+                      <Loader2 className='text-primary h-10 w-10 animate-spin' />
+                      <div className='bg-primary/20 absolute inset-0 h-10 w-10 animate-ping rounded-full' />
+                    </div>
+                    <p className='text-muted-foreground text-sm font-medium'>
+                      加载中...
+                    </p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : data.length === 0 ? (
+              <TableRow className='hover:bg-transparent'>
+                <TableCell colSpan={columns.length} className='text-center'>
+                  <div className='flex min-h-[200px] flex-col items-center justify-center space-y-2'>
+                    <div className='text-muted-foreground/50 text-4xl'>📭</div>
+                    <p className='text-muted-foreground text-sm'>暂无数据</p>
                   </div>
                 </TableCell>
               </TableRow>
@@ -73,7 +87,7 @@ export function DataTable<T extends Record<string, any>>({
               data.map((record, index) => (
                 <TableRow
                   key={getRowKey(record, index)}
-                  className='hover:bg-muted/50'
+                  className='hover:bg-muted/40 transition-colors duration-150'
                 >
                   {columns.map((column) => (
                     <TableCell key={column.key} className={column.className}>

@@ -74,12 +74,15 @@ export function Pagination({
   };
 
   return (
-    <div className='mt-4'>
+    <div className='border-border/50 mt-4 border-t pt-4'>
       <div className='flex items-center justify-between'>
         {/* 左侧：总数和每页显示 */}
         <div className='flex items-center gap-4'>
           <span className='text-muted-foreground text-sm'>
-            总共 <span className='text-primary font-semibold'>{total}</span>{' '}
+            共{' '}
+            <span className='text-primary font-semibold tabular-nums'>
+              {total}
+            </span>{' '}
             条记录
           </span>
           <div className='flex items-center gap-2'>
@@ -88,7 +91,7 @@ export function Pagination({
               value={String(size)}
               onValueChange={(value) => onPageSizeChange(parseInt(value))}
             >
-              <SelectTrigger className='h-8 w-[75px] cursor-pointer'>
+              <SelectTrigger className='h-8 w-[75px] cursor-pointer text-sm'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -142,10 +145,10 @@ export function Pagination({
                   size='sm'
                   onClick={() => onPageChange(pageNum as number)}
                   disabled={isCurrentPage}
-                  className={`h-8 w-8 cursor-pointer p-0 ${
+                  className={`h-8 w-8 cursor-pointer p-0 tabular-nums ${
                     isCurrentPage
-                      ? 'bg-primary text-primary-foreground font-semibold'
-                      : 'hover:bg-accent'
+                      ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
+                      : 'hover:bg-accent hover:shadow-sm'
                   }`}
                 >
                   {pageNum}

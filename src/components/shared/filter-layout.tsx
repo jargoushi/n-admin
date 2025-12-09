@@ -367,7 +367,7 @@ export function FilterLayout<T extends FieldValues>({
   return (
     <form
       onSubmit={handleSubmit(onSearch)}
-      className='bg-card rounded-lg border p-4 shadow-sm'
+      className='bg-card border-border/50 rounded-xl border p-5 shadow-sm transition-shadow duration-300 hover:shadow-md'
     >
       <div className='flex flex-col gap-4 md:flex-row'>
         {/* 主筛选区域：flex 布局 */}
