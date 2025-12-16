@@ -10,22 +10,28 @@
 
 import PageContainer from '@/components/layout/page-container';
 import { Pagination } from '@/components/table/pagination';
+import { usePageList } from '@/hooks/usePageList';
+import { TaskApiService } from '@/service/api/task.api';
 
-import { useMonitorTaskList } from './hooks/useMonitorTaskList';
 import { MonitorTaskFilters } from './components/MonitorTaskFilters';
 import { MonitorTaskTable } from './components/MonitorTaskTable';
+import { DEFAULT_QUERY_PARAMS, FILTER_PARSERS } from './constants';
+import type { MonitorTask, MonitorTaskQueryRequest } from './types';
 
 export default function MonitorTaskManagementPage() {
-  // 使用统一的 Hook 管理筛选和列表数据
   const {
     filters,
     search,
     setFilters,
     resetFilters,
-    tasks,
+    items,
     loading,
     pagination
-  } = useMonitorTaskList();
+  } = usePageList<MonitorTask, MonitorTaskQueryRequest>(
+    TaskApiService.getPageList,
+    DEFAULT_QUERY_PARAMS,
+    FILTER_PARSERS
+  );
 
   return (
     <PageContainer scrollable={false}>
@@ -40,7 +46,7 @@ export default function MonitorTaskManagementPage() {
         {/* 表格区域 */}
         <div className='flex min-h-0 flex-1 flex-col'>
           <div className='min-h-0'>
-            <MonitorTaskTable data={tasks} loading={loading} />
+            <MonitorTaskTable data={items} loading={loading} />
           </div>
 
           <div className='shrink-0 pt-4'>

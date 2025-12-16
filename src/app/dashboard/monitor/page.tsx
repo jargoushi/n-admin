@@ -10,24 +10,30 @@
 
 import PageContainer from '@/components/layout/page-container';
 import { Pagination } from '@/components/table/pagination';
+import { usePageList } from '@/hooks/usePageList';
+import { MonitorApiService } from '@/service/api/monitor.api';
 
-import { useMonitorConfigList } from './hooks/useMonitorConfigList';
 import { MonitorConfigFilters } from './components/MonitorConfigFilters';
 import { MonitorConfigPageHeader } from './components/MonitorConfigPageHeader';
 import { MonitorConfigTable } from './components/MonitorConfigTable';
+import { DEFAULT_QUERY_PARAMS, FILTER_PARSERS } from './constants';
+import type { MonitorConfig, MonitorConfigQueryRequest } from './types';
 
 export default function MonitorConfigManagementPage() {
-  // 使用统一的 Hook 管理筛选和列表数据
   const {
     filters,
     search,
     setFilters,
     resetFilters,
-    configs,
+    items,
     loading,
     pagination,
     refresh
-  } = useMonitorConfigList();
+  } = usePageList<MonitorConfig, MonitorConfigQueryRequest>(
+    MonitorApiService.getPageList,
+    DEFAULT_QUERY_PARAMS,
+    FILTER_PARSERS
+  );
 
   return (
     <PageContainer scrollable={false}>
@@ -50,7 +56,7 @@ export default function MonitorConfigManagementPage() {
         <div className='animate-in fade-in slide-in-from-bottom-4 flex min-h-0 flex-1 flex-col delay-200 duration-500'>
           <div className='border-border/50 bg-card/50 min-h-0 rounded-xl border shadow-sm backdrop-blur-sm transition-all hover:shadow-md'>
             <MonitorConfigTable
-              data={configs}
+              data={items}
               loading={loading}
               onRefresh={refresh}
             />

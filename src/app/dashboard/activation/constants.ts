@@ -67,3 +67,28 @@ export const DISTRIBUTE_COUNT_RANGE = {
   MIN: 1,
   MAX: 100
 } as const;
+
+// ==================== nuqs 解析器配置 ====================
+
+import { parseAsInteger, parseAsString } from 'nuqs';
+
+/**
+ * URL 查询参数解析器配置
+ * 用于 usePageList Hook 的参数类型转换
+ */
+export const FILTER_PARSERS = {
+  // 分页参数
+  page: parseAsInteger.withDefault(DEFAULT_PAGE_REQUEST.page),
+  size: parseAsInteger.withDefault(DEFAULT_PAGE_REQUEST.size),
+
+  // 筛选参数
+  type: parseAsInteger,
+  activation_code: parseAsString,
+  status: parseAsInteger,
+  distributed_at_start: parseAsString,
+  distributed_at_end: parseAsString,
+  activated_at_start: parseAsString,
+  activated_at_end: parseAsString,
+  expire_time_start: parseAsString,
+  expire_time_end: parseAsString
+};

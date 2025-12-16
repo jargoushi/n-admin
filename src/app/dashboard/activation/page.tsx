@@ -10,24 +10,30 @@
 
 import PageContainer from '@/components/layout/page-container';
 import { Pagination } from '@/components/table/pagination';
+import { usePageList } from '@/hooks/usePageList';
+import { ActivationApiService } from '@/service/api/activation.api';
 
-import { useActivationCodeList } from './hooks/useActivationCodeList';
 import { ActivationCodeFilters } from './components/ActivationCodeFilters';
 import { ActivationCodePageHeader } from './components/ActivationCodePageHeader';
 import { ActivationCodeTable } from './components/ActivationCodeTable';
+import { DEFAULT_QUERY_PARAMS, FILTER_PARSERS } from './constants';
+import type { ActivationCode, ActivationCodeQueryRequest } from './types';
 
 export default function ActivationCodeManagementPage() {
-  // 使用统一的 Hook 管理筛选和列表数据
   const {
     filters,
     search,
     setFilters,
     resetFilters,
-    codes,
+    items,
     loading,
     pagination,
     refresh
-  } = useActivationCodeList();
+  } = usePageList<ActivationCode, ActivationCodeQueryRequest>(
+    ActivationApiService.getPageList,
+    DEFAULT_QUERY_PARAMS,
+    FILTER_PARSERS
+  );
 
   return (
     <PageContainer scrollable={false}>
@@ -46,7 +52,7 @@ export default function ActivationCodeManagementPage() {
         <div className='flex min-h-0 flex-1 flex-col'>
           <div className='min-h-0'>
             <ActivationCodeTable
-              data={codes}
+              data={items}
               loading={loading}
               onRefresh={refresh}
             />
