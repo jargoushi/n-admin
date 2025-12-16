@@ -35,9 +35,9 @@ interface ActivationCodeFiltersProps {
 }
 
 /**
- * 筛选字段配置
+ * 筛选字段配置 (导出供页面生成 parsers 使用)
  */
-const FILTERS_CONFIG: FilterFieldConfig<ActivationCodeQueryRequest>[] = [
+export const FILTERS_CONFIG: FilterFieldConfig<ActivationCodeQueryRequest>[] = [
   {
     key: 'activation_code',
     label: '激活码',
@@ -60,8 +60,8 @@ const FILTERS_CONFIG: FilterFieldConfig<ActivationCodeQueryRequest>[] = [
     startKey: 'distributed_at_start',
     endKey: 'distributed_at_end',
     label: '分发时间范围',
-    type: FILTER_TYPES.DATE_RANGE,
-    advanced: true
+    type: FILTER_TYPES.DATE_RANGE
+    // advanced: true
   },
   {
     startKey: 'activated_at_start',

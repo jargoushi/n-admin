@@ -53,21 +53,3 @@ export const TASK_STATUSES: OptionConfig[] = [
 export const DEFAULT_QUERY_PARAMS: MonitorTaskQueryRequest = {
   ...DEFAULT_PAGE_REQUEST
 };
-
-// ==================== nuqs 解析器配置 ====================
-
-import { parseAsInteger, parseAsString } from 'nuqs';
-
-/**
- * URL 查询参数解析器配置
- */
-export const FILTER_PARSERS = {
-  page: parseAsInteger.withDefault(DEFAULT_PAGE_REQUEST.page),
-  size: parseAsInteger.withDefault(DEFAULT_PAGE_REQUEST.size),
-  channel_type: parseAsInteger,
-  task_type: parseAsInteger,
-  status: parseAsInteger,
-  keyword: parseAsString,
-  start_time: parseAsString,
-  end_time: parseAsString
-};

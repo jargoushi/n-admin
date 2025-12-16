@@ -35,9 +35,9 @@ interface MonitorConfigFiltersProps {
 }
 
 /**
- * 筛选字段配置
+ * 筛选字段配置 (导出供页面生成 parsers 使用)
  */
-const FILTERS_CONFIG: FilterFieldConfig<MonitorConfigQueryRequest>[] = [
+export const FILTERS_CONFIG: FilterFieldConfig<MonitorConfigQueryRequest>[] = [
   {
     key: 'account_name',
     label: '账号名称',

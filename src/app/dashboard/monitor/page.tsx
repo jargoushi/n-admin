@@ -11,13 +11,20 @@
 import PageContainer from '@/components/layout/page-container';
 import { Pagination } from '@/components/table/pagination';
 import { usePageList } from '@/hooks/usePageList';
+import { createFilterParsers } from '@/components/shared/filter-layout';
 import { MonitorApiService } from '@/service/api/monitor.api';
 
-import { MonitorConfigFilters } from './components/MonitorConfigFilters';
+import {
+  MonitorConfigFilters,
+  FILTERS_CONFIG
+} from './components/MonitorConfigFilters';
 import { MonitorConfigPageHeader } from './components/MonitorConfigPageHeader';
 import { MonitorConfigTable } from './components/MonitorConfigTable';
-import { DEFAULT_QUERY_PARAMS, FILTER_PARSERS } from './constants';
+import { DEFAULT_QUERY_PARAMS } from './constants';
 import type { MonitorConfig, MonitorConfigQueryRequest } from './types';
+
+// 从筛选配置自动生成 parsers
+const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
 export default function MonitorConfigManagementPage() {
   const {
@@ -32,29 +39,25 @@ export default function MonitorConfigManagementPage() {
   } = usePageList<MonitorConfig, MonitorConfigQueryRequest>(
     MonitorApiService.getPageList,
     DEFAULT_QUERY_PARAMS,
-    FILTER_PARSERS
+    filterParsers
   );
 
   return (
     <PageContainer scrollable={false}>
-      <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-6'>
+      <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
         {/* 页面头部 */}
-        <div className='animate-in fade-in slide-in-from-top-4 duration-500'>
-          <MonitorConfigPageHeader onSuccess={refresh} />
-        </div>
+        <MonitorConfigPageHeader onSuccess={refresh} />
 
         {/* 筛选区域 */}
-        <div className='animate-in fade-in slide-in-from-top-4 delay-100 duration-500'>
-          <MonitorConfigFilters
-            filters={filters}
-            onSearch={search}
-            onReset={resetFilters}
-          />
-        </div>
+        <MonitorConfigFilters
+          filters={filters}
+          onSearch={search}
+          onReset={resetFilters}
+        />
 
         {/* 表格区域 */}
-        <div className='animate-in fade-in slide-in-from-bottom-4 flex min-h-0 flex-1 flex-col delay-200 duration-500'>
-          <div className='border-border/50 bg-card/50 min-h-0 rounded-xl border shadow-sm backdrop-blur-sm transition-all hover:shadow-md'>
+        <div className='flex min-h-0 flex-1 flex-col'>
+          <div className='min-h-0'>
             <MonitorConfigTable
               data={items}
               loading={loading}
@@ -62,7 +65,7 @@ export default function MonitorConfigManagementPage() {
             />
           </div>
 
-          <div className='shrink-0 pt-6'>
+          <div className='shrink-0 pt-4'>
             <Pagination
               pagination={pagination}
               onPageChange={(page) => setFilters({ page })}

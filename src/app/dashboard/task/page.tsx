@@ -11,12 +11,19 @@
 import PageContainer from '@/components/layout/page-container';
 import { Pagination } from '@/components/table/pagination';
 import { usePageList } from '@/hooks/usePageList';
+import { createFilterParsers } from '@/components/shared/filter-layout';
 import { TaskApiService } from '@/service/api/task.api';
 
-import { MonitorTaskFilters } from './components/MonitorTaskFilters';
+import {
+  MonitorTaskFilters,
+  FILTERS_CONFIG
+} from './components/MonitorTaskFilters';
 import { MonitorTaskTable } from './components/MonitorTaskTable';
-import { DEFAULT_QUERY_PARAMS, FILTER_PARSERS } from './constants';
+import { DEFAULT_QUERY_PARAMS } from './constants';
 import type { MonitorTask, MonitorTaskQueryRequest } from './types';
+
+// 从筛选配置自动生成 parsers
+const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
 export default function MonitorTaskManagementPage() {
   const {
@@ -30,7 +37,7 @@ export default function MonitorTaskManagementPage() {
   } = usePageList<MonitorTask, MonitorTaskQueryRequest>(
     TaskApiService.getPageList,
     DEFAULT_QUERY_PARAMS,
-    FILTER_PARSERS
+    filterParsers
   );
 
   return (

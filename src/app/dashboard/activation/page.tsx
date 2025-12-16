@@ -11,13 +11,20 @@
 import PageContainer from '@/components/layout/page-container';
 import { Pagination } from '@/components/table/pagination';
 import { usePageList } from '@/hooks/usePageList';
+import { createFilterParsers } from '@/components/shared/filter-layout';
 import { ActivationApiService } from '@/service/api/activation.api';
 
-import { ActivationCodeFilters } from './components/ActivationCodeFilters';
+import {
+  ActivationCodeFilters,
+  FILTERS_CONFIG
+} from './components/ActivationCodeFilters';
 import { ActivationCodePageHeader } from './components/ActivationCodePageHeader';
 import { ActivationCodeTable } from './components/ActivationCodeTable';
-import { DEFAULT_QUERY_PARAMS, FILTER_PARSERS } from './constants';
+import { DEFAULT_QUERY_PARAMS } from './constants';
 import type { ActivationCode, ActivationCodeQueryRequest } from './types';
+
+// 从筛选配置自动生成 parsers
+const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
 export default function ActivationCodeManagementPage() {
   const {
@@ -32,7 +39,7 @@ export default function ActivationCodeManagementPage() {
   } = usePageList<ActivationCode, ActivationCodeQueryRequest>(
     ActivationApiService.getPageList,
     DEFAULT_QUERY_PARAMS,
-    FILTER_PARSERS
+    filterParsers
   );
 
   return (
