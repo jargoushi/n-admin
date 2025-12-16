@@ -154,7 +154,7 @@ function FilterInput<T extends FieldValues>({
               {...field}
               id={fieldId}
               value={(field.value as string) ?? ''}
-              placeholder={config.placeholder}
+              placeholder='请输入'
               disabled={loading}
               className='h-9 w-full pr-8'
               onChange={(e) => field.onChange(e.target.value || undefined)}
@@ -189,12 +189,16 @@ function FilterSelect<T extends FieldValues>({
       name={config.key}
       control={control}
       render={({ field }) => {
-        const hasValue = field.value !== undefined && field.value !== null;
+        // 修复: 将 null 也视为无值
+        const hasValue =
+          field.value !== undefined &&
+          field.value !== null &&
+          field.value !== '';
 
         return (
           <div className='group relative'>
             <Select
-              value={field.value !== undefined ? String(field.value) : ''}
+              value={hasValue ? String(field.value) : ''}
               onValueChange={(val) => {
                 const option = config.options.find(
                   (opt) => String(opt.code) === val
@@ -207,13 +211,11 @@ function FilterSelect<T extends FieldValues>({
                 id={fieldId}
                 className={`h-9 w-full ${hasValue ? 'group-hover:[&>svg]:opacity-0' : ''}`}
               >
-                <SelectValue placeholder={config.placeholder} />
+                <SelectValue placeholder='请选择' />
               </SelectTrigger>
               <SelectContent>
                 {config.options.map((option) => (
-                  // 【修改点 3】: 渲染 Key 和 Value 使用 option.code
                   <SelectItem key={option.code} value={String(option.code)}>
-                    {/* 【修改点 4】: 显示文本使用 option.desc */}
                     {option.desc}
                   </SelectItem>
                 ))}
@@ -243,7 +245,7 @@ function FilterDateRange<T extends FieldValues>({
   loading?: boolean;
 }) {
   const fieldId = String(config.startKey);
-  const { startKey, endKey, placeholder } = config;
+  const { startKey, endKey } = config;
 
   // 使用 useWatch 读取值
   const startValue = useWatch({ control, name: startKey });
@@ -283,7 +285,6 @@ function FilterDateRange<T extends FieldValues>({
                   id={fieldId}
                   value={value}
                   onChange={handleChange}
-                  placeholder={placeholder}
                   disabled={loading}
                 />
               </div>

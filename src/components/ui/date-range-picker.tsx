@@ -19,11 +19,15 @@ export interface DateRange {
   to?: Date;
 }
 
+/**
+ * 默认占位符
+ */
+const DEFAULT_PLACEHOLDER = '开始时间  ~  结束时间';
+
 interface DateRangePickerProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   value?: DateRange;
   onChange: (range: DateRange | undefined) => void;
-  placeholder?: string;
   disabled?: boolean;
   align?: 'start' | 'center' | 'end';
 }
@@ -35,7 +39,6 @@ export function DateRangePicker({
   className,
   value,
   onChange,
-  placeholder = '选择日期范围',
   disabled,
   align = 'start',
   ...props
@@ -83,20 +86,20 @@ export function DateRangePicker({
       const end = format(value.to, 'yyyy-MM-dd');
       return `${start} ~ ${end}`;
     }
-    return placeholder;
-  }, [value, placeholder]);
+    return DEFAULT_PLACEHOLDER;
+  }, [value]);
 
   const hasCompleteValue = !!value?.from && !!value?.to;
 
   return (
-    <div className={cn('grid w-full', className)} {...props}>
+    <div className={cn('grid', className)} {...props}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
             id='date'
             variant={'outline'}
             className={cn(
-              'relative h-9 w-full justify-start pr-3 text-left font-normal',
+              'relative h-9 w-64 justify-start pr-3 text-left font-normal',
               !hasCompleteValue && 'text-muted-foreground'
             )}
             disabled={disabled}

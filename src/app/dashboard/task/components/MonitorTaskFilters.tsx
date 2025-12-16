@@ -43,22 +43,19 @@ const FILTERS_CONFIG: FilterFieldConfig<MonitorTaskQueryRequest>[] = [
     key: 'channel_code',
     label: '渠道',
     type: FILTER_TYPES.SELECT,
-    options: CHANNEL_TYPES,
-    placeholder: '请选择渠道'
+    options: CHANNEL_TYPES
   },
   {
     key: 'task_type',
     label: '任务类型',
     type: FILTER_TYPES.SELECT,
-    options: TASK_TYPES,
-    placeholder: '请选择任务类型'
+    options: TASK_TYPES
   },
   {
     key: 'task_status',
     label: '任务状态',
     type: FILTER_TYPES.SELECT,
-    options: TASK_STATUSES,
-    placeholder: '请选择任务状态'
+    options: TASK_STATUSES
   },
   // --- 高级筛选：日期范围 ---
   {
@@ -66,7 +63,6 @@ const FILTERS_CONFIG: FilterFieldConfig<MonitorTaskQueryRequest>[] = [
     endKey: 'end_date',
     label: '调度日期范围',
     type: FILTER_TYPES.DATE_RANGE,
-    placeholder: '选择调度日期范围',
     advanced: true
   }
 ];

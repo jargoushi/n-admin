@@ -154,7 +154,6 @@ export function MonitorDailyStatsChart({
                     setDateRange(range);
                   }
                 }}
-                placeholder='选择日期范围'
                 disabled={loading}
               />
             </div>

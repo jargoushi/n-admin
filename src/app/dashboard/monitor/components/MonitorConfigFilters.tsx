@@ -41,22 +41,19 @@ const FILTERS_CONFIG: FilterFieldConfig<MonitorConfigQueryRequest>[] = [
   {
     key: 'account_name',
     label: '账号名称',
-    type: FILTER_TYPES.INPUT,
-    placeholder: '请输入账号名称进行模糊搜索'
+    type: FILTER_TYPES.INPUT
   },
   {
     key: 'channel_code',
     label: '渠道',
     type: FILTER_TYPES.SELECT,
-    options: CHANNEL_TYPES,
-    placeholder: '请选择渠道'
+    options: CHANNEL_TYPES
   },
   {
     key: 'is_active',
     label: '状态',
     type: FILTER_TYPES.SELECT,
-    options: ACTIVE_STATUSES,
-    placeholder: '请选择状态'
+    options: ACTIVE_STATUSES
   },
   // --- 高级筛选：时间范围 ---
   {
@@ -64,7 +61,6 @@ const FILTERS_CONFIG: FilterFieldConfig<MonitorConfigQueryRequest>[] = [
     endKey: 'created_at_end',
     label: '创建时间范围',
     type: FILTER_TYPES.DATE_RANGE,
-    placeholder: '选择创建时间范围',
     advanced: true
   }
 ];
