@@ -18,11 +18,6 @@ export const DEFAULT_PAGINATION: PaginationInfo = {
 };
 
 /**
- * 默认每页大小选项(用于分页组件)
- */
-export const DEFAULT_PAGE_SIZE_OPTIONS = [10, 20, 30, 50, 100];
-
-/**
  * 默认分页请求参数
  * 用于API请求时的默认值
  */
