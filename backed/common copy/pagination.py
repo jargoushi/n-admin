@@ -2,7 +2,7 @@ from typing import Generic, TypeVar, List
 
 from pydantic import Field
 
-from app.schemas.base import BaseRequestModel, BaseResponseModel
+from app.schemas.common.base import BaseRequestModel, BaseResponseModel
 
 T = TypeVar('T')
 

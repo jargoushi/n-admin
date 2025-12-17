@@ -4,8 +4,8 @@ from typing import Generic, TypeVar, Optional
 from pydantic import Field
 from tortoise.queryset import QuerySet
 
-from app.schemas.base import BaseResponseModel
-from app.schemas.pagination import PageResponse, PageRequest
+from app.schemas.common.base import BaseResponseModel
+from app.schemas.common.pagination import PageResponse, PageRequest
 
 T = TypeVar('T')
 
