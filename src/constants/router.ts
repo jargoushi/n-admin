@@ -1,5 +1,12 @@
 import { NavItem } from '@/types/nav';
-import { Settings, Activity, Eye, ListChecks, Ticket } from 'lucide-react';
+import {
+  Settings,
+  Activity,
+  Eye,
+  ListChecks,
+  Ticket,
+  Users
+} from 'lucide-react';
 
 // 系统导航列表
 export const navList: NavItem[] = [
@@ -31,6 +38,11 @@ export const navList: NavItem[] = [
         title: '激活码管理',
         url: '/dashboard/activation',
         icon: Ticket
+      },
+      {
+        title: '用户管理',
+        url: '/dashboard/user',
+        icon: Users
       }
     ]
   }
