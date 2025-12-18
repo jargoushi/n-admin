@@ -5,7 +5,8 @@ import {
   Eye,
   ListChecks,
   Ticket,
-  Users
+  Users,
+  UserCircle
 } from 'lucide-react';
 
 // 系统导航列表
@@ -43,6 +44,11 @@ export const navList: NavItem[] = [
         title: '用户管理',
         url: '/dashboard/user',
         icon: Users
+      },
+      {
+        title: '账号管理',
+        url: '/dashboard/account',
+        icon: UserCircle
       }
     ]
   }

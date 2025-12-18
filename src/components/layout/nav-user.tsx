@@ -9,7 +9,8 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Loader2
+  Loader2,
+  Settings
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -45,6 +46,7 @@ import { AuthApiService } from '@/service/api/auth.api';
 import { UserApiService } from '@/service/api/user.api';
 import type { UserProfile } from '@/app/dashboard/auth/types';
 import type { UserUpdateRequest } from '@/app/dashboard/user/types';
+import { SettingsDialog } from '@/app/dashboard/settings/components/SettingsDialog';
 
 interface PasswordFormData {
   newPassword: string;
@@ -60,6 +62,7 @@ export function NavUser() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
 
   // 用户信息表单
   const profileForm = useForm<UserUpdateRequest>({
@@ -214,6 +217,13 @@ export function NavUser() {
                 >
                   <Lock />
                   修改密码
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setSettingsDialogOpen(true)}
+                  className='cursor-pointer'
+                >
+                  <Settings />
+                  系统设置
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
@@ -420,6 +430,12 @@ export function NavUser() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* 系统设置弹窗 */}
+      <SettingsDialog
+        open={settingsDialogOpen}
+        onOpenChange={setSettingsDialogOpen}
+      />
     </>
   );
 }

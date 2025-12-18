@@ -20,7 +20,6 @@ export default function Header() {
 
         {/* 右侧：主题切换 */}
         <div className='flex items-center gap-1 px-3 sm:gap-2 sm:px-4'>
-          {/* 主题切换按钮 */}
           <ModeToggle />
         </div>
       </div>
