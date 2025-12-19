@@ -1,9 +1,20 @@
 'use client';
 
 import * as React from 'react';
-import { format } from 'date-fns';
+import {
+  format,
+  startOfToday,
+  endOfToday,
+  startOfYesterday,
+  endOfYesterday,
+  subDays,
+  startOfMonth,
+  endOfMonth,
+  subMonths
+} from 'date-fns';
+import { zhCN } from 'date-fns/locale';
 import { Calendar as CalendarIcon, X } from 'lucide-react';
-import { SelectRangeEventHandler } from 'react-day-picker';
+import { SelectRangeEventHandler, type DateRange } from 'react-day-picker';
 
 // 导入 shadcn/ui 基础组件
 import { cn } from '@/lib/utils';
@@ -11,10 +22,6 @@ import { Button } from './button';
 import { Calendar } from './calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
-/**
- * DateRange 类型定义 (保持一致)
- */
-import { type DateRange } from 'react-day-picker';
 export { type DateRange };
 
 /**
@@ -62,16 +69,54 @@ export function DateRangePicker({
   };
 
   /**
+   * 快捷选项配置
+   */
+  const presets = [
+    {
+      label: '今天',
+      getValue: () => ({
+        from: startOfToday(),
+        to: endOfToday()
+      })
+    },
+    {
+      label: '昨天',
+      getValue: () => ({
+        from: startOfYesterday(),
+        to: endOfYesterday()
+      })
+    },
+    {
+      label: '最近一周',
+      getValue: () => ({
+        from: subDays(startOfToday(), 6),
+        to: endOfToday()
+      })
+    },
+    {
+      label: '最近一个月',
+      getValue: () => ({
+        from: subMonths(startOfToday(), 1),
+        to: endOfToday()
+      })
+    }
+  ];
+
+  const handlePresetClick = (getValue: () => DateRange) => {
+    const range = getValue();
+    setInternalRange(range);
+    onChange(range);
+    setIsOpen(false);
+  };
+
+  /**
    * 清空操作处理函数
    */
   const handleClear = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      // 阻止冒泡是必要的安全措施
       e.stopPropagation();
-
       setInternalRange(undefined);
       onChange(undefined);
-
       setIsOpen(false);
     },
     [onChange]
@@ -119,14 +164,65 @@ export function DateRangePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent className='w-auto p-0' align={align}>
-          <Calendar
-            initialFocus
-            mode='range'
-            defaultMonth={internalRange?.from}
-            selected={internalRange}
-            onSelect={handleSelect}
-            numberOfMonths={2}
-          />
+          <div className='flex h-[340px]'>
+            {/* 侧边快捷选项 */}
+            <div className='bg-muted/30 flex w-28 flex-col gap-1 border-r p-2'>
+              {presets.map((preset) => (
+                <Button
+                  key={preset.label}
+                  variant='ghost'
+                  size='sm'
+                  className='hover:bg-primary/10 hover:text-primary justify-start font-normal transition-colors'
+                  onClick={() => handlePresetClick(preset.getValue)}
+                >
+                  {preset.label}
+                </Button>
+              ))}
+            </div>
+
+            {/* 日历区域 */}
+            <div className='p-2'>
+              <Calendar
+                initialFocus
+                mode='range'
+                defaultMonth={internalRange?.from}
+                selected={internalRange}
+                onSelect={handleSelect}
+                numberOfMonths={2}
+                locale={zhCN}
+                className='p-0'
+                classNames={{
+                  months: 'flex flex-row gap-4',
+                  month: 'space-y-4',
+                  caption:
+                    'flex justify-center pt-1 relative items-center h-10',
+                  caption_label: 'text-sm font-semibold',
+                  table: 'w-full border-collapse space-y-1',
+                  head_row: 'flex',
+                  head_cell:
+                    'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
+                  row: 'flex w-full mt-2',
+                  cell: 'h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-range-start)]:rounded-l-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
+                  day: cn(
+                    'h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-accent rounded-md transition-all'
+                  ),
+                  day_range_start:
+                    'day-range-start aria-selected:bg-primary aria-selected:text-primary-foreground',
+                  day_range_end:
+                    'day-range-end aria-selected:bg-primary aria-selected:text-primary-foreground',
+                  day_selected:
+                    'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
+                  day_today: 'bg-accent text-accent-foreground',
+                  day_outside:
+                    'day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30',
+                  day_disabled: 'text-muted-foreground opacity-50',
+                  day_range_middle:
+                    'aria-selected:bg-accent aria-selected:text-accent-foreground',
+                  day_hidden: 'invisible'
+                }}
+              />
+            </div>
+          </div>
         </PopoverContent>
       </Popover>
     </div>
