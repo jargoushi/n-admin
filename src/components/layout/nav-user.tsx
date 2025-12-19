@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   BadgeCheck,
-  ChevronsUpDown,
   LogOut,
   Lock,
   Eye,
