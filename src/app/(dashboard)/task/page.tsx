@@ -22,12 +22,10 @@ import { MonitorTaskTable } from './components/MonitorTaskTable';
 import { DEFAULT_QUERY_PARAMS } from './constants';
 import type { MonitorTask, MonitorTaskQueryRequest } from './types';
 
-import { Suspense } from 'react';
-
 // 从筛选配置自动生成 parsers
 const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
-function MonitorTaskManagementPageContent() {
+export default function MonitorTaskManagementPage() {
   const {
     filters,
     search,
@@ -68,13 +66,5 @@ function MonitorTaskManagementPageContent() {
         </div>
       </div>
     </PageContainer>
-  );
-}
-
-export default function MonitorTaskManagementPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <MonitorTaskManagementPageContent />
-    </Suspense>
   );
 }

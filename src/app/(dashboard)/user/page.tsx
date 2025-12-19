@@ -19,12 +19,10 @@ import { UserTable } from './components/UserTable';
 import { DEFAULT_QUERY_PARAMS } from './constants';
 import type { User, UserQueryRequest } from './types';
 
-import { Suspense } from 'react';
-
 // 从筛选配置自动生成 parsers
 const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
-function UserManagementPageContent() {
+export default function UserManagementPage() {
   const {
     filters,
     search,
@@ -68,13 +66,5 @@ function UserManagementPageContent() {
         </div>
       </div>
     </PageContainer>
-  );
-}
-
-export default function UserManagementPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <UserManagementPageContent />
-    </Suspense>
   );
 }

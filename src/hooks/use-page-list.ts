@@ -29,7 +29,6 @@ export interface UsePageListReturn<T, F extends PageRequest> {
 export function usePageList<T, F extends PageRequest>(
   apiService: (params: F) => Promise<PageResponse<T>>,
   defaultFilters: F,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parsers: any
 ): UsePageListReturn<T, F> {
   const [urlFilters, setUrlFilters] = useQueryStates(parsers, {

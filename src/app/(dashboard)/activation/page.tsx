@@ -23,12 +23,10 @@ import { ActivationCodeTable } from './components/ActivationCodeTable';
 import { DEFAULT_QUERY_PARAMS } from './constants';
 import type { ActivationCode, ActivationCodeQueryRequest } from './types';
 
-import { Suspense } from 'react';
-
 // 从筛选配置自动生成 parsers
 const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
-function ActivationCodeManagementPageContent() {
+export default function ActivationCodeManagementPage() {
   const {
     filters,
     search,
@@ -77,13 +75,5 @@ function ActivationCodeManagementPageContent() {
         </div>
       </div>
     </PageContainer>
-  );
-}
-
-export default function ActivationCodeManagementPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ActivationCodeManagementPageContent />
-    </Suspense>
   );
 }
