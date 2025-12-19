@@ -1,7 +1,5 @@
 'use client';
 import React from 'react';
-import { Separator } from '@/components/ui/separator';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Breadcrumbs } from './breadcrumbs';
 import { ModeToggle } from './mode-toggle';
 
