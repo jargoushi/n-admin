@@ -25,7 +25,7 @@ import {
 import { CHANNEL_TYPES } from '../constants';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
 import { MonitorApiService } from '@/service/api/monitor.api';
-import { useFormSubmit } from '@/hooks/useFormSubmit';
+import { useFormSubmit } from '@/hooks/use-form-submit';
 
 interface MonitorConfigCreateFormProps {
   /** 取消回调（从 GenericDialogs 传递） */

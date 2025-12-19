@@ -29,7 +29,7 @@ import {
 import { ACTIVATION_CODE_TYPES, DISTRIBUTE_COUNT_RANGE } from '../constants';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
 import { ActivationApiService } from '@/service/api/activation.api';
-import { useFormSubmit } from '@/hooks/useFormSubmit';
+import { useFormSubmit } from '@/hooks/use-form-submit';
 
 export function ActivationCodeDistributeForm() {
   // 使用通用 Hook 管理提交状态

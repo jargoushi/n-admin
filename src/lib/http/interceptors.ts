@@ -6,7 +6,7 @@ import type {
 import { toast } from 'sonner';
 import { TokenManager } from './token';
 import type { ApiResponse, HttpError } from './types';
-import { convertDatesInObject } from '@/lib/utils';
+import { convertDatesInObject } from '@/lib/date';
 
 /**
  * 请求拦截器 - 成功处理

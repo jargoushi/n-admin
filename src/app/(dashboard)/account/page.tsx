@@ -10,7 +10,7 @@
 
 import PageContainer from '@/components/layout/page-container';
 import { Pagination } from '@/components/table/pagination';
-import { usePageList } from '@/hooks/usePageList';
+import { usePageList } from '@/hooks/use-page-list';
 import { createFilterParsers } from '@/components/shared/filter-layout';
 import { AccountApiService } from '@/service/api/account.api';
 

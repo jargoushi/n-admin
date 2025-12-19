@@ -36,7 +36,7 @@ import {
 import { findDescByCode } from '@/types/common';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
 import { ActivationApiService } from '@/service/api/activation.api';
-import { useFormSubmit } from '@/hooks/useFormSubmit';
+import { useFormSubmit } from '@/hooks/use-form-submit';
 
 export function ActivationCodeInitForm() {
   // 使用通用 Hook 管理提交状态
@@ -201,7 +201,7 @@ export function ActivationCodeInitForm() {
                   />
                   {errors.items?.[index]?.count && (
                     <p className='text-destructive text-xs'>
-                      {errors.items[index].count.message}
+                      {errors.items?.[index]?.count?.message}
                     </p>
                   )}
                 </div>

@@ -7,7 +7,7 @@ import {
   EntityDetailView,
   FieldConfig
 } from '@/components/shared/entity-detail-view';
-import { formatDateTime } from '@/lib/data-utils';
+import { formatDateTime } from '@/lib/date';
 import type { ActivationCode } from '../types';
 import { ACTIVATION_CODE_TYPES, ACTIVATION_CODE_STATUSES } from '../constants';
 import { findDescByCode } from '@/types/common';

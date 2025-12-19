@@ -44,7 +44,7 @@ import {
   type BindingFormData,
   type BindingUpdateFormData
 } from '../account.schema';
-import { useConfirmation } from '@/hooks/useConfirmation';
+import { useConfirmation } from '@/hooks/use-confirmation';
 import { AccountApiService } from '@/service/api/account.api';
 import { CommonApiService, type EnumItem } from '@/service/api/common.api';
 import type { Account, Binding } from '../types';

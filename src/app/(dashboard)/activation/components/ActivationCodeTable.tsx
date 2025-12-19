@@ -13,8 +13,8 @@ import { Check, X, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 // 引入弹窗基础设施
-import { useGenericDialogs } from '@/hooks/useGenericDialogs';
-import { useConfirmation } from '@/hooks/useConfirmation';
+import { useGenericDialogs } from '@/hooks/use-generic-dialogs';
+import { useConfirmation } from '@/hooks/use-confirmation';
 
 import { DataTable, type Column } from '@/components/table/data-table';
 import {

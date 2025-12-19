@@ -19,7 +19,7 @@ import {
 import type { MonitorConfig } from '../types';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
 import { MonitorApiService } from '@/service/api/monitor.api';
-import { useFormSubmit } from '@/hooks/useFormSubmit';
+import { useFormSubmit } from '@/hooks/use-form-submit';
 
 interface MonitorConfigUpdateFormProps {
   /** 要修改的监控配置（从 GenericDialogs 传递） */

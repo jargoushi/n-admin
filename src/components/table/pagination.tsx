@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { generatePageNumbers } from '@/lib/pagination-utils';
+import { generatePageNumbers } from '@/lib/pagination';
 import type { PaginationInfo } from '@/lib/http/types';
 
 interface PaginationProps {

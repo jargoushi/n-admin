@@ -16,7 +16,7 @@ import {
   ActionDropdown,
   type ActionItem
 } from '@/components/table/action-dropdown';
-import { useConfirmation } from '@/hooks/useConfirmation';
+import { useConfirmation } from '@/hooks/use-confirmation';
 import { AccountApiService } from '@/service/api/account.api';
 import { AccountDialog } from './AccountDialogs';
 import { BindingManageDialog } from './BindingManageDialog';

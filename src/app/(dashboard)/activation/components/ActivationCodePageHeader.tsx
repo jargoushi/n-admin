@@ -5,7 +5,7 @@ import { Plus, Send } from 'lucide-react';
 import { PageHeader } from '@/components/table/page-header';
 
 // 引入弹窗基础设施
-import { useGenericDialogs } from '@/hooks/useGenericDialogs';
+import { useGenericDialogs } from '@/hooks/use-generic-dialogs';
 import { ActivationCodeInitForm } from './ActivationCodeInitForm';
 import { ActivationCodeDistributeForm } from './ActivationCodeDistributeForm';
 
