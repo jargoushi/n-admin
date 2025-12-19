@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,9 +57,16 @@ export function RegisterForm() {
 
       toast.success('注册成功，请登录');
       router.push('/login');
-    } catch (err: any) {
-      // 适配全局拦截器返回的 HttpError 对象
-      const errorMessage = err.message || '注册失败，请重试';
+    } catch (err) {
+      let errorMessage = '注册失败，请重试';
+
+      if (axios.isAxiosError(err)) {
+        errorMessage =
+          err.response?.data?.message || err.message || errorMessage;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
       setError(errorMessage);
       setIsLoading(false);
     }

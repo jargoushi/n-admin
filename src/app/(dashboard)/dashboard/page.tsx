@@ -14,10 +14,8 @@ import {
   BarChart3,
   CheckCircle2,
   Clock,
-  LayoutDashboard,
   Monitor,
   Plus,
-  Users,
   Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,7 +28,6 @@ import {
   YAxis,
   CartesianGrid
 } from 'recharts';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 
 // 模拟统计数据
 const stats = [

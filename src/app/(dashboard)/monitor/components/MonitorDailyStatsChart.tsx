@@ -12,7 +12,10 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { DateRangePicker } from '@/components/ui/date-range-picker';
+import {
+  DateRangePicker,
+  type DateRange
+} from '@/components/ui/date-range-picker';
 import { MonitorApiService } from '@/service/api/monitor.api';
 import type {
   MonitorConfig,
@@ -35,7 +38,7 @@ export function MonitorDailyStatsChart({
   const [stats, setStats] = useState<MonitorDailyStats[]>([]);
 
   // 默认查询最近30天
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 30),
     to: new Date()
   });
@@ -45,14 +48,14 @@ export function MonitorDailyStatsChart({
    */
   const fetchStats = useCallback(async () => {
     if (!config) return;
-    if (!dateRange.from || !dateRange.to) return;
+    if (!dateRange?.from || !dateRange?.to) return;
 
     setLoading(true);
     try {
       const request: MonitorDailyStatsQueryRequest = {
         config_id: config.id,
-        start_date: format(dateRange.from, 'yyyy-MM-dd'),
-        end_date: format(dateRange.to, 'yyyy-MM-dd')
+        start_date: format(dateRange!.from!, 'yyyy-MM-dd'),
+        end_date: format(dateRange!.to!, 'yyyy-MM-dd')
       };
       const data = await MonitorApiService.getDailyStats(request);
       setStats(data);
@@ -148,7 +151,7 @@ export function MonitorDailyStatsChart({
             <div className='flex-1 space-y-2'>
               <Label>日期范围</Label>
               <DateRangePicker
-                value={dateRange as any}
+                value={dateRange}
                 onChange={(range) => {
                   if (range?.from && range?.to) {
                     setDateRange(range);

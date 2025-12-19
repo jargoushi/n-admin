@@ -78,16 +78,16 @@
   --destructive: oklch(0.58 0.22 25);
 
   /* 边框 - 更明显一些以增加层次 */
-  --border: oklch(0.90 0.005 264);
+  --border: oklch(0.9 0.005 264);
   --input: oklch(0.92 0.005 264);
   --ring: oklch(0.55 0.22 264);
 
   /* 图表色 - 现代配色 */
   --chart-1: oklch(0.65 0.24 264);
-  --chart-2: oklch(0.60 0.20 200);
-  --chart-3: oklch(0.70 0.18 150);
+  --chart-2: oklch(0.6 0.2 200);
+  --chart-3: oklch(0.7 0.18 150);
   --chart-4: oklch(0.65 0.22 300);
-  --chart-5: oklch(0.75 0.20 50);
+  --chart-5: oklch(0.75 0.2 50);
 
   /* 侧边栏 - 稍暗的背景形成对比 */
   --sidebar: oklch(0.97 0.004 264);
@@ -96,7 +96,7 @@
   --sidebar-primary-foreground: oklch(0.99 0 0);
   --sidebar-accent: oklch(0.93 0.008 264);
   --sidebar-accent-foreground: oklch(0.25 0.02 264);
-  --sidebar-border: oklch(0.90 0.005 264);
+  --sidebar-border: oklch(0.9 0.005 264);
   --sidebar-ring: oklch(0.55 0.22 264);
 }
 
@@ -139,14 +139,14 @@
 
   /* 图表色 - 暗色主题优化 */
   --chart-1: oklch(0.65 0.24 264);
-  --chart-2: oklch(0.65 0.20 200);
-  --chart-3: oklch(0.70 0.18 150);
+  --chart-2: oklch(0.65 0.2 200);
+  --chart-3: oklch(0.7 0.18 150);
   --chart-4: oklch(0.65 0.22 300);
-  --chart-5: oklch(0.75 0.20 50);
+  --chart-5: oklch(0.75 0.2 50);
 
   /* 侧边栏 - 更深的背景 */
   --sidebar: oklch(0.15 0.02 264);
-  --sidebar-foreground: oklch(0.90 0.01 264);
+  --sidebar-foreground: oklch(0.9 0.01 264);
   --sidebar-primary: oklch(0.65 0.24 264);
   --sidebar-primary-foreground: oklch(0.99 0 0);
   --sidebar-accent: oklch(0.22 0.02 264);
@@ -167,25 +167,24 @@
 
 /* 现代化增强样式 */
 @layer components {
-
   /* 卡片增强 - 添加微妙阴影和边框 */
   .card {
-    @apply shadow-sm ring-1 ring-border/50 backdrop-blur-sm;
+    @apply ring-border/50 shadow-sm ring-1 backdrop-blur-sm;
     transition: all 0.2s ease;
   }
 
   .card:hover {
-    @apply shadow-md ring-primary/20;
+    @apply ring-primary/20 shadow-md;
   }
 
   /* 按钮增强 */
   .btn-primary {
-    @apply bg-gradient-to-r from-primary to-primary/90 shadow-sm;
+    @apply from-primary to-primary/90 bg-gradient-to-r shadow-sm;
     transition: all 0.2s ease;
   }
 
   .btn-primary:hover {
-    @apply shadow-md scale-[1.02];
+    @apply scale-[1.02] shadow-md;
   }
 
   /* 输入框增强 */
@@ -194,7 +193,7 @@
   }
 
   .input-enhanced:focus {
-    @apply ring-2 ring-primary/20 border-primary;
+    @apply ring-primary/20 border-primary ring-2;
   }
 
   /* 表格行增强 */
@@ -208,12 +207,12 @@
 
   /* 玻璃态效果 */
   .glass {
-    @apply bg-card/80 backdrop-blur-md border border-border/50;
+    @apply bg-card/80 border-border/50 border backdrop-blur-md;
   }
 
   /* 渐变文字 */
   .gradient-text {
-    @apply bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent;
+    @apply from-primary via-primary to-accent bg-gradient-to-r bg-clip-text text-transparent;
   }
 
   /* 渐变边框 */
@@ -223,8 +222,10 @@
 
   .gradient-border::before {
     content: '';
-    @apply absolute inset-0 rounded-[inherit] p-[1px] bg-gradient-to-r from-primary/50 via-accent/50 to-primary/50;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    @apply from-primary/50 via-accent/50 to-primary/50 absolute inset-0 rounded-[inherit] bg-gradient-to-r p-[1px];
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
   }
@@ -281,7 +282,7 @@
 
 /* 表格增强样式 */
 .data-table {
-  @apply rounded-lg overflow-hidden;
+  @apply overflow-hidden rounded-lg;
 }
 
 .data-table thead {
@@ -289,11 +290,11 @@
 }
 
 .data-table thead th {
-  @apply font-semibold text-sm text-muted-foreground uppercase tracking-wider py-4;
+  @apply text-muted-foreground py-4 text-sm font-semibold tracking-wider uppercase;
 }
 
 .data-table tbody tr {
-  @apply border-b border-border/50 transition-all duration-200;
+  @apply border-border/50 border-b transition-all duration-200;
 }
 
 .data-table tbody tr:hover {
@@ -310,7 +311,7 @@
 
 /* Badge 增强 */
 .badge {
-  @apply shadow-sm font-medium;
+  @apply font-medium shadow-sm;
 }
 
 /* 按钮增强 */
@@ -332,27 +333,27 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-  @apply ring-2 ring-primary/20 border-primary;
+  @apply ring-primary/20 border-primary ring-2;
 }
 
 /* 卡片标题增强 */
 .card-header {
-  @apply border-b border-border/50 bg-muted/20;
+  @apply border-border/50 bg-muted/20 border-b;
 }
 
 /* 下拉菜单增强 */
 .dropdown-menu {
-  @apply shadow-lg border border-border/50 backdrop-blur-md;
+  @apply border-border/50 border shadow-lg backdrop-blur-md;
 }
 
 /* 对话框增强 */
 .dialog-content {
-  @apply shadow-2xl border border-border/50 backdrop-blur-md;
+  @apply border-border/50 border shadow-2xl backdrop-blur-md;
 }
 
 /* 侧边栏增强 */
 .sidebar {
-  @apply border-r border-border/50 backdrop-blur-sm;
+  @apply border-border/50 border-r backdrop-blur-sm;
 }
 
 /* 加载动画增强 */
@@ -368,10 +369,12 @@ select:focus {
 
 .loading-shimmer {
   animation: shimmer 2s infinite;
-  background: linear-gradient(to right,
-      transparent 0%,
-      rgba(var(--primary), 0.1) 50%,
-      transparent 100%);
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(var(--primary), 0.1) 50%,
+    transparent 100%
+  );
   background-size: 1000px 100%;
 }
 
@@ -386,14 +389,16 @@ select:focus {
 
 /* 渐变背景 */
 .gradient-bg {
-  background: linear-gradient(135deg,
-      oklch(var(--background)) 0%,
-      oklch(var(--muted)) 100%);
+  background: linear-gradient(
+    135deg,
+    oklch(var(--background)) 0%,
+    oklch(var(--muted)) 100%
+  );
 }
 
 /* 玻璃态卡片 */
 .glass-card {
-  @apply bg-card/60 backdrop-blur-xl border border-border/50 shadow-lg;
+  @apply bg-card/60 border-border/50 border shadow-lg backdrop-blur-xl;
 }
 
 /* 动画延迟工具类 */
@@ -421,30 +426,37 @@ select:focus {
 @layer base {
   :root {
     --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.03);
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-sm:
+      0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+    --shadow-md:
+      0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+    --shadow-lg:
+      0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+    --shadow-xl:
+      0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
     --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.15);
     --shadow-glow-primary: 0 0 20px -5px oklch(0.55 0.22 264 / 0.4);
-    --shadow-glow-accent: 0 0 20px -5px oklch(0.60 0.20 200 / 0.4);
+    --shadow-glow-accent: 0 0 20px -5px oklch(0.6 0.2 200 / 0.4);
   }
 
   .dark {
     --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.1);
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.15), 0 1px 2px -1px rgb(0 0 0 / 0.15);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.25), 0 4px 6px -4px rgb(0 0 0 / 0.25);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+    --shadow-sm:
+      0 1px 3px 0 rgb(0 0 0 / 0.15), 0 1px 2px -1px rgb(0 0 0 / 0.15);
+    --shadow-md:
+      0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+    --shadow-lg:
+      0 10px 15px -3px rgb(0 0 0 / 0.25), 0 4px 6px -4px rgb(0 0 0 / 0.25);
+    --shadow-xl:
+      0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
     --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.4);
     --shadow-glow-primary: 0 0 25px -5px oklch(0.65 0.24 264 / 0.5);
-    --shadow-glow-accent: 0 0 25px -5px oklch(0.65 0.20 200 / 0.5);
+    --shadow-glow-accent: 0 0 25px -5px oklch(0.65 0.2 200 / 0.5);
   }
 }
 
 /* ===== 增强动画关键帧 ===== */
 @keyframes subtle-pulse {
-
   0%,
   100% {
     opacity: 1;
@@ -456,7 +468,6 @@ select:focus {
 }
 
 @keyframes glow-pulse {
-
   0%,
   100% {
     box-shadow: 0 0 15px -3px oklch(0.55 0.22 264 / 0.3);
@@ -504,7 +515,6 @@ select:focus {
 }
 
 @keyframes border-glow {
-
   0%,
   100% {
     border-color: oklch(0.55 0.22 264 / 0.3);
@@ -517,7 +527,6 @@ select:focus {
 
 /* ===== 增强工具类 ===== */
 @layer components {
-
   /* 悬浮发光效果 */
   .hover-glow {
     @apply transition-all duration-300;
@@ -596,8 +605,14 @@ select:focus {
   /* 增强边框效果 */
   .border-gradient {
     @apply relative;
-    background: linear-gradient(var(--background), var(--background)) padding-box,
-      linear-gradient(135deg, oklch(0.55 0.22 264 / 0.5), oklch(0.60 0.20 200 / 0.5)) border-box;
+    background:
+      linear-gradient(var(--background), var(--background)) padding-box,
+      linear-gradient(
+          135deg,
+          oklch(0.55 0.22 264 / 0.5),
+          oklch(0.6 0.2 200 / 0.5)
+        )
+        border-box;
     border: 1px solid transparent;
   }
 
@@ -646,7 +661,7 @@ select:focus {
 
   .sidebar-item-active::before {
     content: '';
-    @apply absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-primary;
+    @apply bg-primary absolute top-1/2 left-0 h-6 w-1 -translate-y-1/2 rounded-r-full;
   }
 
   /* 面包屑分隔符样式 */
@@ -656,12 +671,12 @@ select:focus {
 
   /* 页面标题渐变 */
   .page-title-gradient {
-    @apply bg-gradient-to-r from-foreground via-foreground to-muted-foreground bg-clip-text;
+    @apply from-foreground via-foreground to-muted-foreground bg-gradient-to-r bg-clip-text;
   }
 
   /* 毛玻璃效果增强 */
   .glass-strong {
-    @apply bg-background/70 backdrop-blur-xl backdrop-saturate-150 border border-border/50;
+    @apply bg-background/70 border-border/50 border backdrop-blur-xl backdrop-saturate-150;
   }
 
   /* 内容区域入场动画 */
@@ -677,10 +692,12 @@ select:focus {
   .skeleton-shimmer::after {
     content: '';
     @apply absolute inset-0;
-    background: linear-gradient(90deg,
-        transparent 0%,
-        oklch(1 0 0 / 0.1) 50%,
-        transparent 100%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      oklch(1 0 0 / 0.1) 50%,
+      transparent 100%
+    );
     animation: shimmer 2s infinite;
   }
 }

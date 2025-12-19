@@ -10,10 +10,10 @@
 
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,7 +26,6 @@ import { loginSchema, type LoginFormData } from './auth.schema';
 const REMEMBER_KEY = 'remember_username';
 
 export function LoginForm() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -71,10 +70,16 @@ export function LoginForm() {
       // 登录成功，使用 window.location.href 强制全页刷新跳转
       // 这样可以确保从 (auth) 根布局平滑过渡到 (dashboard) 根布局
       window.location.href = '/user';
-    } catch (err: any) {
-      // 优先提取后端返回的业务错误消息
-      const errorMessage =
-        err.response?.data?.message || err.message || '登录失败，请重试';
+    } catch (err) {
+      let errorMessage = '登录失败，请重试';
+
+      if (axios.isAxiosError(err)) {
+        errorMessage =
+          err.response?.data?.message || err.message || errorMessage;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
       setError(errorMessage);
       setIsLoading(false);
     }
