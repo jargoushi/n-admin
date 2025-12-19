@@ -12,7 +12,7 @@ import { DEFAULT_PAGE_REQUEST } from '@/constants/pagination';
 // ==================== 渠道类型配置 ====================
 
 /**
- * 渠道类型统一配置（唯一真相源，与后端格式一致）
+ * 渠道类型统一配置
  */
 export const CHANNEL_TYPES: OptionConfig[] = [
   { code: 1, desc: '小红书' },
@@ -25,7 +25,7 @@ export const CHANNEL_TYPES: OptionConfig[] = [
 // ==================== 启用状态配置 ====================
 
 /**
- * 启用状态统一配置（唯一真相源，与后端格式一致）
+ * 启用状态统一配置
  */
 export const ACTIVE_STATUSES: OptionConfig[] = [
   { code: 0, desc: '禁用' },
@@ -35,7 +35,7 @@ export const ACTIVE_STATUSES: OptionConfig[] = [
 // ==================== 任务状态配置 ====================
 
 /**
- * 任务状态统一配置（唯一真相源，与后端格式一致）
+ * 任务状态统一配置
  */
 export const TASK_STATUSES: OptionConfig[] = [
   { code: 0, desc: '待执行' },

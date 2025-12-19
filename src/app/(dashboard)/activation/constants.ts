@@ -12,7 +12,7 @@ import { DEFAULT_PAGE_REQUEST } from '@/constants/pagination';
 // ==================== 激活码类型配置 ====================
 
 /**
- * 激活码类型统一配置（唯一真相源，与后端格式一致）
+ * 激活码类型统一配置
  */
 export const ACTIVATION_CODE_TYPES: OptionConfig[] = [
   { code: 0, desc: '日卡' },
@@ -24,7 +24,7 @@ export const ACTIVATION_CODE_TYPES: OptionConfig[] = [
 // ==================== 激活码状态配置 ====================
 
 /**
- * 激活码状态统一配置（唯一真相源，与后端格式一致）
+ * 激活码状态统一配置
  */
 export const ACTIVATION_CODE_STATUSES: OptionConfig[] = [
   { code: 0, desc: '未使用' },
