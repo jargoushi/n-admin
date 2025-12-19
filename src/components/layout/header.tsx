@@ -2,6 +2,7 @@
 import React from 'react';
 import { Breadcrumbs } from './breadcrumbs';
 import { ModeToggle } from './mode-toggle';
+import { NavUser } from './nav-user';
 
 export default function Header() {
   return (
@@ -14,9 +15,10 @@ export default function Header() {
           </div>
         </div>
 
-        {/* 右侧：主题切换 */}
-        <div className='flex items-center gap-1 px-3 sm:gap-2 sm:px-4'>
+        {/* 右侧：主题切换 + 用户信息 */}
+        <div className='flex items-center gap-2 px-3 sm:gap-4 sm:px-4'>
           <ModeToggle />
+          <NavUser />
         </div>
       </div>
     </header>

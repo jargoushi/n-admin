@@ -20,12 +20,10 @@ import { AccountTable } from './components/AccountTable';
 import { DEFAULT_QUERY_PARAMS } from './constants';
 import type { Account, AccountQueryRequest } from './types';
 
-import { Suspense } from 'react';
-
 // 从筛选配置自动生成 parsers
 const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
-function AccountContent() {
+export default function AccountManagementPage() {
   const {
     filters,
     search,
@@ -42,41 +40,33 @@ function AccountContent() {
   );
 
   return (
-    <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
-      {/* 页面头部 */}
-      <AccountPageHeader onSuccess={refresh} />
+    <PageContainer scrollable={false}>
+      <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
+        {/* 页面头部 */}
+        <AccountPageHeader onSuccess={refresh} />
 
-      {/* 筛选区域 */}
-      <AccountFilters
-        filters={filters}
-        onSearch={search}
-        onReset={resetFilters}
-      />
+        {/* 筛选区域 */}
+        <AccountFilters
+          filters={filters}
+          onSearch={search}
+          onReset={resetFilters}
+        />
 
-      {/* 表格区域 */}
-      <div className='flex min-h-0 flex-1 flex-col'>
-        <div className='min-h-0'>
-          <AccountTable data={items} loading={loading} onRefresh={refresh} />
-        </div>
+        {/* 表格区域 */}
+        <div className='flex min-h-0 flex-1 flex-col'>
+          <div className='min-h-0'>
+            <AccountTable data={items} loading={loading} onRefresh={refresh} />
+          </div>
 
-        <div className='shrink-0 pt-4'>
-          <Pagination
-            pagination={pagination}
-            onPageChange={(page) => setFilters({ page })}
-            onPageSizeChange={(size) => setFilters({ size, page: 1 })}
-          />
+          <div className='shrink-0 pt-4'>
+            <Pagination
+              pagination={pagination}
+              onPageChange={(page) => setFilters({ page })}
+              onPageSizeChange={(size) => setFilters({ size, page: 1 })}
+            />
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-export default function AccountManagementPage() {
-  return (
-    <PageContainer scrollable={false}>
-      <Suspense fallback={<div>加载中...</div>}>
-        <AccountContent />
-      </Suspense>
     </PageContainer>
   );
 }

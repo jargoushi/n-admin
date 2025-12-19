@@ -35,12 +35,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar
-} from '@/components/ui/sidebar';
 import { getInitials } from '@/lib/utils';
 import { AuthApiService } from '@/service/api/auth.api';
 import { UserApiService } from '@/service/api/user.api';
@@ -54,7 +48,6 @@ interface PasswordFormData {
 }
 
 export function NavUser() {
-  const { isMobile } = useSidebar();
   const router = useRouter();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
@@ -147,97 +140,69 @@ export function NavUser() {
 
   return (
     <>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <SidebarMenuButton
-                size='lg'
-                className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer'
-              >
-                <Avatar className='h-8 w-8 rounded-lg'>
-                  <AvatarImage
-                    src='/avatars/default.jpg'
-                    alt={displayUser.username}
-                  />
-                  <AvatarFallback className='rounded-lg'>
-                    {getInitials(displayUser.username)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-semibold'>
-                    {displayUser.username}
-                  </span>
-                  <span className='truncate text-xs'>
-                    {displayUser.email || '未设置邮箱'}
-                  </span>
-                </div>
-                <ChevronsUpDown className='ml-auto size-4' />
-              </SidebarMenuButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
-              side={isMobile ? 'bottom' : 'right'}
-              align='end'
-              sideOffset={4}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant='ghost'
+            className='relative h-9 w-9 rounded-full'
+            title={displayUser.username}
+          >
+            <Avatar className='border-border/50 hover:border-primary/50 h-9 w-9 border transition-colors'>
+              <AvatarImage
+                src='/avatars/default.jpg'
+                alt={displayUser.username}
+              />
+              <AvatarFallback className='bg-primary/10 text-primary font-medium'>
+                {getInitials(displayUser.username)}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className='w-56' align='end' sideOffset={8}>
+          <DropdownMenuLabel className='font-normal'>
+            <div className='flex flex-col space-y-1'>
+              <p className='text-sm leading-none font-medium'>
+                {displayUser.username}
+              </p>
+              <p className='text-muted-foreground text-xs leading-none'>
+                {displayUser.email || '未设置邮箱'}
+              </p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem
+              onClick={openProfileDialog}
+              className='cursor-pointer'
             >
-              <DropdownMenuLabel className='p-0 font-normal'>
-                <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
-                  <Avatar className='h-8 w-8 rounded-lg'>
-                    <AvatarImage
-                      src='/avatars/default.jpg'
-                      alt={displayUser.username}
-                    />
-                    <AvatarFallback className='rounded-lg'>
-                      {getInitials(displayUser.username)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className='grid flex-1 text-left text-sm leading-tight'>
-                    <span className='truncate font-semibold'>
-                      {displayUser.username}
-                    </span>
-                    <span className='truncate text-xs'>
-                      {displayUser.email || '未设置邮箱'}
-                    </span>
-                  </div>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  onClick={openProfileDialog}
-                  className='cursor-pointer'
-                >
-                  <BadgeCheck />
-                  账号设置
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setPasswordDialogOpen(true)}
-                  className='cursor-pointer'
-                >
-                  <Lock />
-                  修改密码
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setSettingsDialogOpen(true)}
-                  className='cursor-pointer'
-                >
-                  <Settings />
-                  系统设置
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={handleLogout}
-                className='cursor-pointer'
-              >
-                <LogOut />
-                退出登录
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarMenuItem>
-      </SidebarMenu>
+              <BadgeCheck className='mr-2 h-4 w-4' />
+              <span>账号设置</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setPasswordDialogOpen(true)}
+              className='cursor-pointer'
+            >
+              <Lock className='mr-2 h-4 w-4' />
+              <span>修改密码</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setSettingsDialogOpen(true)}
+              className='cursor-pointer'
+            >
+              <Settings className='mr-2 h-4 w-4' />
+              <span>系统设置</span>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={handleLogout}
+            className='cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-950/50'
+          >
+            <LogOut className='mr-2 h-4 w-4' />
+            <span>退出登录</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* 账号设置弹窗 */}
       <Dialog open={profileDialogOpen} onOpenChange={setProfileDialogOpen}>

@@ -23,12 +23,10 @@ import { MonitorConfigTable } from './components/MonitorConfigTable';
 import { DEFAULT_QUERY_PARAMS } from './constants';
 import type { MonitorConfig, MonitorConfigQueryRequest } from './types';
 
-import { Suspense } from 'react';
-
 // 从筛选配置自动生成 parsers
 const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
-function MonitorConfigContent() {
+export default function MonitorConfigManagementPage() {
   const {
     filters,
     search,
@@ -45,45 +43,37 @@ function MonitorConfigContent() {
   );
 
   return (
-    <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
-      {/* 页面头部 */}
-      <MonitorConfigPageHeader onSuccess={refresh} />
+    <PageContainer scrollable={false}>
+      <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
+        {/* 页面头部 */}
+        <MonitorConfigPageHeader onSuccess={refresh} />
 
-      {/* 筛选区域 */}
-      <MonitorConfigFilters
-        filters={filters}
-        onSearch={search}
-        onReset={resetFilters}
-      />
+        {/* 筛选区域 */}
+        <MonitorConfigFilters
+          filters={filters}
+          onSearch={search}
+          onReset={resetFilters}
+        />
 
-      {/* 表格区域 */}
-      <div className='flex min-h-0 flex-1 flex-col'>
-        <div className='min-h-0'>
-          <MonitorConfigTable
-            data={items}
-            loading={loading}
-            onRefresh={refresh}
-          />
-        </div>
+        {/* 表格区域 */}
+        <div className='flex min-h-0 flex-1 flex-col'>
+          <div className='min-h-0'>
+            <MonitorConfigTable
+              data={items}
+              loading={loading}
+              onRefresh={refresh}
+            />
+          </div>
 
-        <div className='shrink-0 pt-4'>
-          <Pagination
-            pagination={pagination}
-            onPageChange={(page) => setFilters({ page })}
-            onPageSizeChange={(size) => setFilters({ size, page: 1 })}
-          />
+          <div className='shrink-0 pt-4'>
+            <Pagination
+              pagination={pagination}
+              onPageChange={(page) => setFilters({ page })}
+              onPageSizeChange={(size) => setFilters({ size, page: 1 })}
+            />
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-export default function MonitorConfigManagementPage() {
-  return (
-    <PageContainer scrollable={false}>
-      <Suspense fallback={<div>加载中...</div>}>
-        <MonitorConfigContent />
-      </Suspense>
     </PageContainer>
   );
 }

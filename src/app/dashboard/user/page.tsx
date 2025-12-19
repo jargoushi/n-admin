@@ -19,12 +19,10 @@ import { UserTable } from './components/UserTable';
 import { DEFAULT_QUERY_PARAMS } from './constants';
 import type { User, UserQueryRequest } from './types';
 
-import { Suspense } from 'react';
-
 // 从筛选配置自动生成 parsers
 const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
-function UserContent() {
+export default function UserManagementPage() {
   const {
     filters,
     search,
@@ -40,37 +38,33 @@ function UserContent() {
   );
 
   return (
-    <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
-      {/* 页面头部 */}
-      <UserPageHeader />
+    <PageContainer scrollable={false}>
+      <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
+        {/* 页面头部 */}
+        <UserPageHeader />
 
-      {/* 筛选区域 */}
-      <UserFilters filters={filters} onSearch={search} onReset={resetFilters} />
+        {/* 筛选区域 */}
+        <UserFilters
+          filters={filters}
+          onSearch={search}
+          onReset={resetFilters}
+        />
 
-      {/* 表格区域 */}
-      <div className='flex min-h-0 flex-1 flex-col'>
-        <div className='min-h-0'>
-          <UserTable data={items} loading={loading} />
-        </div>
+        {/* 表格区域 */}
+        <div className='flex min-h-0 flex-1 flex-col'>
+          <div className='min-h-0'>
+            <UserTable data={items} loading={loading} />
+          </div>
 
-        <div className='shrink-0 pt-4'>
-          <Pagination
-            pagination={pagination}
-            onPageChange={(page) => setFilters({ page })}
-            onPageSizeChange={(size) => setFilters({ size, page: 1 })}
-          />
+          <div className='shrink-0 pt-4'>
+            <Pagination
+              pagination={pagination}
+              onPageChange={(page) => setFilters({ page })}
+              onPageSizeChange={(size) => setFilters({ size, page: 1 })}
+            />
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-export default function UserManagementPage() {
-  return (
-    <PageContainer scrollable={false}>
-      <Suspense fallback={<div>加载中...</div>}>
-        <UserContent />
-      </Suspense>
     </PageContainer>
   );
 }
