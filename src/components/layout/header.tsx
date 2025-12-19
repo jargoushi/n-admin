@@ -9,10 +9,8 @@ export default function Header() {
   return (
     <header className='bg-background/80 supports-[backdrop-filter]:bg-background/60 border-border/50 sticky top-0 z-10 border-b backdrop-blur-xl backdrop-saturate-150'>
       <div className='flex h-16 shrink-0 items-center gap-2'>
-        {/* 左侧：侧边栏触发器 + 面包屑 */}
+        {/* 左侧：面包屑 */}
         <div className='flex min-w-0 flex-1 items-center gap-2 px-3 sm:px-4'>
-          <SidebarTrigger className='-ml-1' />
-          <Separator orientation='vertical' className='mr-2 h-4' />
           <div className='min-w-0 flex-1'>
             <Breadcrumbs />
           </div>
