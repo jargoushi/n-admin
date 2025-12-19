@@ -77,7 +77,7 @@ export function LoginForm() {
       }
 
       // 登录成功，跳转到首页
-      router.push('/dashboard/user');
+      router.push('/user');
     } catch (err) {
       setError(err instanceof Error ? err.message : '登录失败，请重试');
     } finally {
@@ -204,7 +204,7 @@ export function LoginForm() {
               />
               <Label
                 htmlFor='remember'
-                className='text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                className='text-sm leading-none font-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
               >
                 记住用户名
               </Label>

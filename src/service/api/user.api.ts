@@ -17,7 +17,7 @@ import type {
   UserRegisterRequest,
   UserUpdateRequest,
   UserQueryRequest
-} from '@/app/dashboard/user/types';
+} from '@/app/(dashboard)/user/types';
 
 // ==================== API 服务类 ====================
 

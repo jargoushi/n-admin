@@ -23,10 +23,12 @@ import { MonitorConfigTable } from './components/MonitorConfigTable';
 import { DEFAULT_QUERY_PARAMS } from './constants';
 import type { MonitorConfig, MonitorConfigQueryRequest } from './types';
 
+import { Suspense } from 'react';
+
 // 从筛选配置自动生成 parsers
 const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
-export default function MonitorConfigManagementPage() {
+function MonitorConfigManagementPageContent() {
   const {
     filters,
     search,
@@ -75,5 +77,13 @@ export default function MonitorConfigManagementPage() {
         </div>
       </div>
     </PageContainer>
+  );
+}
+
+export default function MonitorConfigManagementPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MonitorConfigManagementPageContent />
+    </Suspense>
   );
 }

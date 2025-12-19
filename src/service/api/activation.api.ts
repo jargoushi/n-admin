@@ -21,7 +21,7 @@ import type {
   ActivationCodeGetRequest,
   ActivationCodeInvalidateRequest,
   ActivationCodeQueryRequest
-} from '@/app/dashboard/activation/types';
+} from '@/app/(dashboard)/activation/types';
 
 // ==================== API 服务类 ====================
 

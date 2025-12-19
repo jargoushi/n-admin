@@ -22,13 +22,22 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasAuthCookie = request.cookies.has(AUTH_COOKIE_KEY);
 
-  // 已登录用户访问登录/注册页，重定向到 dashboard
-  if (hasAuthCookie && publicPaths.includes(pathname)) {
-    return NextResponse.redirect(new URL('/dashboard/user', request.url));
+  // 排除静态资源和 API 路由
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.includes('.')
+  ) {
+    return NextResponse.next();
   }
 
-  // 未登录用户访问受保护路由，重定向到登录页
-  if (!hasAuthCookie && pathname.startsWith('/dashboard')) {
+  // 已登录用户访问登录/注册页，重定向到首页
+  if (hasAuthCookie && publicPaths.includes(pathname)) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  // 未登录用户访问受保护路由（非公开路由），重定向到登录页
+  if (!hasAuthCookie && !publicPaths.includes(pathname)) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
@@ -37,5 +46,5 @@ export function middleware(request: NextRequest) {
 
 // 配置需要拦截的路由
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/register']
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
 };

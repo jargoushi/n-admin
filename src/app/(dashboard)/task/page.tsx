@@ -1,8 +1,9 @@
 /**
- * 用户管理页面
+ * 任务管理页面
  *
  * @description
- * 用户的完整管理界面
+ * 任务的完整管理界面
+ * 负责数据管理和布局
  */
 
 'use client';
@@ -11,18 +12,22 @@ import PageContainer from '@/components/layout/page-container';
 import { Pagination } from '@/components/table/pagination';
 import { usePageList } from '@/hooks/usePageList';
 import { createFilterParsers } from '@/components/shared/filter-layout';
-import { UserApiService } from '@/service/api/user.api';
+import { TaskApiService } from '@/service/api/task.api';
 
-import { UserFilters, FILTERS_CONFIG } from './components/UserFilters';
-import { UserPageHeader } from './components/UserPageHeader';
-import { UserTable } from './components/UserTable';
+import {
+  MonitorTaskFilters,
+  FILTERS_CONFIG
+} from './components/MonitorTaskFilters';
+import { MonitorTaskTable } from './components/MonitorTaskTable';
 import { DEFAULT_QUERY_PARAMS } from './constants';
-import type { User, UserQueryRequest } from './types';
+import type { MonitorTask, MonitorTaskQueryRequest } from './types';
+
+import { Suspense } from 'react';
 
 // 从筛选配置自动生成 parsers
 const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
-export default function UserManagementPage() {
+function MonitorTaskManagementPageContent() {
   const {
     filters,
     search,
@@ -31,8 +36,8 @@ export default function UserManagementPage() {
     items,
     loading,
     pagination
-  } = usePageList<User, UserQueryRequest>(
-    UserApiService.getPageList,
+  } = usePageList<MonitorTask, MonitorTaskQueryRequest>(
+    TaskApiService.getPageList,
     DEFAULT_QUERY_PARAMS,
     filterParsers
   );
@@ -40,11 +45,8 @@ export default function UserManagementPage() {
   return (
     <PageContainer scrollable={false}>
       <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
-        {/* 页面头部 */}
-        <UserPageHeader />
-
         {/* 筛选区域 */}
-        <UserFilters
+        <MonitorTaskFilters
           filters={filters}
           onSearch={search}
           onReset={resetFilters}
@@ -53,7 +55,7 @@ export default function UserManagementPage() {
         {/* 表格区域 */}
         <div className='flex min-h-0 flex-1 flex-col'>
           <div className='min-h-0'>
-            <UserTable data={items} loading={loading} />
+            <MonitorTaskTable data={items} loading={loading} />
           </div>
 
           <div className='shrink-0 pt-4'>
@@ -66,5 +68,13 @@ export default function UserManagementPage() {
         </div>
       </div>
     </PageContainer>
+  );
+}
+
+export default function MonitorTaskManagementPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MonitorTaskManagementPageContent />
+    </Suspense>
   );
 }

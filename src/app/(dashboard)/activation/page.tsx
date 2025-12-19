@@ -1,9 +1,9 @@
 /**
- * 任务管理页面
+ * 激活码管理页面
  *
  * @description
- * 任务的完整管理界面
- * 负责数据管理和布局
+ * 激活码的完整管理界面
+ * 负责数据管理和布局,弹窗逻辑由子组件自治管理
  */
 
 'use client';
@@ -12,20 +12,23 @@ import PageContainer from '@/components/layout/page-container';
 import { Pagination } from '@/components/table/pagination';
 import { usePageList } from '@/hooks/usePageList';
 import { createFilterParsers } from '@/components/shared/filter-layout';
-import { TaskApiService } from '@/service/api/task.api';
+import { ActivationApiService } from '@/service/api/activation.api';
 
 import {
-  MonitorTaskFilters,
+  ActivationCodeFilters,
   FILTERS_CONFIG
-} from './components/MonitorTaskFilters';
-import { MonitorTaskTable } from './components/MonitorTaskTable';
+} from './components/ActivationCodeFilters';
+import { ActivationCodePageHeader } from './components/ActivationCodePageHeader';
+import { ActivationCodeTable } from './components/ActivationCodeTable';
 import { DEFAULT_QUERY_PARAMS } from './constants';
-import type { MonitorTask, MonitorTaskQueryRequest } from './types';
+import type { ActivationCode, ActivationCodeQueryRequest } from './types';
+
+import { Suspense } from 'react';
 
 // 从筛选配置自动生成 parsers
 const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
-export default function MonitorTaskManagementPage() {
+function ActivationCodeManagementPageContent() {
   const {
     filters,
     search,
@@ -33,9 +36,10 @@ export default function MonitorTaskManagementPage() {
     resetFilters,
     items,
     loading,
-    pagination
-  } = usePageList<MonitorTask, MonitorTaskQueryRequest>(
-    TaskApiService.getPageList,
+    pagination,
+    refresh
+  } = usePageList<ActivationCode, ActivationCodeQueryRequest>(
+    ActivationApiService.getPageList,
     DEFAULT_QUERY_PARAMS,
     filterParsers
   );
@@ -43,8 +47,11 @@ export default function MonitorTaskManagementPage() {
   return (
     <PageContainer scrollable={false}>
       <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
+        {/* 页面头部 */}
+        <ActivationCodePageHeader onSuccess={refresh} />
+
         {/* 筛选区域 */}
-        <MonitorTaskFilters
+        <ActivationCodeFilters
           filters={filters}
           onSearch={search}
           onReset={resetFilters}
@@ -53,7 +60,11 @@ export default function MonitorTaskManagementPage() {
         {/* 表格区域 */}
         <div className='flex min-h-0 flex-1 flex-col'>
           <div className='min-h-0'>
-            <MonitorTaskTable data={items} loading={loading} />
+            <ActivationCodeTable
+              data={items}
+              loading={loading}
+              onRefresh={refresh}
+            />
           </div>
 
           <div className='shrink-0 pt-4'>
@@ -66,5 +77,13 @@ export default function MonitorTaskManagementPage() {
         </div>
       </div>
     </PageContainer>
+  );
+}
+
+export default function ActivationCodeManagementPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ActivationCodeManagementPageContent />
+    </Suspense>
   );
 }

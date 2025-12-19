@@ -1,9 +1,8 @@
 /**
- * 激活码管理页面
+ * 用户管理页面
  *
  * @description
- * 激活码的完整管理界面
- * 负责数据管理和布局,弹窗逻辑由子组件自治管理
+ * 用户的完整管理界面
  */
 
 'use client';
@@ -12,21 +11,20 @@ import PageContainer from '@/components/layout/page-container';
 import { Pagination } from '@/components/table/pagination';
 import { usePageList } from '@/hooks/usePageList';
 import { createFilterParsers } from '@/components/shared/filter-layout';
-import { ActivationApiService } from '@/service/api/activation.api';
+import { UserApiService } from '@/service/api/user.api';
 
-import {
-  ActivationCodeFilters,
-  FILTERS_CONFIG
-} from './components/ActivationCodeFilters';
-import { ActivationCodePageHeader } from './components/ActivationCodePageHeader';
-import { ActivationCodeTable } from './components/ActivationCodeTable';
+import { UserFilters, FILTERS_CONFIG } from './components/UserFilters';
+import { UserPageHeader } from './components/UserPageHeader';
+import { UserTable } from './components/UserTable';
 import { DEFAULT_QUERY_PARAMS } from './constants';
-import type { ActivationCode, ActivationCodeQueryRequest } from './types';
+import type { User, UserQueryRequest } from './types';
+
+import { Suspense } from 'react';
 
 // 从筛选配置自动生成 parsers
 const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
-export default function ActivationCodeManagementPage() {
+function UserManagementPageContent() {
   const {
     filters,
     search,
@@ -34,10 +32,9 @@ export default function ActivationCodeManagementPage() {
     resetFilters,
     items,
     loading,
-    pagination,
-    refresh
-  } = usePageList<ActivationCode, ActivationCodeQueryRequest>(
-    ActivationApiService.getPageList,
+    pagination
+  } = usePageList<User, UserQueryRequest>(
+    UserApiService.getPageList,
     DEFAULT_QUERY_PARAMS,
     filterParsers
   );
@@ -46,10 +43,10 @@ export default function ActivationCodeManagementPage() {
     <PageContainer scrollable={false}>
       <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
         {/* 页面头部 */}
-        <ActivationCodePageHeader onSuccess={refresh} />
+        <UserPageHeader />
 
         {/* 筛选区域 */}
-        <ActivationCodeFilters
+        <UserFilters
           filters={filters}
           onSearch={search}
           onReset={resetFilters}
@@ -58,11 +55,7 @@ export default function ActivationCodeManagementPage() {
         {/* 表格区域 */}
         <div className='flex min-h-0 flex-1 flex-col'>
           <div className='min-h-0'>
-            <ActivationCodeTable
-              data={items}
-              loading={loading}
-              onRefresh={refresh}
-            />
+            <UserTable data={items} loading={loading} />
           </div>
 
           <div className='shrink-0 pt-4'>
@@ -75,5 +68,13 @@ export default function ActivationCodeManagementPage() {
         </div>
       </div>
     </PageContainer>
+  );
+}
+
+export default function UserManagementPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <UserManagementPageContent />
+    </Suspense>
   );
 }

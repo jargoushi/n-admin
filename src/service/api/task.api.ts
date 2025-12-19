@@ -13,7 +13,7 @@ import type { PageResponse } from '@/lib/http';
 import type {
   MonitorTask,
   MonitorTaskQueryRequest
-} from '@/app/dashboard/task/types';
+} from '@/app/(dashboard)/task/types';
 
 // ==================== API 服务类 ====================
 

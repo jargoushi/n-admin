@@ -25,7 +25,7 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { UserApiService } from '@/service/api/user.api';
-import type { UserRegisterRequest } from '@/app/dashboard/user/types';
+import type { UserRegisterRequest } from '@/app/(dashboard)/user/types';
 
 interface RegisterFormData extends UserRegisterRequest {
   confirmPassword: string;

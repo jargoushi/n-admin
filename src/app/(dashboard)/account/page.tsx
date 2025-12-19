@@ -20,10 +20,12 @@ import { AccountTable } from './components/AccountTable';
 import { DEFAULT_QUERY_PARAMS } from './constants';
 import type { Account, AccountQueryRequest } from './types';
 
+import { Suspense } from 'react';
+
 // 从筛选配置自动生成 parsers
 const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
-export default function AccountManagementPage() {
+function AccountManagementPageContent() {
   const {
     filters,
     search,
@@ -68,5 +70,13 @@ export default function AccountManagementPage() {
         </div>
       </div>
     </PageContainer>
+  );
+}
+
+export default function AccountManagementPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AccountManagementPageContent />
+    </Suspense>
   );
 }

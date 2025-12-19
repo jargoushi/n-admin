@@ -12,7 +12,7 @@ import type {
   AllSettingsResponse,
   Setting,
   SettingUpdateRequest
-} from '@/app/dashboard/account/types';
+} from '@/app/(dashboard)/account/types';
 
 // ==================== 账号管理 ====================
 

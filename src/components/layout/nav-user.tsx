@@ -37,9 +37,9 @@ import {
 import { getInitials } from '@/lib/utils';
 import { AuthApiService } from '@/service/api/auth.api';
 import { UserApiService } from '@/service/api/user.api';
-import type { UserProfile } from '@/app/dashboard/auth/types';
-import type { UserUpdateRequest } from '@/app/dashboard/user/types';
-import { SettingsDialog } from '@/app/dashboard/settings/components/SettingsDialog';
+import type { UserProfile } from '@/app/(dashboard)/auth/types';
+import type { UserUpdateRequest } from '@/app/(dashboard)/user/types';
+import { SettingsDialog } from '@/app/(dashboard)/settings/components/SettingsDialog';
 
 interface PasswordFormData {
   newPassword: string;

@@ -23,7 +23,7 @@ import type {
   MonitorConfigQueryRequest,
   MonitorDailyStatsQueryRequest,
   MonitorDailyStats
-} from '@/app/dashboard/monitor/types';
+} from '@/app/(dashboard)/monitor/types';
 
 // ==================== API 服务类 ====================
 

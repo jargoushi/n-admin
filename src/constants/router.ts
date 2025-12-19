@@ -19,12 +19,12 @@ export const navList: NavItem[] = [
     items: [
       {
         title: '监控配置',
-        url: '/dashboard/monitor',
+        url: '/monitor',
         icon: Eye
       },
       {
         title: '任务管理',
-        url: '/dashboard/task',
+        url: '/task',
         icon: ListChecks
       }
     ]
@@ -37,17 +37,17 @@ export const navList: NavItem[] = [
     items: [
       {
         title: '激活码管理',
-        url: '/dashboard/activation',
+        url: '/activation',
         icon: Ticket
       },
       {
         title: '用户管理',
-        url: '/dashboard/user',
+        url: '/user',
         icon: Users
       },
       {
         title: '账号管理',
-        url: '/dashboard/account',
+        url: '/account',
         icon: UserCircle
       }
     ]
