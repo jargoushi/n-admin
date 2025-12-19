@@ -13,23 +13,14 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { UserApiService } from '@/service/api/user.api';
-import type { UserRegisterRequest } from '@/app/(dashboard)/user/types';
-
-interface RegisterFormData extends UserRegisterRequest {
-  confirmPassword: string;
-}
+import { registerSchema, type RegisterFormData } from './auth.schema';
 
 export function RegisterForm() {
   const router = useRouter();
@@ -41,9 +32,9 @@ export function RegisterForm() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors }
   } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       username: '',
       password: '',
@@ -51,8 +42,6 @@ export function RegisterForm() {
       activation_code: ''
     }
   });
-
-  const password = watch('password');
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
@@ -118,15 +107,7 @@ export function RegisterForm() {
                   type='text'
                   placeholder='2-50位，字母、数字、下划线'
                   className='pl-10'
-                  {...register('username', {
-                    required: '请输入用户名',
-                    minLength: { value: 2, message: '用户名至少2位' },
-                    maxLength: { value: 50, message: '用户名最多50位' },
-                    pattern: {
-                      value: /^[a-zA-Z0-9_]+$/,
-                      message: '只能包含字母、数字和下划线'
-                    }
-                  })}
+                  {...register('username')}
                 />
               </div>
               {errors.username && (
@@ -160,20 +141,7 @@ export function RegisterForm() {
                   type={showPassword ? 'text' : 'password'}
                   placeholder='8-20位，包含大小写字母和数字'
                   className='px-10'
-                  {...register('password', {
-                    required: '请输入密码',
-                    minLength: { value: 8, message: '密码至少8位' },
-                    maxLength: { value: 20, message: '密码最多20位' },
-                    validate: (value) => {
-                      const hasUpper = /[A-Z]/.test(value);
-                      const hasLower = /[a-z]/.test(value);
-                      const hasDigit = /[0-9]/.test(value);
-                      if (!hasUpper || !hasLower || !hasDigit) {
-                        return '必须包含大写字母、小写字母和数字';
-                      }
-                      return true;
-                    }
-                  })}
+                  {...register('password')}
                 />
                 <button
                   type='button'
@@ -218,11 +186,7 @@ export function RegisterForm() {
                   type={showConfirmPassword ? 'text' : 'password'}
                   placeholder='请再次输入密码'
                   className='px-10'
-                  {...register('confirmPassword', {
-                    required: '请确认密码',
-                    validate: (value) =>
-                      value === password || '两次输入的密码不一致'
-                  })}
+                  {...register('confirmPassword')}
                 />
                 <button
                   type='button'
@@ -268,9 +232,7 @@ export function RegisterForm() {
                   type='text'
                   placeholder='请输入激活码'
                   className='pl-10'
-                  {...register('activation_code', {
-                    required: '请输入激活码'
-                  })}
+                  {...register('activation_code')}
                 />
               </div>
               {errors.activation_code && (

@@ -7,9 +7,15 @@
 
 'use client';
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  monitorConfigSchema,
+  type MonitorConfigFormData
+} from '../monitor.schema';
 import type { MonitorConfig } from '../types';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
 import { MonitorApiService } from '@/service/api/monitor.api';
@@ -27,43 +33,41 @@ export function MonitorConfigUpdateForm({
   onCancel
 }: MonitorConfigUpdateFormProps) {
   // 使用通用 Hook 管理提交状态
-  const { isLoading, handleSubmit } = useFormSubmit(
-    async (targetUrl: string) => {
+  const { isLoading, handleSubmit: onApiSubmit } = useFormSubmit(
+    async (data: MonitorConfigFormData) => {
       if (!config) throw new Error('配置不存在');
-      await MonitorApiService.update(config.id, targetUrl);
+      await MonitorApiService.update(config.id, data.target_url);
       // 提交成功后直接关闭弹窗
       onCancel?.();
     }
   );
 
-  // 表单数据
-  const [targetUrl, setTargetUrl] = useState<string>(config?.target_url || '');
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty }
+  } = useForm<MonitorConfigFormData>({
+    resolver: zodResolver(monitorConfigSchema),
+    defaultValues: {
+      channel_code: config?.channel_code || 1,
+      target_url: config?.target_url || ''
+    }
+  });
 
   // 同步外部数据变化
   useEffect(() => {
     if (config) {
-      setTargetUrl(config.target_url);
+      reset({
+        channel_code: config.channel_code,
+        target_url: config.target_url
+      });
     }
-  }, [config]);
+  }, [config, reset]);
 
-  /**
-   * 更新字段
-   */
-  const updateField = useCallback((value: string) => {
-    setTargetUrl(value);
-  }, []);
-
-  /**
-   * 表单校验
-   */
-  const isValid = useMemo(() => {
-    if (!config) return false;
-    return (
-      targetUrl.trim().length > 0 &&
-      targetUrl.length <= 512 &&
-      targetUrl !== config.target_url
-    );
-  }, [targetUrl, config]);
+  const onSubmit = (data: MonitorConfigFormData) => {
+    onApiSubmit(data);
+  };
 
   // 如果没有配置数据，显示加载状态
   if (!config) {
@@ -78,8 +82,8 @@ export function MonitorConfigUpdateForm({
     <BaseFormLayout
       submit={{
         text: '保存修改',
-        onSubmit: () => handleSubmit(targetUrl),
-        disabled: !isValid,
+        onSubmit: handleSubmit(onSubmit),
+        disabled: !isDirty,
         loading: isLoading
       }}
     >
@@ -96,14 +100,19 @@ export function MonitorConfigUpdateForm({
           <Input
             id='target_url'
             type='text'
-            value={targetUrl}
-            onChange={(e) => updateField(e.target.value)}
             placeholder='请输入监控目标链接'
             disabled={isLoading}
+            {...register('target_url')}
           />
-          <p className='text-muted-foreground text-xs'>
-            请输入完整的目标链接地址（最多512个字符）
-          </p>
+          {errors.target_url ? (
+            <p className='text-destructive text-xs'>
+              {errors.target_url.message}
+            </p>
+          ) : (
+            <p className='text-muted-foreground text-xs'>
+              请输入完整的目标链接地址（最多512个字符）
+            </p>
+          )}
         </div>
       </div>
     </BaseFormLayout>

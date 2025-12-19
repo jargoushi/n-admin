@@ -66,13 +66,14 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [metaRes, settingsRes] = await Promise.all([
-        CommonApiService.getSettingsMetadata(),
-        SettingApiService.getAll()
-      ]);
+      // 顺序获取元数据和设置数据，简化逻辑
+      const metaRes = await CommonApiService.getSettingsMetadata();
+      const settingsRes = await SettingApiService.getAll();
+
       setMetadata(metaRes.groups);
       setGroups(settingsRes.groups);
       setPendingChanges({});
+
       if (metaRes.groups.length > 0 && activeGroup === null) {
         setActiveGroup(metaRes.groups[0].code);
       }
@@ -105,14 +106,14 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
     if (!hasChanges) return;
     setSaving(true);
     try {
-      await Promise.all(
-        Object.entries(pendingChanges).map(([key, value]) =>
-          SettingApiService.update({
-            setting_key: Number(key),
-            setting_value: value
-          })
-        )
-      );
+      // 顺序提交变更，避免并发压力，逻辑更清晰
+      for (const [key, value] of Object.entries(pendingChanges)) {
+        await SettingApiService.update({
+          setting_key: Number(key),
+          setting_value: value
+        });
+      }
+
       toast.success('保存成功');
       setPendingChanges({});
       fetchData();

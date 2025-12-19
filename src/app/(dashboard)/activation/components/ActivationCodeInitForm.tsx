@@ -8,6 +8,8 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, Trash2, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,10 +23,11 @@ import {
 } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { copyToClipboard } from '@/lib/utils';
-import type {
-  ActivationCodeCreateItem,
-  ActivationCodeTypeResult
-} from '../types';
+import type { ActivationCodeTypeResult } from '../types';
+import {
+  activationCodeInitSchema,
+  type ActivationCodeInitFormData
+} from '../activation.schema';
 import {
   MAX_INIT_ITEMS,
   INIT_COUNT_RANGE,
@@ -35,98 +38,59 @@ import { BaseFormLayout } from '@/components/shared/base-form-layout';
 import { ActivationApiService } from '@/service/api/activation.api';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 
-/**
- * 默认初始化项
- */
-const DEFAULT_ITEM: ActivationCodeCreateItem = {
-  type: 0,
-  count: INIT_COUNT_RANGE.MIN
-};
-
 export function ActivationCodeInitForm() {
   // 使用通用 Hook 管理提交状态
-  const { result, isLoading, handleSubmit } = useFormSubmit(
-    ActivationApiService.init
-  );
+  const {
+    result,
+    isLoading,
+    handleSubmit: onApiSubmit
+  } = useFormSubmit(ActivationApiService.init);
 
-  // 表单数据
-  const [items, setItems] = useState<ActivationCodeCreateItem[]>([
-    DEFAULT_ITEM
-  ]);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch
+  } = useForm<ActivationCodeInitFormData>({
+    resolver: zodResolver(activationCodeInitSchema),
+    defaultValues: {
+      items: [{ type: 0, count: INIT_COUNT_RANGE.MIN }]
+    }
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'items'
+  });
+
+  const watchItems = watch('items');
 
   /**
    * 获取当前已选中的类型列表
    */
   const selectedTypes = useMemo(
-    () => new Set(items.map((item) => item.type)),
-    [items]
+    () => new Set(watchItems.map((item) => item.type)),
+    [watchItems]
   );
 
   /**
    * 处理添加初始化项
    */
   const handleAddItem = useCallback(() => {
-    if (items.length >= MAX_INIT_ITEMS) return;
+    if (fields.length >= MAX_INIT_ITEMS) return;
 
     const nextType = ACTIVATION_CODE_TYPES.find(
       (opt) => !selectedTypes.has(opt.code as number)
     )?.code as number | undefined;
 
-    const newType = nextType !== undefined ? nextType : DEFAULT_ITEM.type;
+    const newType = nextType !== undefined ? nextType : 0;
 
-    setItems((prev) => [...prev, { ...DEFAULT_ITEM, type: newType }]);
-  }, [items.length, selectedTypes]);
+    append({ type: newType, count: INIT_COUNT_RANGE.MIN });
+  }, [fields.length, selectedTypes, append]);
 
-  /**
-   * 处理移除初始化项
-   */
-  const handleRemoveItem = useCallback(
-    (index: number) => {
-      if (items.length === 1) return;
-      setItems((prev) => prev.filter((_, i) => i !== index));
-    },
-    [items.length]
-  );
-
-  /**
-   * 处理更新初始化项字段
-   */
-  const handleUpdateItem = useCallback(
-    (index: number, key: keyof ActivationCodeCreateItem, value: number) => {
-      setItems((prev) =>
-        prev.map((item, i) => {
-          if (i === index) {
-            if (
-              key === 'type' &&
-              selectedTypes.has(value) &&
-              value !== item.type
-            ) {
-              return item;
-            }
-            return { ...item, [key]: value };
-          }
-          return item;
-        })
-      );
-    },
-    [selectedTypes]
-  );
-
-  /**
-   * 表单校验逻辑
-   */
-  const isValid = useMemo(() => {
-    if (items.length === 0) return false;
-
-    if (selectedTypes.size !== items.length) {
-      return false;
-    }
-
-    return items.every(
-      (item) =>
-        item.count >= INIT_COUNT_RANGE.MIN && item.count <= INIT_COUNT_RANGE.MAX
-    );
-  }, [items, selectedTypes.size]);
+  const onSubmit = (data: ActivationCodeInitFormData) => {
+    onApiSubmit(data);
+  };
 
   // 结果内容
   const resultContent = result && (
@@ -173,71 +137,81 @@ export function ActivationCodeInitForm() {
       resultContent={resultContent}
       submit={{
         text: '立即生成',
-        onSubmit: () => handleSubmit({ items }),
-        disabled: !isValid,
+        onSubmit: handleSubmit(onSubmit),
         loading: isLoading
       }}
     >
       <div className='space-y-4'>
         <div className='max-h-[300px] space-y-4 overflow-y-auto'>
-          {items.map((item, index) => (
-            <Card key={index} className='p-4'>
+          {fields.map((field, index) => (
+            <Card key={field.id} className='p-4'>
               <div className='grid grid-cols-12 gap-4'>
                 <div className='col-span-12 space-y-2 sm:col-span-5'>
                   <Label>激活码类型</Label>
-                  <Select
-                    value={String(item.type)}
-                    onValueChange={(value) =>
-                      handleUpdateItem(index, 'type', Number(value))
-                    }
-                    disabled={isLoading}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder='请选择激活码类型' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ACTIVATION_CODE_TYPES.map((option) => {
-                        const typeValue = option.code as 0 | 1 | 2 | 3;
-
-                        return (
-                          <SelectItem
-                            key={option.code}
-                            value={String(option.code)}
-                            disabled={
-                              selectedTypes.has(typeValue) &&
-                              typeValue !== item.type
-                            }
-                          >
-                            {option.desc} (
-                            {findDescByCode(ACTIVATION_CODE_TYPES, typeValue)})
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
+                  <Controller
+                    name={`items.${index}.type`}
+                    control={control}
+                    render={({ field: selectField }) => (
+                      <Select
+                        value={String(selectField.value)}
+                        onValueChange={(value) =>
+                          selectField.onChange(Number(value))
+                        }
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder='请选择激活码类型' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ACTIVATION_CODE_TYPES.map((option) => {
+                            const typeValue = option.code as 0 | 1 | 2 | 3;
+                            return (
+                              <SelectItem
+                                key={option.code}
+                                value={String(option.code)}
+                                disabled={
+                                  selectedTypes.has(typeValue) &&
+                                  typeValue !== selectField.value
+                                }
+                              >
+                                {option.desc} (
+                                {findDescByCode(
+                                  ACTIVATION_CODE_TYPES,
+                                  typeValue
+                                )}
+                                )
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
                 </div>
 
                 <div className='col-span-12 space-y-2 sm:col-span-5'>
                   <Label>生成数量</Label>
                   <Input
                     type='number'
-                    min={INIT_COUNT_RANGE.MIN}
-                    max={INIT_COUNT_RANGE.MAX}
-                    value={item.count}
-                    onChange={(e) =>
-                      handleUpdateItem(index, 'count', Number(e.target.value))
-                    }
                     placeholder='请输入生成数量'
                     disabled={isLoading}
+                    {...control.register(`items.${index}.count`, {
+                      valueAsNumber: true
+                    })}
                   />
+                  {errors.items?.[index]?.count && (
+                    <p className='text-destructive text-xs'>
+                      {errors.items[index].count.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className='col-span-12 flex items-end justify-end sm:col-span-2'>
                   <Button
                     size='icon'
                     variant='destructive'
-                    onClick={() => handleRemoveItem(index)}
-                    disabled={items.length === 1 || isLoading}
+                    onClick={() => remove(index)}
+                    disabled={fields.length === 1 || isLoading}
                   >
                     <Trash2 className='h-4 w-4' />
                   </Button>
@@ -247,7 +221,16 @@ export function ActivationCodeInitForm() {
           ))}
         </div>
 
-        {items.length < MAX_INIT_ITEMS && (
+        {errors.items?.root && (
+          <p className='text-destructive text-sm'>
+            {errors.items.root.message}
+          </p>
+        )}
+        {errors.items?.message && (
+          <p className='text-destructive text-sm'>{errors.items.message}</p>
+        )}
+
+        {fields.length < MAX_INIT_ITEMS && (
           <Button
             variant='outline'
             onClick={handleAddItem}
@@ -256,7 +239,7 @@ export function ActivationCodeInitForm() {
             disabled={isLoading || selectedTypes.size === MAX_INIT_ITEMS}
           >
             <Plus className='mr-2 h-4 w-4' />
-            添加初始化项 ({items.length}/{MAX_INIT_ITEMS})
+            添加初始化项 ({fields.length}/{MAX_INIT_ITEMS})
           </Button>
         )}
 

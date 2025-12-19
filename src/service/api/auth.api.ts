@@ -18,7 +18,7 @@ import type {
   LoginResponse,
   UserProfile,
   ChangePasswordRequest
-} from '@/app/(dashboard)/auth/types';
+} from '@/types/auth';
 
 // ==================== API 服务类 ====================
 

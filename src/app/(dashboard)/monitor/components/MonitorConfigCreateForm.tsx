@@ -7,7 +7,8 @@
 
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -17,7 +18,10 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import type { MonitorConfigCreateRequest } from '../types';
+import {
+  monitorConfigSchema,
+  type MonitorConfigFormData
+} from '../monitor.schema';
 import { CHANNEL_TYPES } from '../constants';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
 import { MonitorApiService } from '@/service/api/monitor.api';
@@ -32,71 +36,69 @@ export function MonitorConfigCreateForm({
   onCancel
 }: MonitorConfigCreateFormProps = {}) {
   // 使用通用 Hook 管理提交状态
-  const { isLoading, handleSubmit } = useFormSubmit(
-    async (data: MonitorConfigCreateRequest) => {
+  const { isLoading, handleSubmit: onApiSubmit } = useFormSubmit(
+    async (data: MonitorConfigFormData) => {
       await MonitorApiService.create(data);
       // 提交成功后直接关闭弹窗
       onCancel?.();
     }
   );
 
-  // 表单数据
-  const [formData, setFormData] = useState<MonitorConfigCreateRequest>({
-    channel_code: 1,
-    target_url: ''
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors }
+  } = useForm<MonitorConfigFormData>({
+    resolver: zodResolver(monitorConfigSchema),
+    defaultValues: {
+      channel_code: 1,
+      target_url: ''
+    }
   });
 
-  /**
-   * 更新单个字段
-   */
-  const updateField = useCallback(
-    (key: keyof MonitorConfigCreateRequest, value: number | string) => {
-      setFormData((prev) => ({ ...prev, [key]: value }));
-    },
-    []
-  );
-
-  /**
-   * 表单校验
-   */
-  const isValid = useMemo(() => {
-    return (
-      formData.channel_code !== undefined &&
-      formData.target_url.trim().length > 0 &&
-      formData.target_url.length <= 512
-    );
-  }, [formData]);
+  const onSubmit = (data: MonitorConfigFormData) => {
+    onApiSubmit(data);
+  };
 
   return (
     <BaseFormLayout
       submit={{
         text: '立即创建',
-        onSubmit: () => handleSubmit(formData),
-        disabled: !isValid,
+        onSubmit: handleSubmit(onSubmit),
         loading: isLoading
       }}
     >
       <div className='space-y-4'>
         <div className='space-y-2'>
           <Label htmlFor='channel_code'>渠道类型</Label>
-          <Select
-            value={String(formData.channel_code)}
-            onValueChange={(value) =>
-              updateField('channel_code', Number(value))
-            }
-            disabled={isLoading}
-          >
-            <SelectTrigger id='channel_code'>
-              <SelectValue placeholder='请选择渠道类型' />
-            </SelectTrigger>
-            <SelectContent>
-              {CHANNEL_TYPES.map((option) => (
-                <SelectItem key={option.code} value={String(option.code)}>
-                  {option.desc}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Controller
+            name='channel_code'
+            control={control}
+            render={({ field }) => (
+              <Select
+                value={String(field.value)}
+                onValueChange={(value) => field.onChange(Number(value))}
+                disabled={isLoading}
+              >
+                <SelectTrigger id='channel_code'>
+                  <SelectValue placeholder='请选择渠道类型' />
+                </SelectTrigger>
+                <SelectContent>
+                  {CHANNEL_TYPES.map((option) => (
+                    <SelectItem key={option.code} value={String(option.code)}>
+                      {option.desc}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {errors.channel_code && (
+            <p className='text-destructive text-xs'>
+              {errors.channel_code.message}
+            </p>
+          )}
         </div>
 
         <div className='space-y-2'>
@@ -104,14 +106,19 @@ export function MonitorConfigCreateForm({
           <Input
             id='target_url'
             type='text'
-            value={formData.target_url}
-            onChange={(e) => updateField('target_url', e.target.value)}
             placeholder='请输入监控目标链接'
             disabled={isLoading}
+            {...register('target_url')}
           />
-          <p className='text-muted-foreground text-xs'>
-            请输入完整的目标链接地址（最多512个字符）
-          </p>
+          {errors.target_url ? (
+            <p className='text-destructive text-xs'>
+              {errors.target_url.message}
+            </p>
+          ) : (
+            <p className='text-muted-foreground text-xs'>
+              请输入完整的目标链接地址（最多512个字符）
+            </p>
+          )}
         </div>
       </div>
     </BaseFormLayout>

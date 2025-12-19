@@ -7,7 +7,8 @@
 
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,7 +22,10 @@ import {
 } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { copyToClipboard } from '@/lib/utils';
-import type { ActivationCodeGetRequest } from '../types';
+import {
+  activationCodeDistributeSchema,
+  type ActivationCodeDistributeFormData
+} from '../activation.schema';
 import { ACTIVATION_CODE_TYPES, DISTRIBUTE_COUNT_RANGE } from '../constants';
 import { BaseFormLayout } from '@/components/shared/base-form-layout';
 import { ActivationApiService } from '@/service/api/activation.api';
@@ -29,38 +33,28 @@ import { useFormSubmit } from '@/hooks/useFormSubmit';
 
 export function ActivationCodeDistributeForm() {
   // 使用通用 Hook 管理提交状态
-  const { result, isLoading, handleSubmit } = useFormSubmit(
-    ActivationApiService.distribute
-  );
+  const {
+    result,
+    isLoading,
+    handleSubmit: onApiSubmit
+  } = useFormSubmit(ActivationApiService.distribute);
 
-  // 表单数据
-  const [formData, setFormData] = useState<ActivationCodeGetRequest>({
-    type: 0,
-    count: 1
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors }
+  } = useForm<ActivationCodeDistributeFormData>({
+    resolver: zodResolver(activationCodeDistributeSchema),
+    defaultValues: {
+      type: 0,
+      count: 1
+    }
   });
 
-  /**
-   * 更新单个字段
-   */
-  const updateField = useCallback(
-    (key: keyof ActivationCodeGetRequest, value: number) => {
-      setFormData((prev) => ({ ...prev, [key]: value }));
-    },
-    []
-  );
-
-  /**
-   * 表单校验
-   */
-  const isValid = useMemo(() => {
-    return (
-      formData.type !== undefined &&
-      formData.type !== null &&
-      formData.count !== undefined &&
-      formData.count >= DISTRIBUTE_COUNT_RANGE.MIN &&
-      formData.count <= DISTRIBUTE_COUNT_RANGE.MAX
-    );
-  }, [formData]);
+  const onSubmit = (data: ActivationCodeDistributeFormData) => {
+    onApiSubmit(data);
+  };
 
   // 结果内容
   const resultContent = result && (
@@ -99,30 +93,38 @@ export function ActivationCodeDistributeForm() {
       resultContent={resultContent}
       submit={{
         text: '立即派发',
-        onSubmit: () => handleSubmit(formData),
-        disabled: !isValid,
+        onSubmit: handleSubmit(onSubmit),
         loading: isLoading
       }}
     >
       <div className='space-y-4'>
         <div className='space-y-2'>
           <Label htmlFor='type'>激活码类型</Label>
-          <Select
-            value={String(formData.type)}
-            onValueChange={(value) => updateField('type', Number(value))}
-            disabled={isLoading}
-          >
-            <SelectTrigger id='type'>
-              <SelectValue placeholder='请选择激活码类型' />
-            </SelectTrigger>
-            <SelectContent>
-              {ACTIVATION_CODE_TYPES.map((option) => (
-                <SelectItem key={option.code} value={String(option.code)}>
-                  {option.desc}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Controller
+            name='type'
+            control={control}
+            render={({ field }) => (
+              <Select
+                value={String(field.value)}
+                onValueChange={(value) => field.onChange(Number(value))}
+                disabled={isLoading}
+              >
+                <SelectTrigger id='type'>
+                  <SelectValue placeholder='请选择激活码类型' />
+                </SelectTrigger>
+                <SelectContent>
+                  {ACTIVATION_CODE_TYPES.map((option) => (
+                    <SelectItem key={option.code} value={String(option.code)}>
+                      {option.desc}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {errors.type && (
+            <p className='text-destructive text-xs'>{errors.type.message}</p>
+          )}
         </div>
 
         <div className='space-y-2'>
@@ -130,17 +132,18 @@ export function ActivationCodeDistributeForm() {
           <Input
             id='count'
             type='number'
-            min={DISTRIBUTE_COUNT_RANGE.MIN}
-            max={DISTRIBUTE_COUNT_RANGE.MAX}
-            value={formData.count}
-            onChange={(e) => updateField('count', Number(e.target.value))}
             placeholder='请输入派发数量'
             disabled={isLoading}
+            {...register('count', { valueAsNumber: true })}
           />
-          <p className='text-muted-foreground text-xs'>
-            可派发 {DISTRIBUTE_COUNT_RANGE.MIN}-{DISTRIBUTE_COUNT_RANGE.MAX}{' '}
-            个激活码
-          </p>
+          {errors.count ? (
+            <p className='text-destructive text-xs'>{errors.count.message}</p>
+          ) : (
+            <p className='text-muted-foreground text-xs'>
+              可派发 {DISTRIBUTE_COUNT_RANGE.MIN}-{DISTRIBUTE_COUNT_RANGE.MAX}{' '}
+              个激活码
+            </p>
+          )}
         </div>
       </div>
     </BaseFormLayout>

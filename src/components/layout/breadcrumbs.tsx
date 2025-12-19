@@ -12,82 +12,53 @@ import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import { ChevronRight } from 'lucide-react';
 import { Fragment } from 'react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
+
+interface BreadcrumbItemData {
+  link: string;
+  title: string;
+}
 
 export function Breadcrumbs() {
-  const items = useBreadcrumbs();
+  const items = useBreadcrumbs() as BreadcrumbItemData[];
 
   if (!items?.length) return null;
 
-  // 移动端只显示最后两个层级（当前页面和上一级）
-  const mobileItems = items.length > 2 ? items.slice(-2) : items;
-  // 桌面端显示所有层级
-  const desktopItems = items;
-
   return (
-    <>
-      {/* 移动端：简化显示 */}
-      <div className='block md:hidden'>
-        <Breadcrumb>
-          <BreadcrumbList>
-            {mobileItems.map(
-              (item: { link: string; title: string }, index: number) => (
-                <Fragment key={`mobile-${item.title}-${index}`}>
-                  {index !== mobileItems.length - 1 ? (
-                    <BreadcrumbItem>
-                      <BreadcrumbLink asChild>
-                        <Link href={item.link} className='text-xs'>
-                          {item.title}
-                        </Link>
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                  ) : (
-                    <BreadcrumbItem>
-                      <BreadcrumbPage className='text-xs font-medium'>
-                        {item.title}
-                      </BreadcrumbPage>
-                    </BreadcrumbItem>
-                  )}
-                  {index < mobileItems.length - 1 && (
-                    <BreadcrumbSeparator>
-                      <ChevronRight />
-                    </BreadcrumbSeparator>
-                  )}
-                </Fragment>
-              )
-            )}
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
+    <Breadcrumb>
+      <BreadcrumbList>
+        {items.map((item, index) => {
+          const isLast = index === items.length - 1;
+          const isMobileHidden = index < items.length - 2;
 
-      {/* 桌面端：完整显示 */}
-      <div className='hidden md:block'>
-        <Breadcrumb>
-          <BreadcrumbList>
-            {desktopItems.map(
-              (item: { link: string; title: string }, index: number) => (
-                <Fragment key={`desktop-${item.title}-${index}`}>
-                  {index !== desktopItems.length - 1 ? (
-                    <BreadcrumbItem>
-                      <BreadcrumbLink asChild>
-                        <Link href={item.link}>{item.title}</Link>
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                  ) : (
-                    <BreadcrumbItem>
-                      <BreadcrumbPage>{item.title}</BreadcrumbPage>
-                    </BreadcrumbItem>
-                  )}
-                  {index < desktopItems.length - 1 && (
-                    <BreadcrumbSeparator>
-                      <ChevronRight />
-                    </BreadcrumbSeparator>
-                  )}
-                </Fragment>
-              )
-            )}
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
-    </>
+          return (
+            <Fragment key={`${item.title}-${index}`}>
+              <BreadcrumbItem
+                className={cn(isMobileHidden && 'hidden md:block')}
+              >
+                {isLast ? (
+                  <BreadcrumbPage className='text-xs font-medium md:text-sm'>
+                    {item.title}
+                  </BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink asChild>
+                    <Link href={item.link} className='text-xs md:text-sm'>
+                      {item.title}
+                    </Link>
+                  </BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+              {!isLast && (
+                <BreadcrumbSeparator
+                  className={cn(isMobileHidden && 'hidden md:block')}
+                >
+                  <ChevronRight className='h-4 w-4' />
+                </BreadcrumbSeparator>
+              )}
+            </Fragment>
+          );
+        })}
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }

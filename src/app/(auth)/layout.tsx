@@ -6,10 +6,6 @@
  */
 
 import { Metadata } from 'next';
-import { geistSans, geistMono } from '@/lib/fonts';
-import '@/app/globals.css';
-import { Toaster } from '@/components/ui/sonner';
-import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 export const metadata: Metadata = {
   title: {
@@ -22,26 +18,17 @@ interface AuthLayoutProps {
   children: React.ReactNode;
 }
 
-export default function AuthRootLayout({ children }: AuthLayoutProps) {
+export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <html lang='en' suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground relative min-h-screen antialiased`}
-      >
-        <NuqsAdapter>
-          <Toaster />
-          <div className='bg-background relative flex min-h-screen items-center justify-center overflow-hidden'>
-            {/* 认证页背景装饰 */}
-            <div className='pointer-events-none fixed inset-0 -z-10 overflow-hidden'>
-              <div className='bg-primary/5 absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full blur-[120px]' />
-              <div className='bg-accent/5 absolute top-[10%] -right-[10%] h-[40%] w-[40%] rounded-full blur-[120px]' />
-              <div className='bg-primary/3 absolute bottom-[-10%] left-[20%] h-[40%] w-[40%] rounded-full blur-[120px]' />
-            </div>
+    <div className='bg-background relative flex min-h-screen items-center justify-center overflow-hidden'>
+      {/* 认证页背景装饰 */}
+      <div className='pointer-events-none fixed inset-0 -z-10 overflow-hidden'>
+        <div className='bg-primary/5 absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full blur-[120px]' />
+        <div className='bg-accent/5 absolute top-[10%] -right-[10%] h-[40%] w-[40%] rounded-full blur-[120px]' />
+        <div className='bg-primary/3 absolute bottom-[-10%] left-[20%] h-[40%] w-[40%] rounded-full blur-[120px]' />
+      </div>
 
-            <div className='relative z-10 w-full max-w-md px-4'>{children}</div>
-          </div>
-        </NuqsAdapter>
-      </body>
-    </html>
+      <div className='relative z-10 w-full max-w-md px-4'>{children}</div>
+    </div>
   );
 }

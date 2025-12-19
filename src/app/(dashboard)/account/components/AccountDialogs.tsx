@@ -22,6 +22,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { accountSchema, type AccountFormData } from '../account.schema';
 import type { Account, AccountCreateRequest } from '../types';
 import { DEFAULT_ACCOUNT_FORM } from '../constants';
 
@@ -53,7 +55,8 @@ export function AccountDialog({
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm<AccountCreateRequest>({
+  } = useForm<AccountFormData>({
+    resolver: zodResolver(accountSchema),
     defaultValues: DEFAULT_ACCOUNT_FORM
   });
 
@@ -96,7 +99,7 @@ export function AccountDialog({
             <Input
               id='name'
               placeholder='请输入账号名称'
-              {...register('name', { required: '请输入账号名称' })}
+              {...register('name')}
             />
             {errors.name && (
               <p className='text-destructive text-sm'>{errors.name.message}</p>

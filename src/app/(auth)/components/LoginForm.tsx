@@ -13,26 +13,17 @@ import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { AuthApiService } from '@/service/api/auth.api';
+import { loginSchema, type LoginFormData } from './auth.schema';
 
 const REMEMBER_KEY = 'remember_username';
-
-interface LoginFormData {
-  username: string;
-  password: string;
-}
 
 export function LoginForm() {
   const router = useRouter();
@@ -47,6 +38,7 @@ export function LoginForm() {
     setValue,
     formState: { errors }
   } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       username: '',
       password: ''

@@ -13,6 +13,7 @@
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface SubmitConfig {
   /** 按钮文字 */
@@ -34,35 +35,19 @@ interface BaseFormLayoutProps {
 
   /** 提交按钮配置(可选,不传则不显示提交按钮,适用于纯展示场景) */
   submit?: SubmitConfig;
+
+  /** 容器类名 */
+  className?: string;
 }
 
 /**
  * 基础表单布局组件
- *
- * @example
- * ```tsx
- * // 基础表单 + 提交按钮
- * <BaseFormLayout
- *   submit={{
- *     text: '提交',
- *     onSubmit: handleSubmit,
- *     disabled: !isValid,
- *     loading: isLoading
- *   }}
- * >
- *   <FormFields />
- * </BaseFormLayout>
- *
- * // 自动切换到结果模式(隐藏提交按钮)
- * <BaseFormLayout resultContent={<Result />}>
- *   <FormFields />
- * </BaseFormLayout>
- * ```
  */
 export function BaseFormLayout({
   children,
   resultContent,
-  submit
+  submit,
+  className
 }: BaseFormLayoutProps) {
   // 判断是否为结果模式
   const isResultMode = !!resultContent;
@@ -78,9 +63,9 @@ export function BaseFormLayout({
   };
 
   return (
-    <div className='flex flex-col space-y-4'>
+    <div className={cn('flex flex-col space-y-4', className)}>
       {/* 内容区域 */}
-      <div className='min-h-[200px]'>{content}</div>
+      <div className='flex-1'>{content}</div>
 
       {/* 提交按钮: 仅在表单模式且传入 submit 配置时显示 */}
       {!isResultMode && submit && (

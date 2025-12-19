@@ -36,6 +36,14 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { MultiSelect } from '@/components/ui/multi-select';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  bindingSchema,
+  bindingUpdateSchema,
+  type BindingFormData,
+  type BindingUpdateFormData
+} from '../account.schema';
 import { useConfirmation } from '@/hooks/useConfirmation';
 import { AccountApiService } from '@/service/api/account.api';
 import { CommonApiService, type EnumItem } from '@/service/api/common.api';
@@ -45,20 +53,6 @@ interface BindingManageDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   account: Account | null;
-}
-
-// 表单数据类型
-interface BindingFormData {
-  project_code: number | null;
-  channel_codes: number[];
-  browser_id: string;
-}
-
-// 编辑表单数据类型
-interface EditFormData {
-  id: number;
-  channel_codes: number[];
-  browser_id: string;
 }
 
 export function BindingManageDialog({
@@ -76,16 +70,30 @@ export function BindingManageDialog({
 
   // 新建绑定表单状态
   const [showAddForm, setShowAddForm] = useState(false);
-  const [formData, setFormData] = useState<BindingFormData>({
-    project_code: null,
-    channel_codes: [],
-    browser_id: ''
-  });
   const [submitting, setSubmitting] = useState(false);
 
   // 编辑表单状态
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState<EditFormData | null>(null);
+
+  // 新建表单
+  const addForm = useForm<BindingFormData>({
+    resolver: zodResolver(bindingSchema),
+    defaultValues: {
+      project_code: undefined,
+      channel_codes: [],
+      browser_id: ''
+    }
+  });
+
+  // 编辑表单
+  const editForm = useForm<BindingUpdateFormData>({
+    resolver: zodResolver(bindingUpdateSchema),
+    defaultValues: {
+      id: 0,
+      channel_codes: [],
+      browser_id: ''
+    }
+  });
 
   // 确认弹窗
   const { confirm, ConfirmDialog } = useConfirmation();
@@ -135,85 +143,83 @@ export function BindingManageDialog({
       fetchBindings();
       setShowAddForm(false);
       setEditingId(null);
-      setFormData({ project_code: null, channel_codes: [], browser_id: '' });
+      addForm.reset({
+        project_code: undefined,
+        channel_codes: [],
+        browser_id: ''
+      });
     }
-  }, [open, account, fetchEnums, fetchBindings]);
+  }, [open, account, fetchEnums, fetchBindings, addForm]);
 
   /**
    * 处理新增绑定
    */
-  const handleAdd = useCallback(async () => {
-    if (
-      !account ||
-      !formData.project_code ||
-      formData.channel_codes.length === 0
-    ) {
-      toast.error('请选择项目和至少一个渠道');
-      return;
-    }
+  const handleAdd = async (data: BindingFormData) => {
+    if (!account) return;
     setSubmitting(true);
     try {
       await AccountApiService.bind(account.id, {
-        project_code: formData.project_code!,
-        channel_codes: formData.channel_codes,
-        browser_id: formData.browser_id || undefined
+        project_code: data.project_code,
+        channel_codes: data.channel_codes,
+        browser_id: data.browser_id || undefined
       });
-      toast.success(`成功绑定 ${formData.channel_codes.length} 个渠道`);
+      toast.success(`成功绑定 ${data.channel_codes.length} 个渠道`);
       setShowAddForm(false);
-      setFormData({ project_code: null, channel_codes: [], browser_id: '' });
+      addForm.reset({
+        project_code: undefined,
+        channel_codes: [],
+        browser_id: ''
+      });
       fetchBindings();
     } catch (error) {
       console.error('绑定失败', error);
     } finally {
       setSubmitting(false);
     }
-  }, [account, formData, fetchBindings]);
+  };
 
   /**
    * 打开编辑
    */
-  const handleStartEdit = useCallback((binding: Binding) => {
-    setEditingId(binding.id);
-    setEditForm({
-      id: binding.id,
-      channel_codes: binding.channel_codes,
-      browser_id: binding.browser_id || ''
-    });
-  }, []);
+  const handleStartEdit = useCallback(
+    (binding: Binding) => {
+      setEditingId(binding.id);
+      editForm.reset({
+        id: binding.id,
+        channel_codes: binding.channel_codes,
+        browser_id: binding.browser_id || ''
+      });
+    },
+    [editForm]
+  );
 
   /**
    * 取消编辑
    */
   const handleCancelEdit = useCallback(() => {
     setEditingId(null);
-    setEditForm(null);
   }, []);
 
   /**
    * 保存编辑
    */
-  const handleSaveEdit = useCallback(async () => {
-    if (!editForm || editForm.channel_codes.length === 0) {
-      toast.error('请至少选择一个渠道');
-      return;
-    }
+  const handleSaveEdit = async (data: BindingUpdateFormData) => {
     setSubmitting(true);
     try {
       await AccountApiService.updateBinding({
-        id: editForm.id,
-        channel_codes: editForm.channel_codes,
-        browser_id: editForm.browser_id || undefined
+        id: data.id,
+        channel_codes: data.channel_codes,
+        browser_id: data.browser_id || undefined
       });
       toast.success('更新成功');
       setEditingId(null);
-      setEditForm(null);
       fetchBindings();
     } catch (error) {
       console.error('更新失败', error);
     } finally {
       setSubmitting(false);
     }
-  }, [editForm, fetchBindings]);
+  };
 
   /**
    * 处理解绑
@@ -264,23 +270,35 @@ export function BindingManageDialog({
                     <Label>
                       项目 <span className='text-destructive'>*</span>
                     </Label>
-                    <Select
-                      value={formData.project_code?.toString() || ''}
-                      onValueChange={(v) =>
-                        setFormData({ ...formData, project_code: Number(v) })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder='请选择项目' />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {projects.map((p) => (
-                          <SelectItem key={p.code} value={p.code.toString()}>
-                            {p.desc}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Controller
+                      name='project_code'
+                      control={addForm.control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value?.toString() || ''}
+                          onValueChange={(v) => field.onChange(Number(v))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder='请选择项目' />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {projects.map((p) => (
+                              <SelectItem
+                                key={p.code}
+                                value={p.code.toString()}
+                              >
+                                {p.desc}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {addForm.formState.errors.project_code && (
+                      <p className='text-destructive text-xs'>
+                        {addForm.formState.errors.project_code.message}
+                      </p>
+                    )}
                   </div>
 
                   {/* 渠道多选 */}
@@ -288,17 +306,23 @@ export function BindingManageDialog({
                     <Label>
                       渠道 <span className='text-destructive'>*</span>
                     </Label>
-                    <MultiSelect
-                      options={channelOptions}
-                      value={formData.channel_codes}
-                      onChange={(vals) =>
-                        setFormData({
-                          ...formData,
-                          channel_codes: vals as number[]
-                        })
-                      }
-                      placeholder='请选择渠道'
+                    <Controller
+                      name='channel_codes'
+                      control={addForm.control}
+                      render={({ field }) => (
+                        <MultiSelect
+                          options={channelOptions}
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder='请选择渠道'
+                        />
+                      )}
                     />
+                    {addForm.formState.errors.channel_codes && (
+                      <p className='text-destructive text-xs'>
+                        {addForm.formState.errors.channel_codes.message}
+                      </p>
+                    )}
                   </div>
 
                   {/* 浏览器 ID */}
@@ -306,16 +330,22 @@ export function BindingManageDialog({
                     <Label>浏览器 ID（可选）</Label>
                     <Input
                       placeholder='请输入浏览器 ID'
-                      value={formData.browser_id || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, browser_id: e.target.value })
-                      }
+                      {...addForm.register('browser_id')}
                     />
+                    {addForm.formState.errors.browser_id && (
+                      <p className='text-destructive text-xs'>
+                        {addForm.formState.errors.browser_id.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div className='flex gap-2'>
-                  <Button size='sm' onClick={handleAdd} disabled={submitting}>
+                  <Button
+                    size='sm'
+                    onClick={addForm.handleSubmit(handleAdd)}
+                    disabled={submitting}
+                  >
                     确认绑定
                   </Button>
                   <Button
@@ -323,8 +353,8 @@ export function BindingManageDialog({
                     variant='outline'
                     onClick={() => {
                       setShowAddForm(false);
-                      setFormData({
-                        project_code: null,
+                      addForm.reset({
+                        project_code: undefined,
                         channel_codes: [],
                         browser_id: ''
                       });
@@ -367,35 +397,47 @@ export function BindingManageDialog({
                       <TableRow key={binding.id}>
                         <TableCell>{binding.project_name}</TableCell>
                         <TableCell>
-                          {editingId === binding.id && editForm ? (
-                            <MultiSelect
-                              options={channelOptions}
-                              value={editForm.channel_codes}
-                              onChange={(vals) =>
-                                setEditForm({
-                                  ...editForm,
-                                  channel_codes: vals as number[]
-                                })
-                              }
-                              placeholder='请选择渠道'
-                            />
+                          {editingId === binding.id ? (
+                            <div className='space-y-1'>
+                              <Controller
+                                name='channel_codes'
+                                control={editForm.control}
+                                render={({ field }) => (
+                                  <MultiSelect
+                                    options={channelOptions}
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    placeholder='请选择渠道'
+                                  />
+                                )}
+                              />
+                              {editForm.formState.errors.channel_codes && (
+                                <p className='text-destructive text-[10px]'>
+                                  {
+                                    editForm.formState.errors.channel_codes
+                                      .message
+                                  }
+                                </p>
+                              )}
+                            </div>
                           ) : (
                             binding.channel_names.join(', ')
                           )}
                         </TableCell>
                         <TableCell>
-                          {editingId === binding.id && editForm ? (
-                            <Input
-                              className='h-8'
-                              value={editForm.browser_id}
-                              onChange={(e) =>
-                                setEditForm({
-                                  ...editForm,
-                                  browser_id: e.target.value
-                                })
-                              }
-                              placeholder='浏览器 ID'
-                            />
+                          {editingId === binding.id ? (
+                            <div className='space-y-1'>
+                              <Input
+                                className='h-8'
+                                placeholder='浏览器 ID'
+                                {...editForm.register('browser_id')}
+                              />
+                              {editForm.formState.errors.browser_id && (
+                                <p className='text-destructive text-[10px]'>
+                                  {editForm.formState.errors.browser_id.message}
+                                </p>
+                              )}
+                            </div>
                           ) : (
                             <span className='font-mono text-sm'>
                               {binding.browser_id || '-'}
@@ -408,7 +450,7 @@ export function BindingManageDialog({
                               <Button
                                 size='sm'
                                 variant='ghost'
-                                onClick={handleSaveEdit}
+                                onClick={editForm.handleSubmit(handleSaveEdit)}
                                 disabled={submitting}
                               >
                                 保存

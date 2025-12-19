@@ -10,13 +10,13 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export interface Column<T> {
   key: string;
   title: string;
   className?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  render?: (value: any, record: T, index: number) => React.ReactNode;
+  render?: (value: T[keyof T], record: T, index: number) => React.ReactNode;
 }
 
 interface DataTableProps<T> {
@@ -49,12 +49,10 @@ export function DataTable<T extends object>({
               {columns.map((column) => (
                 <TableHead
                   key={column.key}
-                  className={`bg-muted/30 font-semibold ${column.className || ''}`}
-                  style={{
-                    position: 'sticky',
-                    top: 0,
-                    backgroundColor: 'hsl(var(--muted) / 0.3)'
-                  }}
+                  className={cn(
+                    'bg-muted/30 sticky top-0 z-10 font-semibold',
+                    column.className
+                  )}
                 >
                   {column.title}
                 </TableHead>
