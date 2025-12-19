@@ -6,11 +6,18 @@ import {
   ListChecks,
   Ticket,
   Users,
-  UserCircle
+  UserCircle,
+  LayoutDashboard
 } from 'lucide-react';
 
 // 系统导航列表
 export const navList: NavItem[] = [
+  {
+    title: '仪表盘',
+    url: '/dashboard',
+    icon: LayoutDashboard,
+    isActive: true
+  },
   {
     title: '数据监控',
     url: '#',

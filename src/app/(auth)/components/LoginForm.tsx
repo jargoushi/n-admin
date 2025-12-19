@@ -76,11 +76,14 @@ export function LoginForm() {
         localStorage.removeItem(REMEMBER_KEY);
       }
 
-      // 登录成功，跳转到首页
-      router.push('/user');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '登录失败，请重试');
-    } finally {
+      // 登录成功，使用 window.location.href 强制全页刷新跳转
+      // 这样可以确保从 (auth) 根布局平滑过渡到 (dashboard) 根布局
+      window.location.href = '/user';
+    } catch (err: any) {
+      // 优先提取后端返回的业务错误消息
+      const errorMessage =
+        err.response?.data?.message || err.message || '登录失败，请重试';
+      setError(errorMessage);
       setIsLoading(false);
     }
   };

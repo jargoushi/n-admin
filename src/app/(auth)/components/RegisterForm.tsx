@@ -67,9 +67,10 @@ export function RegisterForm() {
 
       toast.success('注册成功，请登录');
       router.push('/login');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '注册失败，请重试');
-    } finally {
+    } catch (err: any) {
+      // 适配全局拦截器返回的 HttpError 对象
+      const errorMessage = err.message || '注册失败，请重试';
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
