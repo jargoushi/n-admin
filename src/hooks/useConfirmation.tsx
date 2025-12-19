@@ -46,7 +46,7 @@ export function useConfirmation() {
       setState((prev) => ({ ...prev, isLoading: false }));
       console.error('确认操作失败:', error);
     }
-  }, [state.onConfirm, close]);
+  }, [state, close]);
 
   const ConfirmDialog = useCallback(
     () => (

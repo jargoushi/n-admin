@@ -4,8 +4,7 @@ import { ServerErrorPage } from '@/components/ui/error-pages';
 import { useEffect } from 'react';
 
 export default function Error({
-  error,
-  reset
+  error
 }: {
   error: Error & { digest?: string };
   reset: () => void;

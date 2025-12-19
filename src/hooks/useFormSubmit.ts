@@ -11,13 +11,13 @@ import { useState, useCallback } from 'react';
 /**
  * 表单提交 Hook 返回值
  */
-interface UseFormSubmitReturn<TResult> {
+interface UseFormSubmitReturn<TData, TResult> {
   /** 提交结果 */
   result: TResult | null;
   /** 加载状态 */
   isLoading: boolean;
   /** 提交处理函数 */
-  handleSubmit: (data: any) => Promise<TResult | null>;
+  handleSubmit: (data: TData) => Promise<TResult | null>;
   /** 重置结果 */
   resetResult: () => void;
 }
@@ -39,7 +39,7 @@ interface UseFormSubmitReturn<TResult> {
  */
 export function useFormSubmit<TData, TResult>(
   submitFn: (data: TData) => Promise<TResult | null>
-): UseFormSubmitReturn<TResult> {
+): UseFormSubmitReturn<TData, TResult> {
   const [result, setResult] = useState<TResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 

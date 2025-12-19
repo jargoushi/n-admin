@@ -8,7 +8,7 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { Edit, Power, Trash2, BarChart3 } from 'lucide-react';
 
 // 引入弹窗基础设施
@@ -67,45 +67,57 @@ export function MonitorConfigTable({
   /**
    * 处理修改操作
    */
-  const handleUpdate = (config: MonitorConfig) => {
-    openDialog('update', config);
-  };
+  const handleUpdate = useCallback(
+    (config: MonitorConfig) => {
+      openDialog('update', config);
+    },
+    [openDialog]
+  );
 
   /**
    * 处理查看数据统计
    */
-  const handleViewStats = (config: MonitorConfig) => {
-    openDialog('stats', config);
-  };
+  const handleViewStats = useCallback(
+    (config: MonitorConfig) => {
+      openDialog('stats', config);
+    },
+    [openDialog]
+  );
 
   /**
    * 处理切换状态操作
    */
-  const handleToggle = (config: MonitorConfig) => {
-    const newStatus = config.is_active === 1 ? 0 : 1;
-    const statusText = newStatus === 1 ? '启用' : '禁用';
+  const handleToggle = useCallback(
+    (config: MonitorConfig) => {
+      const newStatus = config.is_active === 1 ? 0 : 1;
+      const statusText = newStatus === 1 ? '启用' : '禁用';
 
-    confirm({
-      description: `确定要${statusText}该监控配置吗？`,
-      onConfirm: async () => {
-        await MonitorApiService.toggle(config.id, newStatus);
-        onRefresh?.();
-      }
-    });
-  };
+      confirm({
+        description: `确定要${statusText}该监控配置吗？`,
+        onConfirm: async () => {
+          await MonitorApiService.toggle(config.id, newStatus);
+          onRefresh?.();
+        }
+      });
+    },
+    [confirm, onRefresh]
+  );
 
   /**
    * 处理删除操作
    */
-  const handleDelete = (config: MonitorConfig) => {
-    confirm({
-      description: `确定要删除该监控配置吗？\n\n账号：${config.account_name || '未知'}\n删除后将无法恢复！`,
-      onConfirm: async () => {
-        await MonitorApiService.delete(config.id);
-        onRefresh?.();
-      }
-    });
-  };
+  const handleDelete = useCallback(
+    (config: MonitorConfig) => {
+      confirm({
+        description: `确定要删除该监控配置吗？\n\n账号：${config.account_name || '未知'}\n删除后将无法恢复！`,
+        onConfirm: async () => {
+          await MonitorApiService.delete(config.id);
+          onRefresh?.();
+        }
+      });
+    },
+    [confirm, onRefresh]
+  );
 
   /** 列配置 */
   const columns = useMemo<Column<MonitorConfig>[]>(

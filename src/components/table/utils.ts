@@ -40,7 +40,7 @@ export function formatDate(dateString: string): string {
  * @param values 筛选值对象
  * @returns 是否有活跃筛选
  */
-export function hasActiveFilters(values: Record<string, any>): boolean {
+export function hasActiveFilters(values: Record<string, unknown>): boolean {
   return Object.values(values).some(
     (value) =>
       value && value !== '' && !(Array.isArray(value) && value.length === 0)

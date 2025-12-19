@@ -18,7 +18,7 @@ interface SubmitConfig {
   /** 按钮文字 */
   text: string;
   /** 提交处理函数 */
-  onSubmit: () => void | Promise<void> | Promise<any>;
+  onSubmit: () => void | Promise<void> | Promise<unknown>;
   /** 是否禁用 */
   disabled?: boolean;
   /** 是否加载中 */

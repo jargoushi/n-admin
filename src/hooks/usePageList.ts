@@ -29,6 +29,7 @@ export interface UsePageListReturn<T, F extends PageRequest> {
 export function usePageList<T, F extends PageRequest>(
   apiService: (params: F) => Promise<PageResponse<T>>,
   defaultFilters: F,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parsers: any
 ): UsePageListReturn<T, F> {
   const [urlFilters, setUrlFilters] = useQueryStates(parsers, {
@@ -40,7 +41,7 @@ export function usePageList<T, F extends PageRequest>(
 
   const filters = useMemo(
     () => ({ ...defaultFilters, ...urlFilters }) as F,
-    [JSON.stringify(urlFilters)]
+    [defaultFilters, urlFilters]
   );
 
   const [items, setItems] = useState<T[]>([]);
@@ -65,24 +66,27 @@ export function usePageList<T, F extends PageRequest>(
 
   const setFilters = useCallback(
     (newFilters: Partial<F>) => {
-      setUrlFilters(newFilters as any);
+      setUrlFilters(newFilters as Parameters<typeof setUrlFilters>[0]);
     },
     [setUrlFilters]
   );
 
   const search = useCallback(
     (newFilters: Partial<F>) => {
-      setUrlFilters({ ...newFilters, page: 1 } as any);
+      setUrlFilters({
+        ...newFilters,
+        page: 1
+      } as Parameters<typeof setUrlFilters>[0]);
     },
     [setUrlFilters]
   );
 
   // 重置筛选条件并用默认值查询
   const resetFilters = useCallback(() => {
-    setUrlFilters(defaultFilters as any);
+    setUrlFilters(defaultFilters as Parameters<typeof setUrlFilters>[0]);
     // 直接用默认值查询,不等待 URL 更新
     fetchList(defaultFilters);
-  }, [setUrlFilters, fetchList]);
+  }, [setUrlFilters, fetchList, defaultFilters]);
 
   // 刷新当前数据
   const refresh = useCallback(() => {
@@ -92,7 +96,7 @@ export function usePageList<T, F extends PageRequest>(
   // 监听筛选条件变化或强制刷新
   useEffect(() => {
     fetchList(filters);
-  }, [JSON.stringify(filters), refreshKey]);
+  }, [filters, refreshKey, fetchList]);
 
   return {
     filters,

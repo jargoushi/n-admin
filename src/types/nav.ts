@@ -1,7 +1,7 @@
 export interface NavItem {
   title: string;
   url: string;
-  icon?: any;
+  icon?: React.ElementType;
   isActive?: boolean;
   items?: NavItem[];
 }

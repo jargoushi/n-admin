@@ -59,7 +59,7 @@ export async function copyToClipboard(
       toast.success(successMessage);
     }
     return true;
-  } catch (error) {
+  } catch {
     if (showToast) {
       toast.error(errorMessage);
     }

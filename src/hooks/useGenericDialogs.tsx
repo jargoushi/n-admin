@@ -29,7 +29,9 @@ export interface UseGenericDialogsOptions {
  *
  * @returns { openDialog, DialogsContainer }
  */
-export function useGenericDialogs<T = any>(options: UseGenericDialogsOptions) {
+export function useGenericDialogs<T = unknown>(
+  options: UseGenericDialogsOptions
+) {
   const { dialogs, onClose: onCloseCallback } = options;
 
   const [dialogState, setDialogState] = useState<GenericDialogState<T>>({

@@ -14,10 +14,8 @@ import { Popover, PopoverContent, PopoverTrigger } from './popover';
 /**
  * DateRange 类型定义 (保持一致)
  */
-export interface DateRange {
-  from?: Date;
-  to?: Date;
-}
+import { type DateRange } from 'react-day-picker';
+export { type DateRange };
 
 /**
  * 默认占位符
@@ -125,7 +123,7 @@ export function DateRangePicker({
             initialFocus
             mode='range'
             defaultMonth={internalRange?.from}
-            selected={internalRange as any}
+            selected={internalRange}
             onSelect={handleSelect}
             numberOfMonths={2}
           />

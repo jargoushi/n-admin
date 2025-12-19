@@ -10,23 +10,32 @@ import {
 } from '@/components/ui/dialog';
 
 // 定义通用的对话框状态类型
-export interface GenericDialogState<T = any> {
+export interface GenericDialogState<T = unknown> {
   type: string | null;
   data: T | null;
   open: boolean;
+}
+
+// 弹窗组件 Props 约束
+export interface DialogComponentProps<T = unknown> {
+  data: T | null;
+  onCancel: () => void;
+  [key: string]: unknown;
 }
 
 // 弹窗配置接口
 export interface DialogConfig {
   title: string;
   description?: string;
-  component: ComponentType<any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  component: ComponentType<DialogComponentProps<any>>;
   className?: string;
-  props?: Record<string, any>;
+  props?: Record<string, unknown>;
 }
 
 interface GenericDialogsProps {
-  dialogState: GenericDialogState;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dialogState: GenericDialogState<any>;
   onClose: () => void;
   dialogs: Record<string, DialogConfig>;
 }

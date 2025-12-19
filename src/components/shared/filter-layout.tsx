@@ -79,7 +79,9 @@ export function createFilterParsers<T extends FieldValues>(
   config: FilterFieldConfig<T>[],
   defaultPage = 1,
   defaultSize = 10
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Record<string, any> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parsers: Record<string, any> = {
     page: parseAsInteger.withDefault(defaultPage),
     size: parseAsInteger.withDefault(defaultSize)

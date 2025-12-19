@@ -19,23 +19,7 @@ import {
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
-
-// 防抖 Hook
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}
+import type { DateRange } from 'react-day-picker';
 
 // 筛选字段类型定义
 export interface FilterOption {
@@ -54,8 +38,8 @@ export interface FilterField {
 
 interface SearchFilterProps {
   fields: FilterField[];
-  values: Record<string, any>;
-  onValuesChange: (values: Record<string, any>) => void;
+  values: Record<string, unknown>;
+  onValuesChange: (values: Record<string, unknown>) => void;
   debounceDelay?: number;
 }
 
@@ -74,7 +58,7 @@ export function SearchFilter({
     const initialTextInputs: Record<string, string> = {};
     fields.forEach((field) => {
       if (field.type === 'text') {
-        initialTextInputs[field.key] = values[field.key] || '';
+        initialTextInputs[field.key] = (values[field.key] as string) || '';
       }
     });
     setTextInputs(initialTextInputs);
@@ -107,7 +91,7 @@ export function SearchFilter({
   );
 
   const handleDateRangeChange = useCallback(
-    (key: string, dateRange: any) => {
+    (key: string, dateRange: DateRange | undefined) => {
       console.log('handleDateRangeChange:', { key, dateRange, values });
       const newValues = { ...values, [key]: dateRange };
       console.log('New values after date change:', newValues);
@@ -126,7 +110,7 @@ export function SearchFilter({
         }
         return acc;
       },
-      {} as Record<string, any>
+      {} as Record<string, unknown>
     );
 
     // 清空文本输入状态
@@ -168,7 +152,7 @@ export function SearchFilter({
         );
 
       case 'select':
-        const selectValue = values[field.key] || '';
+        const selectValue = (values[field.key] as string) || '';
         return (
           <div key={field.key} className='flex items-center gap-2'>
             <span className='text-muted-foreground text-sm font-medium whitespace-nowrap'>
@@ -198,7 +182,7 @@ export function SearchFilter({
         );
 
       case 'dateRange':
-        const dateValue = values[field.key];
+        const dateValue = values[field.key] as DateRange | undefined;
         return (
           <div key={field.key} className='flex items-center gap-2'>
             <span className='text-muted-foreground text-sm font-medium whitespace-nowrap'>

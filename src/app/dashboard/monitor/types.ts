@@ -121,7 +121,7 @@ export interface MonitorDailyStats {
   /** 内容数 */
   content_count: number;
   /** 扩展数据 */
-  extra_data?: Record<string, any>;
+  extra_data?: Record<string, unknown>;
   /** 创建时间 */
   created_at: string;
 }

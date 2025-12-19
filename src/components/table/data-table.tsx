@@ -15,6 +15,7 @@ export interface Column<T> {
   key: string;
   title: string;
   className?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   render?: (value: any, record: T, index: number) => React.ReactNode;
 }
 
@@ -22,20 +23,21 @@ interface DataTableProps<T> {
   columns: Column<T>[];
   data: T[];
   loading?: boolean;
-  rowKey?: string | ((record: T) => string);
+  rowKey?: keyof T | ((record: T) => string);
 }
 
-export function DataTable<T extends Record<string, any>>({
+export function DataTable<T extends object>({
   columns,
   data,
   loading = false,
-  rowKey = 'id'
+  rowKey = 'id' as keyof T
 }: DataTableProps<T>) {
   const getRowKey = (record: T, index: number): string => {
     if (typeof rowKey === 'function') {
       return rowKey(record);
     }
-    return record[rowKey] || index.toString();
+    const key = rowKey as keyof T;
+    return String(record[key]) || index.toString();
   };
 
   return (
@@ -92,8 +94,12 @@ export function DataTable<T extends Record<string, any>>({
                   {columns.map((column) => (
                     <TableCell key={column.key} className={column.className}>
                       {column.render
-                        ? column.render(record[column.key], record, index)
-                        : record[column.key]}
+                        ? column.render(
+                            record[column.key as keyof T],
+                            record,
+                            index
+                          )
+                        : (record[column.key as keyof T] as React.ReactNode)}
                     </TableCell>
                   ))}
                 </TableRow>

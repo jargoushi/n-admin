@@ -7,12 +7,7 @@ import {
   responseInterceptor,
   responseErrorInterceptor
 } from './interceptors';
-import type {
-  RequestConfig,
-  PathParams,
-  ApiResponse,
-  QueryParams
-} from './types';
+import type { RequestConfig, PathParams, QueryParams } from './types';
 
 /**
  * 创建 axios 实例
