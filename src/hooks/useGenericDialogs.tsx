@@ -3,7 +3,7 @@ import {
   GenericDialogs,
   type DialogConfig,
   type GenericDialogState
-} from '@/components/shared/GenericDialogs';
+} from '@/components/shared/generic-dialogs';
 
 /**
  * Hook 配置选项

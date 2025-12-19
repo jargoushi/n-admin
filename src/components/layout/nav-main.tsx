@@ -57,7 +57,7 @@ export function NavMain() {
                         isActive={isItemActive}
                         className='cursor-pointer'
                       >
-                        <item.icon />
+                        {item.icon && <item.icon />}
                         <span>{item.title}</span>
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
@@ -70,7 +70,7 @@ export function NavMain() {
                               isActive={isActivePath(subItem.url)}
                             >
                               <Link href={subItem.url}>
-                                <subItem.icon />
+                                {subItem.icon && <subItem.icon />}
                                 <span>{subItem.title}</span>
                               </Link>
                             </SidebarMenuSubButton>
@@ -86,7 +86,7 @@ export function NavMain() {
                     isActive={isItemActive}
                   >
                     <Link href={item.url}>
-                      <item.icon />
+                      {item.icon && <item.icon />}
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>

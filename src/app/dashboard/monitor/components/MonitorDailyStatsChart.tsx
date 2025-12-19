@@ -148,7 +148,7 @@ export function MonitorDailyStatsChart({
             <div className='flex-1 space-y-2'>
               <Label>日期范围</Label>
               <DateRangePicker
-                value={dateRange}
+                value={dateRange as any}
                 onChange={(range) => {
                   if (range?.from && range?.to) {
                     setDateRange(range);

@@ -22,10 +22,12 @@ import { MonitorTaskTable } from './components/MonitorTaskTable';
 import { DEFAULT_QUERY_PARAMS } from './constants';
 import type { MonitorTask, MonitorTaskQueryRequest } from './types';
 
+import { Suspense } from 'react';
+
 // 从筛选配置自动生成 parsers
 const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
-export default function MonitorTaskManagementPage() {
+function MonitorTaskContent() {
   const {
     filters,
     search,
@@ -41,30 +43,38 @@ export default function MonitorTaskManagementPage() {
   );
 
   return (
-    <PageContainer scrollable={false}>
-      <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
-        {/* 筛选区域 */}
-        <MonitorTaskFilters
-          filters={filters}
-          onSearch={search}
-          onReset={resetFilters}
-        />
+    <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
+      {/* 筛选区域 */}
+      <MonitorTaskFilters
+        filters={filters}
+        onSearch={search}
+        onReset={resetFilters}
+      />
 
-        {/* 表格区域 */}
-        <div className='flex min-h-0 flex-1 flex-col'>
-          <div className='min-h-0'>
-            <MonitorTaskTable data={items} loading={loading} />
-          </div>
+      {/* 表格区域 */}
+      <div className='flex min-h-0 flex-1 flex-col'>
+        <div className='min-h-0'>
+          <MonitorTaskTable data={items} loading={loading} />
+        </div>
 
-          <div className='shrink-0 pt-4'>
-            <Pagination
-              pagination={pagination}
-              onPageChange={(page) => setFilters({ page })}
-              onPageSizeChange={(size) => setFilters({ size, page: 1 })}
-            />
-          </div>
+        <div className='shrink-0 pt-4'>
+          <Pagination
+            pagination={pagination}
+            onPageChange={(page) => setFilters({ page })}
+            onPageSizeChange={(size) => setFilters({ size, page: 1 })}
+          />
         </div>
       </div>
+    </div>
+  );
+}
+
+export default function MonitorTaskManagementPage() {
+  return (
+    <PageContainer scrollable={false}>
+      <Suspense fallback={<div>加载中...</div>}>
+        <MonitorTaskContent />
+      </Suspense>
     </PageContainer>
   );
 }

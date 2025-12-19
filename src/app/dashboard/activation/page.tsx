@@ -23,10 +23,12 @@ import { ActivationCodeTable } from './components/ActivationCodeTable';
 import { DEFAULT_QUERY_PARAMS } from './constants';
 import type { ActivationCode, ActivationCodeQueryRequest } from './types';
 
+import { Suspense } from 'react';
+
 // 从筛选配置自动生成 parsers
 const filterParsers = createFilterParsers(FILTERS_CONFIG);
 
-export default function ActivationCodeManagementPage() {
+function ActivationCodeContent() {
   const {
     filters,
     search,
@@ -43,37 +45,45 @@ export default function ActivationCodeManagementPage() {
   );
 
   return (
-    <PageContainer scrollable={false}>
-      <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
-        {/* 页面头部 */}
-        <ActivationCodePageHeader onSuccess={refresh} />
+    <div className='flex h-[calc(100vh-8rem)] w-full flex-col space-y-4'>
+      {/* 页面头部 */}
+      <ActivationCodePageHeader onSuccess={refresh} />
 
-        {/* 筛选区域 */}
-        <ActivationCodeFilters
-          filters={filters}
-          onSearch={search}
-          onReset={resetFilters}
-        />
+      {/* 筛选区域 */}
+      <ActivationCodeFilters
+        filters={filters}
+        onSearch={search}
+        onReset={resetFilters}
+      />
 
-        {/* 表格区域 */}
-        <div className='flex min-h-0 flex-1 flex-col'>
-          <div className='min-h-0'>
-            <ActivationCodeTable
-              data={items}
-              loading={loading}
-              onRefresh={refresh}
-            />
-          </div>
+      {/* 表格区域 */}
+      <div className='flex min-h-0 flex-1 flex-col'>
+        <div className='min-h-0'>
+          <ActivationCodeTable
+            data={items}
+            loading={loading}
+            onRefresh={refresh}
+          />
+        </div>
 
-          <div className='shrink-0 pt-4'>
-            <Pagination
-              pagination={pagination}
-              onPageChange={(page) => setFilters({ page })}
-              onPageSizeChange={(size) => setFilters({ size, page: 1 })}
-            />
-          </div>
+        <div className='shrink-0 pt-4'>
+          <Pagination
+            pagination={pagination}
+            onPageChange={(page) => setFilters({ page })}
+            onPageSizeChange={(size) => setFilters({ size, page: 1 })}
+          />
         </div>
       </div>
+    </div>
+  );
+}
+
+export default function ActivationCodeManagementPage() {
+  return (
+    <PageContainer scrollable={false}>
+      <Suspense fallback={<div>加载中...</div>}>
+        <ActivationCodeContent />
+      </Suspense>
     </PageContainer>
   );
 }

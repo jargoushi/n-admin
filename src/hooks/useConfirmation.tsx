@@ -1,4 +1,4 @@
-import { ConfirmationDialog } from '@/components/shared/ConfirmationDialog';
+import { ConfirmationDialog } from '@/components/shared/confirmation-dialog';
 import { useState, useCallback } from 'react';
 
 /**

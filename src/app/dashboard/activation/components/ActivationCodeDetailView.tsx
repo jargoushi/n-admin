@@ -6,7 +6,7 @@ import React from 'react';
 import {
   EntityDetailView,
   FieldConfig
-} from '@/components/shared/EntityDetailView';
+} from '@/components/shared/entity-detail-view';
 import { formatDateTime } from '@/lib/data-utils';
 import type { ActivationCode } from '../types';
 import { ACTIVATION_CODE_TYPES, ACTIVATION_CODE_STATUSES } from '../constants';
@@ -19,8 +19,10 @@ const CODE_DETAIL_CONFIG: FieldConfig<ActivationCode>[] = [
   {
     label: '激活码',
     key: 'activation_code',
-    render: (value: string) => (
-      <code className='font-mono text-lg font-medium break-all'>{value}</code>
+    render: (value: unknown) => (
+      <code className='font-mono text-lg font-medium break-all'>
+        {value as string}
+      </code>
     )
   },
   {
@@ -44,12 +46,12 @@ const CODE_DETAIL_CONFIG: FieldConfig<ActivationCode>[] = [
   {
     label: '创建时间',
     key: 'created_at',
-    render: (value: string) => formatDateTime(value)
+    render: (value: unknown) => formatDateTime(value as string)
   },
   {
     label: '更新时间',
     key: 'updated_at',
-    render: (value: string) => formatDateTime(value)
+    render: (value: unknown) => formatDateTime(value as string)
   },
   {
     label: '过期时间',
@@ -65,12 +67,12 @@ const CODE_DETAIL_CONFIG: FieldConfig<ActivationCode>[] = [
   {
     label: '分发时间',
     key: 'distributed_at',
-    render: (value: string) => formatDateTime(value)
+    render: (value: unknown) => formatDateTime(value as string)
   },
   {
     label: '激活时间',
     key: 'activated_at',
-    render: (value: string) => formatDateTime(value)
+    render: (value: unknown) => formatDateTime(value as string)
   }
 ];
 
