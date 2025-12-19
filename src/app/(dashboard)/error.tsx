@@ -14,7 +14,7 @@ export default function Error({
 }) {
   useEffect(() => {
     // 记录错误到错误报告服务
-    console.error('Global Error:', error);
+    console.error('Dashboard Error:', error);
   }, [error]);
 
   return (
@@ -35,7 +35,7 @@ export default function Error({
 
           <h1 className='mb-2 text-3xl font-bold tracking-tight'>出错了</h1>
           <p className='text-muted-foreground mb-8 text-balance'>
-            抱歉，系统遇到了一个意外错误。我们已经记录了此问题，并将尽快修复。
+            抱歉，后台系统遇到了一个意外错误。我们已经记录了此问题，并将尽快修复。
           </p>
 
           {/* 错误详情（仅开发环境或具有 digest 时显示） */}
@@ -85,7 +85,7 @@ export default function Error({
 
         {/* 底部装饰文字 */}
         <p className='text-muted-foreground/40 mt-8 text-center text-xs font-medium tracking-widest uppercase'>
-          N Admin System Recovery
+          N Admin Dashboard Recovery
         </p>
       </div>
     </div>
